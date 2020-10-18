@@ -22,13 +22,13 @@ class Product {
       this.url, this.rating, this.companyId, this.userId);
 
   Product.fromJson(Map<String, dynamic> json)
-      : id = json["id"] as int,
+      : id = json["id"],
         name = json["name"],
         iconUrl = json["iconUrl"],
         overview = json["overview"],
         description = json["description"],
         url = json["url"],
-        rating = json["rating"] as int,
-        companyId = json["companyId"] as int,
-        userId = json["userId"] as int;
+        rating = json["rating"],
+        companyId = json["companyId"],
+        userId = json["userId"];
 }

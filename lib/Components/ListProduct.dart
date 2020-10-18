@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:swd_project/Bloc/Get_Product_Bloc.dart';
 import 'package:swd_project/Model/Product.dart';
 import 'package:swd_project/Model/ProductResponse.dart';
+import 'package:swd_project/Pages/DetailProduct.dart';
 
 class ListProduct extends StatefulWidget {
   @override
@@ -31,10 +33,14 @@ class _ListProductState extends State<ListProduct> {
         SizedBox(
           height: 10,
         ),
-        StreamBuilder<List<Product>>(
+        StreamBuilder<ProductResponse>(
           stream: productBloc.subject,
-          builder: (context, AsyncSnapshot<List<Product>> snapshot) {
+          builder: (context, AsyncSnapshot<ProductResponse> snapshot) {
             if (snapshot.hasData) {
+              if (snapshot.data.error != null &&
+                  snapshot.data.error.length > 0) {
+                return _buildErrorWidget(snapshot.data.error);
+              }
               return _buildProductWidget(snapshot.data);
             } else if (snapshot.hasError) {
               return _buildErrorWidget(snapshot.error);
@@ -56,7 +62,7 @@ class _ListProductState extends State<ListProduct> {
           height: 25.0,
           width: 25.0,
           child: CircularProgressIndicator(
-            valueColor: new AlwaysStoppedAnimation<Color>(Colors.white),
+            valueColor: new AlwaysStoppedAnimation<Color>(Colors.blueGrey),
             strokeWidth: 4.0,
           ),
         )
@@ -74,84 +80,71 @@ class _ListProductState extends State<ListProduct> {
     ));
   }
 
-  Widget _buildProductWidget(List<Product> data) {
-    List<Product> products = data;
-    return ListView.builder(
-      scrollDirection:
-          Axis.vertical, //Vertical viewport was given unbounded height
+  Widget _buildProductWidget(ProductResponse data) {
+    List<Product> products = data.products;
+    return GridView.builder(
+      scrollDirection: Axis.vertical,
       shrinkWrap: true,
-      itemCount: products == null ? 0 : products.length,
-      itemBuilder: (context, index) {
-        return Padding(
-          padding: const EdgeInsets.fromLTRB(29, 10, 30, 0),
-          child: Container(
-            width: 200,
-            height: 90,
-            decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(15),
-                boxShadow: [
-                  new BoxShadow(
-                      color: Colors.black54,
-                      offset: new Offset(1.0, 2.0),
-                      blurRadius: 3.5),
-                ]),
-            child: ListTile(
-              leading: Container(
-                width: 60,
-                height: 70,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(
-                    color: Colors.white,
-                    width: 2,
+      itemCount: products.length,
+      physics: ScrollPhysics(),
+      // ngao ngao ko scroll này
+      gridDelegate:
+          SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
+      itemBuilder: (BuildContext context, int index) {
+        return new Card(
+          child: InkResponse(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => DetailPage(
+                    product: products[index],
                   ),
-                  boxShadow: [
-                    BoxShadow(
-                        color: Colors.grey.withOpacity(.3),
-                        offset: Offset(0, 5),
-                        blurRadius: 25)
-                  ],
                 ),
-                child: Stack(
+              );
+            },
+            child: new GridTile(
+              child: Container(
+                decoration: BoxDecoration(
+                    color: Colors.grey[100],
+                    borderRadius: BorderRadius.circular(5),
+                    boxShadow: [
+                      new BoxShadow(
+                          color: Colors.black54.withOpacity(0.5),
+                          offset: new Offset(1.0, 3.0),
+                          blurRadius: 3.7),
+                    ]),
+                child: Column(
                   children: [
-                    Positioned.fill(
+                    Text(
+                      products[index].name,
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 20),
                       child: CircleAvatar(
                         backgroundImage: NetworkImage(products[index].iconUrl),
-                        radius: 20,
+                        radius: 45,
                       ),
-                    ),
+                    )
                   ],
                 ),
               ),
-              title: Padding(
-                padding: const EdgeInsets.fromLTRB(1, 0, 0, 24),
-                child: Text(
-                  products[index].name,
-                  style: TextStyle(fontWeight: FontWeight.bold),
+              // child: new Text(products[index].), //just for testing, will fill with image later
+              footer: Padding(
+                padding: const EdgeInsets.only(left: 45),
+                child: RatingBarIndicator(
+                  rating: (products[index].rating).toDouble(),
+                  itemBuilder: (context, index) => Icon(
+                    Icons.star,
+                    color: Colors.amber,
+                  ),
+                  itemCount: 5,
+                  itemSize: 20,
+                  direction: Axis.horizontal,
                 ),
               ),
-              subtitle: Row(children: <Widget>[
-                Flexible(
-                  child: RichText(
-                    overflow: TextOverflow.ellipsis,
-                    strutStyle: StrutStyle(fontSize: 12.0),
-                    text: TextSpan(
-                        style: TextStyle(color: Colors.black),
-                        text: '${products[index].overview}'),
-                  ),
-                ),
-              ]),
-              onTap: () {
-                // Navigator.of(context).pushReplacement(
-                //   MaterialPageRoute(
-                //     builder: (context) => ChatScreen(
-                //       name: data[index]['name'].toString(),
-                //       UrlImage: data[index]['imgUrl'].toString(),
-                //     ),
-                //   ),
-                // );
-              },
             ),
           ),
         );

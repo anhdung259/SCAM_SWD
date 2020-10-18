@@ -1,15 +1,14 @@
 import 'package:rxdart/rxdart.dart';
-import 'package:swd_project/Model/Product.dart';
 import 'package:swd_project/Model/ProductResponse.dart';
 import 'package:swd_project/Repository/Repository.dart';
 
 class ProductListBloc {
   ProductRepository _productRepository = ProductRepository();
-  final BehaviorSubject<List<Product>> _subject =
-      BehaviorSubject<List<Product>>();
+  final BehaviorSubject<ProductResponse> _subject =
+      BehaviorSubject<ProductResponse>();
 
   getProduct() async {
-    List<Product> productList = await _productRepository.getProducts();
+    ProductResponse productList = await _productRepository.getProducts();
     _subject.sink.add(productList);
   }
 
@@ -17,7 +16,7 @@ class ProductListBloc {
     _subject.close();
   }
 
-  BehaviorSubject<List<Product>> get subject => _subject.stream;
+  BehaviorSubject<ProductResponse> get subject => _subject.stream;
 }
 
 final productBloc = ProductListBloc();

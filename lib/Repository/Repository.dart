@@ -1,27 +1,32 @@
-import 'package:dio/dio.dart';
-import 'package:swd_project/Model/Product.dart';
+import 'package:swd_project/Model/QuestionReviewResponse.dart';
+
 import '../Model/ProductResponse.dart';
-import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class ProductRepository {
-  // final String apiKey = "Your-Api-Key";
   static String mainUrl = "https://scam2020.azurewebsites.net";
-
-  final Dio _dio = Dio();
   var getProductUrl = '$mainUrl/api/Products';
+  var getListQuestionUrl = '$mainUrl/api/Questions';
 
-  // var getPlayingUrl = '$mainUrl/movie/now_playing';
-
-  Future<List<Product>> getProducts() async {
+  Future<ProductResponse> getProducts() async {
     final response = await http.get(getProductUrl);
 
     if (response.statusCode == 200) {
-      return json
-          .decode(response.body)
-          .map<Product>((item) => Product.fromJson(item))
-          .toList();
+      print("bbbb");
+      return ProductResponse.fromJson(response.body);
     } else {
+      throw Exception('Failed to load post');
+    }
+  }
+
+  Future<QuestionReviewResponse> getListQuestion() async {
+    final response = await http.get(getListQuestionUrl);
+
+    if (response.statusCode == 200) {
+      print("aaaaaaaaaaaa");
+      return QuestionReviewResponse.fromJson(response.body);
+    } else {
+      print("aaaaaaaaaaaa");
       throw Exception('Failed to load post');
     }
   }
