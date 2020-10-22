@@ -95,9 +95,9 @@ class ProductSearch extends SearchDelegate<String> {
               );
             },
             child: ListTile(
-              leading: Icon(
-                Icons.apps,
-                color: Colors.blue,
+              leading: CircleAvatar(
+                backgroundImage: NetworkImage(suggestionList[index].iconUrl),
+                radius: 20,
               ),
               title: Text(suggestionList[index].name),
             ),

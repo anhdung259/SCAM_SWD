@@ -4,7 +4,7 @@ import 'package:swd_project/Model/QuestionReviewResponse.dart';
 import 'package:swd_project/Repository/Repository.dart';
 
 class QuestionList {
-  ProductRepository _productRepository = ProductRepository();
+  Repository _productRepository = Repository();
   final BehaviorSubject<QuestionReviewResponse> _subject =
       BehaviorSubject<QuestionReviewResponse>();
   final BehaviorSubject<List<QuestionReview>> _listTextQuestion =
@@ -33,6 +33,13 @@ class QuestionList {
       }
     }
     _listTextQuestion.sink.add(listTextQuestion);
+    print(_listTextQuestion.value.length);
+  }
+
+  int getSize() {
+    List<QuestionReview> list = _listTextQuestion.value;
+    var size = list.length;
+    return size;
   }
 
   getListRatingQuestion() async {
@@ -62,7 +69,6 @@ class QuestionList {
   }
 
   getListMultipleQuestion() async {
-    print("dddd");
     QuestionReviewResponse listQuestion =
         await _productRepository.getListQuestion();
     List<QuestionReview> listQuestionAllType = listQuestion.questions;

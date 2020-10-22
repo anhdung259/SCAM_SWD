@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:swd_project/Bloc/Post_Review_Bloc.dart';
 import 'package:swd_project/Model/Product.dart';
 import 'package:swd_project/Widget/ListMultipleQuestion.dart';
 import 'package:swd_project/Widget/ListRatingQuestion.dart';
@@ -39,6 +40,13 @@ class _QuestionReviewPageState extends State<QuestionReviewPage> {
               ListQuestionText(),
               ListYesNoQuestion(),
               ListMultiple(),
+              Center(
+                  child: RaisedButton(
+                onPressed: () {
+                  reviewbloc.printText();
+                },
+                child: Text("Submit"),
+              )),
             ],
           ),
         ));

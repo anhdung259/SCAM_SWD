@@ -1,6 +1,6 @@
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
-import 'package:swd_project/Components/ListProduct.dart';
+import 'package:swd_project/Components/CategoryList.dart';
 import 'package:swd_project/Components/SearchBar.dart';
 
 class MyHomePage extends StatefulWidget {
@@ -29,7 +29,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
         drawer: Drawer(),
         body: ListView(
-          children: [ListProduct()],
+          children: [CategoryList()],
         ));
   }
 }

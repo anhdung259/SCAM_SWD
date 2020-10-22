@@ -1,5 +1,5 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:swd_project/Bloc/Get_Product_Bloc.dart';
 import 'package:swd_project/Model/Product.dart';
 import 'package:swd_project/Model/ProductResponse.dart';
@@ -75,7 +75,7 @@ class _ListProductState extends State<ListProduct> {
         child: Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Text("Error occured: $error"),
+        Text("Error occurred: $error"),
       ],
     ));
   }
@@ -89,7 +89,7 @@ class _ListProductState extends State<ListProduct> {
       physics: ScrollPhysics(),
       // ngao ngao ko scroll này
       gridDelegate:
-          SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
+          SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3),
       itemBuilder: (BuildContext context, int index) {
         return new Card(
           child: InkResponse(
@@ -115,6 +115,7 @@ class _ListProductState extends State<ListProduct> {
                           blurRadius: 3.7),
                     ]),
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Text(
                       products[index].name,
@@ -125,26 +126,13 @@ class _ListProductState extends State<ListProduct> {
                       padding: const EdgeInsets.only(top: 20),
                       child: CircleAvatar(
                         backgroundImage: NetworkImage(products[index].iconUrl),
-                        radius: 45,
+                        radius: 23,
                       ),
                     )
                   ],
                 ),
               ),
               // child: new Text(products[index].), //just for testing, will fill with image later
-              footer: Padding(
-                padding: const EdgeInsets.only(left: 45),
-                child: RatingBarIndicator(
-                  rating: (products[index].rating).toDouble(),
-                  itemBuilder: (context, index) => Icon(
-                    Icons.star,
-                    color: Colors.amber,
-                  ),
-                  itemCount: 5,
-                  itemSize: 20,
-                  direction: Axis.horizontal,
-                ),
-              ),
             ),
           ),
         );

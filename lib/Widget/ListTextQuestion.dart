@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:swd_project/Bloc/Get_QuestionReview_Bloc.dart';
 import 'package:swd_project/Model/QuestionReview.dart';
+import 'package:swd_project/Model/ReviewAnswer.dart';
 
 class ListQuestionText extends StatefulWidget {
   @override
@@ -8,11 +9,25 @@ class ListQuestionText extends StatefulWidget {
 }
 
 class _ListQuestionTextState extends State<ListQuestionText> {
+  List<TextEditingController> _controller;
+  ReviewAnswer rw;
+  List<ReviewAnswer> reviewAnswer;
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     questionBloc.getListTextQuestion();
+    reviewAnswer = List<ReviewAnswer>();
+    _controller = List.generate(100, (index) => TextEditingController());
+  }
+
+  void addList(int id, String text) {
+    reviewAnswer.add(new ReviewAnswer(2, id, text));
+
+    for (int i = 0; i < reviewAnswer.length; i++) {
+      print(reviewAnswer[i].answer);
+    }
+    // clear the text from the input
   }
 
   @override
@@ -91,7 +106,9 @@ class _ListQuestionTextState extends State<ListQuestionText> {
                             blurRadius: 3.7),
                       ]),
                   height: 70,
-                  child: TextFormField(
+                  child: TextField(
+                    controller: _controller[index],
+                    onChanged: (value) {},
                     maxLines: 5,
                   ),
                 ),

@@ -1,18 +1,20 @@
+import 'package:swd_project/Model/CategoriesResponse.dart';
 import 'package:swd_project/Model/QuestionReviewResponse.dart';
 
 import '../Model/ProductResponse.dart';
 import 'package:http/http.dart' as http;
 
-class ProductRepository {
+class Repository {
   static String mainUrl = "https://scam2020.azurewebsites.net";
   var getProductUrl = '$mainUrl/api/Products';
   var getListQuestionUrl = '$mainUrl/api/Questions';
+  var getListCateUrl = '$mainUrl/api/Categories';
+  var getProductByCateUrl = '$mainUrl/api/Categories';
 
   Future<ProductResponse> getProducts() async {
     final response = await http.get(getProductUrl);
 
     if (response.statusCode == 200) {
-      print("bbbb");
       return ProductResponse.fromJson(response.body);
     } else {
       throw Exception('Failed to load post');
@@ -23,10 +25,28 @@ class ProductRepository {
     final response = await http.get(getListQuestionUrl);
 
     if (response.statusCode == 200) {
-      print("aaaaaaaaaaaa");
       return QuestionReviewResponse.fromJson(response.body);
     } else {
-      print("aaaaaaaaaaaa");
+      throw Exception('Failed to load post');
+    }
+  }
+
+  Future<CategoryResponse> getListCate() async {
+    final response = await http.get(getListCateUrl);
+
+    if (response.statusCode == 200) {
+      return CategoryResponse.fromJson(response.body);
+    } else {
+      throw Exception('Failed to load post');
+    }
+  }
+
+  Future<ProductResponse> getProductByCate(int id) async {
+    final response = await http.get(getProductByCateUrl + "/$id" + "/Products");
+
+    if (response.statusCode == 200) {
+      return ProductResponse.fromJson(response.body);
+    } else {
       throw Exception('Failed to load post');
     }
   }
