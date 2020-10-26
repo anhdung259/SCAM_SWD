@@ -1,7 +1,13 @@
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:swd_project/Components/CategoryList.dart';
 import 'package:swd_project/Components/SearchBar.dart';
+import 'package:swd_project/Components/TaskMenu/SlideMenu.dart';
+import 'package:swd_project/Components/TaskMenu/TaskMenu.dart';
+
+import '../Components/CategoryList.dart';
+import '../Model/Category.dart';
 
 class MyHomePage extends StatefulWidget {
   @override
@@ -27,7 +33,14 @@ class _MyHomePageState extends State<MyHomePage> {
                 })
           ],
         ),
-        drawer: Drawer(),
+        drawer: Drawer(
+          child: ListView(
+            padding: EdgeInsets.zero,
+            children: <Widget>[
+              SlideMenu(),
+            ],
+          ),
+        ),
         body: ListView(
           children: [CategoryList()],
         ));

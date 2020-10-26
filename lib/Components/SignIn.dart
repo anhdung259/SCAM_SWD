@@ -30,8 +30,7 @@ class _SignIn extends State<SignIn> {
               SizedBox(height: 30),
               _btnGoogleSignIn("logoGoogle.png", "Sign in with Google"),
               SizedBox(height: 10),
-              _btnFacebook("logoFaceBook.png","Sign in with Facebook"),
-              SizedBox(height: 10),
+              
             ],
           ),
         ),
