@@ -46,7 +46,7 @@ class _CategoryListState extends State<CategoryList> {
           height: 25.0,
           width: 25.0,
           child: CircularProgressIndicator(
-            valueColor: new AlwaysStoppedAnimation<Color>(Colors.white),
+            valueColor: new AlwaysStoppedAnimation<Color>(Colors.blueAccent),
             strokeWidth: 4.0,
           ),
         )

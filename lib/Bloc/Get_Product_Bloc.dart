@@ -1,4 +1,5 @@
 import 'package:rxdart/rxdart.dart';
+import 'package:swd_project/Model/Product.dart';
 import 'package:swd_project/Model/ProductResponse.dart';
 import 'package:swd_project/Repository/Repository.dart';
 
@@ -12,6 +13,12 @@ class ProductListBloc {
   getProduct() async {
     ProductResponse productList = await _productRepository.getProducts();
     _subject.sink.add(productList);
+  }
+  getListSize() async {
+    List<Product> prod;
+    ProductResponse productList = await _productRepository.getProducts();
+    prod= productList.products;
+    return prod;
   }
 
   getProductByCategory(int id) async {

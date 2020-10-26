@@ -34,45 +34,38 @@ class _CategoryTabState extends State<CategoryTab>
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 800,
+      height: 250,
       child: DefaultTabController(
           length: categories.length,
           child: Scaffold(
             backgroundColor: Colors.white,
-            appBar: AppBar(
-              title: Text(
-                "Các loại phần mềm phổ biến".toUpperCase(),
-                style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black),
-              ),
-              backgroundColor: Colors.white,
-              bottom: TabBar(
-                onTap: (num) {
-                  print(num);
-                },
-                controller: _tabController,
-                indicatorColor: Colors.deepOrange,
-                indicatorSize: TabBarIndicatorSize.tab,
-                indicatorWeight: 3.0,
-                unselectedLabelColor: Colors.black,
-                labelColor: Colors.black,
-                isScrollable: true,
-                tabs: categories.map((Category category) {
-                  return Container(
-                    padding: EdgeInsets.only(bottom: 10.0, top: 5.0),
-                    child: Text(category.name.toUpperCase(),
-                        style: TextStyle(
-                            fontSize: 13.5,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black54)),
-                  );
-                }).toList(),
+            appBar: PreferredSize(
+              preferredSize: Size.fromHeight(50.0),
+              child: AppBar(
+                backgroundColor: Colors.white,
+                bottom: TabBar(
+                  controller: _tabController,
+                  indicatorColor: Colors.deepOrange,
+                  indicatorSize: TabBarIndicatorSize.tab,
+                  indicatorWeight: 3.0,
+                  unselectedLabelColor: Colors.blue,
+                  labelColor: Colors.blue,
+                  isScrollable: true,
+                  tabs: categories.map((Category category) {
+                    return Container(
+                      padding: EdgeInsets.only(bottom: 10.0, top: 5.0),
+                      child: Text(category.name.toUpperCase(),
+                          style: TextStyle(
+                              fontSize: 13.5,
+                              fontWeight: FontWeight.w800,
+                              color: Colors.black87)),
+                    );
+                  }).toList(),
+                ),
               ),
             ),
             body: Padding(
-              padding: const EdgeInsets.only(top: 50),
+              padding: const EdgeInsets.only(top: 35),
               child: TabBarView(
                   controller: _tabController,
                   children: categories.map((Category cate) {

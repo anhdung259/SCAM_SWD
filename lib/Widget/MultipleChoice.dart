@@ -1,38 +1,75 @@
+import 'package:chips_choice/chips_choice.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:swd_project/Model/QuestionReview.dart';
 
+// ignore: must_be_immutable
 class MultipleChoice extends StatefulWidget {
-  final String text;
+  final QuestionReview qr;
 
-  const MultipleChoice({Key key, this.text}) : super(key: key);
+  Map<int, List<String>> answerMultiple = {};
+
+  MultipleChoice({Key key, this.qr, this.answerMultiple}) : super(key: key);
+
   @override
-  _MultipleChoiceState createState() => _MultipleChoiceState(text);
+  _MultipleChoiceState createState() =>
+      _MultipleChoiceState(qr, answerMultiple);
 }
 
 class _MultipleChoiceState extends State<MultipleChoice> {
-  bool _unchecked = false;
-  final String text;
+  QuestionReview qr;
+  Map<int, List<String>> answerMultiple = {};
 
-  _MultipleChoiceState(this.text);
+  _MultipleChoiceState(this.qr, this.answerMultiple);
+  List<String> tags = [];
+  List<String> options = [];
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    options.add(qr.option1);
+    options.add(qr.option2);
+    options.add(qr.option3);
+    options.add(qr.option4);
+    options.add(qr.option5);
+  }
+
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-        onTap: () {},
-        child: Row(
-          children: [
-            Expanded(
-              child: CheckboxListTile(
-                title: Text(text),
-                value: _unchecked,
-                onChanged: (check) {
-                  setState(() {
-                    _unchecked = check;
-                  });
-                },
-                controlAffinity: ListTileControlAffinity.leading,
-              ),
-            ),
-          ],
-        ));
+    return Column(children: [
+      ChipsChoice<String>.multiple(
+        choiceStyle: const C2ChoiceStyle(
+          color: Colors.indigo,
+          borderOpacity: .3,
+        ),
+        choiceActiveStyle: const C2ChoiceStyle(
+          color: Colors.indigo,
+          brightness: Brightness.dark,
+        ),
+        wrapped: true,
+        value: tags,
+        onChanged: (val) => setState(() {
+          tags = val;
+          answerMultiple.update(qr.id, (value) => tags, ifAbsent: () => tags);
+        }),
+        choiceItems: C2Choice.listFrom<String, String>(
+          source: options,
+          value: (i, v) => v,
+          label: (i, v) => v,
+          tooltip: (i, v) => v,
+        ),
+      )
+    ]);
+
+    // title: 'Scrollable List Multiple Choice',
+    // child: ChipsChoice<String>.multiple(
+    //   value: tags,
+    //   onChanged: (val) => setState(() => tags = val),
+    //   choiceItems: C2Choice.listFrom<String, String>(
+    //     source: options,
+    //     value: (i, v) => v,
+    //     label: (i, v) => v,
+    //     tooltip: (i, v) => v,
+    //   ),
   }
 }

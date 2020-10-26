@@ -1,142 +1,92 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:swd_project/Bloc/Get_Product_Bloc.dart';
+import 'package:swd_project/Model/Category_include_product.dart';
 import 'package:swd_project/Model/Product.dart';
 import 'package:swd_project/Model/ProductResponse.dart';
 import 'package:swd_project/Pages/DetailProduct.dart';
 
 class ListProduct extends StatefulWidget {
+  final List<ProductCategory> productCategory;
+
+  const ListProduct({Key key, this.productCategory}) : super(key: key);
   @override
-  _ListProductState createState() => _ListProductState();
+  _ListProductState createState() => _ListProductState(productCategory);
 }
 
 class _ListProductState extends State<ListProduct> {
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    productBloc.getProduct();
-  }
+  final List<ProductCategory> productCategory;
+
+  _ListProductState(this.productCategory);
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Text(
-            "Top App",
-            style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
-          ),
-        ),
-        SizedBox(
-          height: 10,
-        ),
-        StreamBuilder<ProductResponse>(
-          stream: productBloc.subject,
-          builder: (context, AsyncSnapshot<ProductResponse> snapshot) {
-            if (snapshot.hasData) {
-              if (snapshot.data.error != null &&
-                  snapshot.data.error.length > 0) {
-                return _buildErrorWidget(snapshot.data.error);
-              }
-              return _buildProductWidget(snapshot.data);
-            } else if (snapshot.hasError) {
-              return _buildErrorWidget(snapshot.error);
-            } else {
-              return _buildLoadingWidget();
-            }
-          },
-        )
-      ],
-    );
-  }
+    return Container(
+      height: 130,
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
 
-  Widget _buildLoadingWidget() {
-    return Center(
-        child: Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        SizedBox(
-          height: 25.0,
-          width: 25.0,
-          child: CircularProgressIndicator(
-            valueColor: new AlwaysStoppedAnimation<Color>(Colors.blueGrey),
-            strokeWidth: 4.0,
-          ),
-        )
-      ],
-    ));
-  }
-
-  Widget _buildErrorWidget(String error) {
-    return Center(
-        child: Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Text("Error occurred: $error"),
-      ],
-    ));
-  }
-
-  Widget _buildProductWidget(ProductResponse data) {
-    List<Product> products = data.products;
-    return GridView.builder(
-      scrollDirection: Axis.vertical,
-      shrinkWrap: true,
-      itemCount: products.length,
-      physics: ScrollPhysics(),
-      // ngao ngao ko scroll này
-      gridDelegate:
-          SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3),
-      itemBuilder: (BuildContext context, int index) {
-        return new Card(
-          child: InkResponse(
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => DetailPage(
-                    product: products[index],
-                  ),
-                ),
-              );
-            },
-            child: new GridTile(
-              child: Container(
-                decoration: BoxDecoration(
-                    color: Colors.grey[100],
-                    borderRadius: BorderRadius.circular(5),
-                    boxShadow: [
-                      new BoxShadow(
-                          color: Colors.black54.withOpacity(0.5),
-                          offset: new Offset(1.0, 3.0),
-                          blurRadius: 3.7),
-                    ]),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Text(
-                      products[index].name,
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 20),
-                      child: CircleAvatar(
-                        backgroundImage: NetworkImage(products[index].iconUrl),
-                        radius: 23,
+        itemCount: productCategory.length,
+        physics: ScrollPhysics(),
+        // ngao ngao ko scroll này
+        itemBuilder: (BuildContext context, int index) {
+          return Container(
+            width: 160,
+            height: 90,
+            child: new Card(
+              child: InkResponse(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => DetailPage(
+                        product: productCategory[index].product,
                       ),
-                    )
-                  ],
+                    ),
+                  );
+                },
+                child: new GridTile(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(50),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 10, top: 0),
+                          child: Container(
+                            width: 97,
+                            height: 93,
+                            decoration: BoxDecoration(
+                                image: DecorationImage(
+                              image: NetworkImage(
+                                  productCategory[index].product.iconUrl),
+                              fit: BoxFit.fill,
+                            )),
+                            // backgroundImage:
+                            //     NetworkImage(products[index].iconUrl),
+                            // radius: 56,
+                          ),
+                        ),
+                        Text(
+                          productCategory[index].product.name,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 15,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  // child: new Text(products[index].), //just for testing, will fill with image later
                 ),
               ),
-              // child: new Text(products[index].), //just for testing, will fill with image later
             ),
-          ),
-        );
-      },
+          );
+        },
+      ),
     );
   }
 }
