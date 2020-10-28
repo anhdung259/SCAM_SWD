@@ -1,9 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:swd_project/Bloc/Get_Product_Bloc.dart';
 import 'package:swd_project/Model/Category_include_product.dart';
-import 'package:swd_project/Model/Product.dart';
-import 'package:swd_project/Model/ProductResponse.dart';
 import 'package:swd_project/Pages/DetailProduct.dart';
 
 class ListProduct extends StatefulWidget {
@@ -25,7 +22,6 @@ class _ListProductState extends State<ListProduct> {
       height: 130,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
-
         itemCount: productCategory.length,
         physics: ScrollPhysics(),
         // ngao ngao ko scroll này
@@ -52,6 +48,7 @@ class _ListProductState extends State<ListProduct> {
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.end,
                       children: [
                         Padding(
                           padding: const EdgeInsets.only(bottom: 10, top: 0),

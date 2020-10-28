@@ -11,7 +11,7 @@ class _ListCheckBoxFilterStarState extends State<ListCheckBoxFilterStar> {
   @override
   Widget build(BuildContext context) {
     return Container(
-        padding: EdgeInsets.all(20),
+        width: MediaQuery.of(context).size.width - 50,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

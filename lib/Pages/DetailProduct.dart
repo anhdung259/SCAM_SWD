@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:swd_project/Bloc/Get_Review_Bloc.dart';
 import 'package:swd_project/Components/ProductInfo.dart';
 import 'package:swd_project/Components/ReviewInfo.dart';
 import 'package:swd_project/Model/Product.dart';
@@ -18,6 +19,12 @@ class _DetailPageState extends State<DetailPage> {
   final Product product;
 
   _DetailPageState(this.product);
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    reviewByIdBloc.getReview(product.id);
+  }
 
   @override
   final List<String> _tabs = <String>[
