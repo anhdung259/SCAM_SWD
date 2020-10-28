@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:swd_project/Bloc/Get_Categories_Bloc.dart';
 import 'package:swd_project/Bloc/TaskMenu/User_Bloc.dart';
-import 'package:swd_project/Model/Category.dart';
-import 'package:swd_project/Model/User.dart';
 import 'package:swd_project/Model/UserRepository.dart';
 
 class CategoryList extends StatefulWidget {
@@ -71,7 +68,7 @@ class _CategoryListState extends State<CategoryList> {
         child: Text("No Genres"),
       );
     } else {
-      return Profile(null);
+      return null;
     }
   }
 }
