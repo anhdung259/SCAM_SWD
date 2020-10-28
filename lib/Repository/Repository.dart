@@ -1,5 +1,9 @@
+import 'package:swd_project/Model/CateVsProductResponse.dart';
 import 'package:swd_project/Model/CategoriesResponse.dart';
+import 'package:swd_project/Model/Category_include_product.dart';
 import 'package:swd_project/Model/QuestionReviewResponse.dart';
+import 'package:swd_project/Model/User.dart';
+import 'package:swd_project/Model/UserRepository.dart';
 
 import '../Model/ProductResponse.dart';
 import 'package:http/http.dart' as http;
@@ -10,6 +14,17 @@ class Repository {
   var getListQuestionUrl = '$mainUrl/api/Questions';
   var getListCateUrl = '$mainUrl/api/Categories';
   var getProductByCateUrl = '$mainUrl/api/Categories';
+  var getListCateIncludeProductUrl = '$mainUrl/api/Categories/top';
+  var getUserByID = '$mainUrl/api/Users/';
+
+  Future<UserRepository> getUserProfile(int id) async {
+    final reponse = await http.get(getUserByID + "$id");
+    if (reponse.statusCode == 200) {
+      return UserRepository.fromJson(reponse.body);
+    } else {
+      throw Exception("fail to get User");
+    }
+  }
 
   Future<ProductResponse> getProducts() async {
     final response = await http.get(getProductUrl);
@@ -46,6 +61,17 @@ class Repository {
 
     if (response.statusCode == 200) {
       return ProductResponse.fromJson(response.body);
+    } else {
+      throw Exception('Failed to load post');
+    }
+  }
+
+  Future<CategoryVsProductResponse> getListCateIncludeProduct(int size) async {
+    final response =
+        await http.get(getListCateIncludeProductUrl + "/$size" + "/Products");
+
+    if (response.statusCode == 200) {
+      return CategoryVsProductResponse.fromJson(response.body);
     } else {
       throw Exception('Failed to load post');
     }

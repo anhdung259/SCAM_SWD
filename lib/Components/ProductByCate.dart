@@ -1,3 +1,4 @@
+import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:swd_project/Bloc/Get_Product_Bloc.dart';
@@ -5,19 +6,24 @@ import 'package:swd_project/Model/Product.dart';
 import 'package:swd_project/Model/ProductResponse.dart';
 import 'package:swd_project/Pages/DetailProduct.dart';
 
+import 'SearchBar.dart';
+
 class ProductByCate extends StatefulWidget {
   final int categoryId;
+  final String nameCategory;
 
-  const ProductByCate({Key key, this.categoryId}) : super(key: key);
+  const ProductByCate({Key key, this.categoryId, this.nameCategory})
+      : super(key: key);
 
   @override
-  _ProductByCateState createState() => _ProductByCateState(categoryId);
+  _ProductByCateState createState() =>
+      _ProductByCateState(categoryId, nameCategory);
 }
 
 class _ProductByCateState extends State<ProductByCate> {
   final int categoryId;
-
-  _ProductByCateState(this.categoryId);
+  final String nameCategory;
+  _ProductByCateState(this.categoryId, this.nameCategory);
 
   @override
   void initState() {
@@ -32,20 +38,38 @@ class _ProductByCateState extends State<ProductByCate> {
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<ProductResponse>(
-      stream: productBloc.proCate,
-      builder: (context, AsyncSnapshot<ProductResponse> snapshot) {
-        if (snapshot.hasData) {
-          if (snapshot.data.error != null && snapshot.data.error.length > 0) {
-            return _buildErrorWidget(snapshot.data.error);
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Color.fromARGB(255, 18, 32, 50),
+        title: Text(nameCategory),
+        centerTitle: true,
+        actions: [
+          IconButton(
+              icon: Icon(
+                EvaIcons.searchOutline,
+                color: Colors.white,
+              ),
+              onPressed: () {
+                showSearch(context: (context), delegate: searchBar);
+              })
+        ],
+      ),
+      drawer: Drawer(),
+      body: StreamBuilder<ProductResponse>(
+        stream: productBloc.proCate,
+        builder: (context, AsyncSnapshot<ProductResponse> snapshot) {
+          if (snapshot.hasData) {
+            if (snapshot.data.error != null && snapshot.data.error.length > 0) {
+              return _buildErrorWidget(snapshot.data.error);
+            }
+            return _buildProductWidget(snapshot.data);
+          } else if (snapshot.hasError) {
+            return _buildErrorWidget(snapshot.error);
+          } else {
+            return _buildLoadingWidget();
           }
-          return _buildProductWidget(snapshot.data);
-        } else if (snapshot.hasError) {
-          return _buildErrorWidget(snapshot.error);
-        } else {
-          return _buildLoadingWidget();
-        }
-      },
+        },
+      ),
     );
   }
 
@@ -99,19 +123,15 @@ class _ProductByCateState extends State<ProductByCate> {
       );
     } else
       return Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.all(6.0),
         child: GridView.builder(
           scrollDirection: Axis.vertical,
-          shrinkWrap: true,
-
+          gridDelegate:
+              SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
           itemCount: products.length,
           physics: ScrollPhysics(),
           // ngao ngao ko scroll này
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 3,
-              crossAxisSpacing: 3,
-              mainAxisSpacing: 15,
-              childAspectRatio: 0.84),
+
           itemBuilder: (BuildContext context, int index) {
             return new Card(
               child: InkResponse(
@@ -128,7 +148,7 @@ class _ProductByCateState extends State<ProductByCate> {
                 child: new GridTile(
                   child: Container(
                     decoration: BoxDecoration(
-                        color: Colors.grey[100],
+                        color: Colors.white,
                         borderRadius: BorderRadius.circular(5),
                         boxShadow: [
                           new BoxShadow(
@@ -141,10 +161,17 @@ class _ProductByCateState extends State<ProductByCate> {
                       children: [
                         Padding(
                           padding: const EdgeInsets.only(bottom: 10, top: 10),
-                          child: CircleAvatar(
-                            backgroundImage:
-                                NetworkImage(products[index].iconUrl),
-                            radius: 38,
+                          child: Container(
+                            width: 97,
+                            height: 87,
+                            decoration: BoxDecoration(
+                                image: DecorationImage(
+                              image: NetworkImage(products[index].iconUrl),
+                              fit: BoxFit.fill,
+                            )),
+                            // backgroundImage:
+                            //     NetworkImage(products[index].iconUrl),
+                            // radius: 56,
                           ),
                         ),
                         Text(

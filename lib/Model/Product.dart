@@ -14,12 +14,22 @@ class Product {
   final String overview;
   final String description;
   final String url;
+  final String backgroundImageUrl;
   final int rating;
   final int companyId;
   final int userId;
 
-  Product(this.id, this.name, this.iconUrl, this.overview, this.description,
-      this.url, this.rating, this.companyId, this.userId);
+  Product(
+      this.id,
+      this.name,
+      this.iconUrl,
+      this.overview,
+      this.description,
+      this.url,
+      this.rating,
+      this.companyId,
+      this.userId,
+      this.backgroundImageUrl);
 
   Product.fromJson(Map<String, dynamic> json)
       : id = json["id"],
@@ -30,5 +40,6 @@ class Product {
         url = json["url"],
         rating = json["rating"],
         companyId = json["companyId"],
-        userId = json["userId"];
+        userId = json["userId"],
+        backgroundImageUrl = json["backgroundImageUrl"];
 }

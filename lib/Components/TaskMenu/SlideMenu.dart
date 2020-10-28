@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:swd_project/Components/Profile/Profile.dart';
 
 class SlideMenu extends StatefulWidget {
   @override
@@ -19,19 +20,30 @@ class _SlideMenuState extends State<SlideMenu> {
             elevation: 10,
             child: Padding(
               padding: EdgeInsets.all(8.0),
-              child: Image.asset(
-                "logoApp.png",
-                width: 80,
-                height: 80,
+              child: InkWell(
+                onTap: () {
+                  Route route =
+                      MaterialPageRoute(builder: (context) => Profile(null));
+                  Navigator.push(context, route);
+                },
+                splashColor: Color.fromARGB(255, 18, 32, 50),
+                child: Image.asset(
+                  "logoApp.png",
+                  width: 80,
+                  height: 80,
+                ),
               ),
             ),
           ),
           Padding(
             padding: EdgeInsets.all(8.0),
-            child: Text(
-              "Name of user",
-              style: TextStyle(
-                  color: Color.fromARGB(255, 255, 255, 255), fontSize: 15),
+            child: InkWell(
+              onTap: () {},
+              child: Text(
+                "Name of user",
+                style: TextStyle(
+                    color: Color.fromARGB(255, 255, 255, 255), fontSize: 15),
+              ),
             ),
           )
         ],

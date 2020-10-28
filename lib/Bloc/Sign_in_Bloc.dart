@@ -29,4 +29,6 @@ Future<String> SignInWithGG() async {
   return '$user';
 }
 
-void SignOutGG() async {}
+void SignOutGG() async {
+  await ggSign.signOut();
+}

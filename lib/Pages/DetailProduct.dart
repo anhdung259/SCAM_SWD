@@ -24,7 +24,6 @@ class _DetailPageState extends State<DetailPage> {
     "Product Information",
     "Reviews",
     "Pricing",
-    "Feature",
   ];
 
   @override
@@ -69,6 +68,7 @@ class _DetailPageState extends State<DetailPage> {
                                 child: Padding(
                                   padding: const EdgeInsets.all(5.0),
                                   child: CircleAvatar(
+                                    backgroundColor: Colors.white,
                                     backgroundImage:
                                         NetworkImage(product.iconUrl),
                                     radius: 30,
@@ -138,8 +138,7 @@ class _DetailPageState extends State<DetailPage> {
                 ReviewPage(product: product),
                 ProductInfo(
                   product: product,
-                ),
-                ReviewPage(),
+                )
               ]),
         ),
       ),

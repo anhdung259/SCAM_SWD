@@ -1,13 +1,13 @@
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:swd_project/Components/CategoryList.dart';
+import 'package:swd_project/Components/CategoryListIncludeProduct.dart';
 import 'package:swd_project/Components/SearchBar.dart';
-import 'package:swd_project/Components/TaskMenu/SlideMenu.dart';
-import 'package:swd_project/Components/TaskMenu/TaskMenu.dart';
 
-import '../Components/CategoryList.dart';
-import '../Model/Category.dart';
+import 'package:swd_project/Components/SlideShow.dart';
+import 'package:swd_project/Components/TaskMenu/ListtleList.dart';
+import 'package:swd_project/Components/TaskMenu/SlideMenu.dart';
+import 'package:swd_project/Components/TaskMenu/SignOut.dart';
 
 class MyHomePage extends StatefulWidget {
   @override
@@ -15,18 +15,23 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  final _controller = ScrollController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          backgroundColor: Color.fromARGB(255, 18, 32, 50),
-          title: Text("Home"),
+          backgroundColor: Colors.white,
+          title: Text(
+            "Home",
+            style: TextStyle(color: Colors.black),
+          ),
+          iconTheme: new IconThemeData(color: Colors.black),
           centerTitle: true,
           actions: [
             IconButton(
                 icon: Icon(
                   EvaIcons.searchOutline,
-                  color: Colors.white,
+                  color: Colors.black,
                 ),
                 onPressed: () {
                   showSearch(context: (context), delegate: searchBar);
@@ -36,13 +41,24 @@ class _MyHomePageState extends State<MyHomePage> {
         drawer: Drawer(
           child: ListView(
             padding: EdgeInsets.zero,
-            children: <Widget>[
+            children: [
               SlideMenu(),
+              ListTitle(),
+              SizedBox(
+                height: 5,
+              ),
+              CusListTitle(),
             ],
           ),
         ),
-        body: ListView(
-          children: [CategoryList()],
+        body: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(50),
+          ),
+          child: ListView(
+            controller: _controller,
+            children: [SlideShow(), CategoryListIncludeProduct()],
+          ),
         ));
   }
 }
