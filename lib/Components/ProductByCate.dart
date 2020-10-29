@@ -7,6 +7,9 @@ import 'package:swd_project/Model/ProductResponse.dart';
 import 'package:swd_project/Pages/DetailProduct.dart';
 
 import 'SearchBar.dart';
+import 'TaskMenu/ListtleList.dart';
+import 'TaskMenu/SignOut.dart';
+import 'TaskMenu/SlideMenu.dart';
 
 class ProductByCate extends StatefulWidget {
   final int categoryId;
@@ -54,7 +57,19 @@ class _ProductByCateState extends State<ProductByCate> {
               })
         ],
       ),
-      drawer: Drawer(),
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            SlideMenu(),
+            ListTitle(),
+            SizedBox(
+              height: 5,
+            ),
+            CusListTitle(),
+          ],
+        ),
+      ),
       body: StreamBuilder<ProductResponse>(
         stream: productBloc.proCate,
         builder: (context, AsyncSnapshot<ProductResponse> snapshot) {

@@ -32,19 +32,7 @@ class _userProfile extends State<userProfile> {
         iconTheme: new IconThemeData(color: Colors.black),
         centerTitle: true,
       ),
-      drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: [
-            SlideMenu(),
-            ListTitle(),
-            SizedBox(
-              height: 5,
-            ),
-            CusListTitle(),
-          ],
-        ),
-      ),
+
       body: StreamBuilder<UserResponse>(
           stream: userBloc.userProfile,
           builder: (context, AsyncSnapshot<UserResponse> response) {
