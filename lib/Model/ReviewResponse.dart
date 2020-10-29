@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:swd_project/Model/Review.dart';
+import 'package:swd_project/Model/ReviewList.dart';
 
 class ReviewResponse {
   final List<Review> reviews;

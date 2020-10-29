@@ -5,20 +5,23 @@ import 'package:swd_project/Model/ReviewAnswer.dart';
 class ReviewOfMember extends StatefulWidget {
   final List<ReviewAnswer> reviewByUser;
   final double rate;
+  final String time;
 
-  const ReviewOfMember({Key key, this.reviewByUser, this.rate})
+  const ReviewOfMember({Key key, this.reviewByUser, this.rate, this.time})
       : super(key: key);
 
   @override
   _ReviewOfMemberState createState() =>
-      _ReviewOfMemberState(reviewByUser, rate);
+      _ReviewOfMemberState(reviewByUser, rate, time);
 }
 
 class _ReviewOfMemberState extends State<ReviewOfMember> {
   final List<ReviewAnswer> reviewByUser;
   final double rate;
+  final String time;
   List<String> listIdQuestion = ["7", "8", "9", "10"];
-  _ReviewOfMemberState(this.reviewByUser, this.rate);
+
+  _ReviewOfMemberState(this.reviewByUser, this.rate, this.time);
 
   @override
   void initState() {
@@ -31,20 +34,34 @@ class _ReviewOfMemberState extends State<ReviewOfMember> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Padding(
-          padding: const EdgeInsets.only(left: 15, top: 10),
-          child: starRating(rate),
+        Row(
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(left: 15, top: 10, right: 15),
+              child: starRating(rate),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(top: 16),
+              child: Text(
+                time,
+                style: TextStyle(fontSize: 16),
+              ),
+            ),
+          ],
         ),
-        Container(
-            padding: EdgeInsets.all(13),
-            height: 350,
-            child: ListView.builder(
-              physics: ScrollPhysics(),
-              itemCount: reviewByUser.length,
-              itemBuilder: (context, index) {
-                return Column(
+        Column(children: [
+          ListView.builder(
+            physics: NeverScrollableScrollPhysics(),
+            shrinkWrap: true,
+            padding: const EdgeInsets.all(10),
+            itemCount: reviewByUser.length,
+            itemBuilder: (context, index) {
+              return SingleChildScrollView(
+                scrollDirection: Axis.vertical,
+                physics: ScrollPhysics(),
+                child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
+                    children: [
                       if (reviewByUser[index]
                           .questionId
                           .toString()
@@ -56,9 +73,11 @@ class _ReviewOfMemberState extends State<ReviewOfMember> {
                         textQuestion(reviewByUser[index].question.questionText),
                         textAnswer(reviewByUser[index].answer),
                       ]
-                    ]);
-              },
-            ))
+                    ]),
+              );
+            },
+          )
+        ])
       ],
     );
   }
@@ -82,9 +101,12 @@ class _ReviewOfMemberState extends State<ReviewOfMember> {
       padding: const EdgeInsets.only(bottom: 7),
       child: Text(
         text,
+        textAlign: TextAlign.justify,
         style: TextStyle(
+          fontWeight: FontWeight.w400,
+          fontSize: 14,
+          letterSpacing: 0.28,
           color: Colors.black,
-          fontSize: 15,
         ),
       ),
     );
@@ -99,8 +121,9 @@ class _ReviewOfMemberState extends State<ReviewOfMember> {
             "\"$text\"",
             style: TextStyle(
               color: Colors.black,
-              fontSize: 22,
-              fontWeight: FontWeight.w800,
+              fontSize: 21,
+              fontWeight: FontWeight.w500,
+              letterSpacing: 0.27,
             ),
           ),
         )

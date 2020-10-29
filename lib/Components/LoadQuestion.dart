@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:swd_project/Bloc/Get_QuestionReview_Bloc.dart';
+import 'package:swd_project/Bloc/Post_Review_Bloc.dart';
 import 'package:swd_project/Model/QuestionReview.dart';
 import 'package:swd_project/Model/ReviewAnswer.dart';
 import 'package:swd_project/Widget/MultipleChoice.dart';
@@ -8,14 +9,23 @@ import 'package:swd_project/Widget/RadioButton.dart';
 
 class LoadQuestionReview extends StatefulWidget {
   final List<QuestionReview> questions;
-  const LoadQuestionReview({Key key, this.questions}) : super(key: key);
+  final int productId;
+
+  const LoadQuestionReview({Key key, this.questions, this.productId})
+      : super(key: key);
 
   @override
-  _LoadQuestionReviewState createState() => _LoadQuestionReviewState(questions);
+  _LoadQuestionReviewState createState() =>
+      _LoadQuestionReviewState(questions, productId);
 }
 
 class _LoadQuestionReviewState extends State<LoadQuestionReview> {
   final List<QuestionReview> questions;
+  final int productId;
+  int userId = 3;
+
+  _LoadQuestionReviewState(this.questions, this.productId);
+
   List<TextEditingController> _controller;
   List<Answer> listReviewAnswer = [];
   Map<int, String> answer = {};
@@ -32,8 +42,6 @@ class _LoadQuestionReviewState extends State<LoadQuestionReview> {
   }
 
   List<int> questionsId = [];
-
-  _LoadQuestionReviewState(this.questions);
 
   @override
   void initState() {
@@ -79,7 +87,7 @@ class _LoadQuestionReviewState extends State<LoadQuestionReview> {
               );
             }),
         RaisedButton(
-          onPressed: () {
+          onPressed: () async {
             // for (int j = 0; j < _controller.length; j++) {
             //   listReviewAnswer.add(
             //       new ReviewAnswer(2, questionsId[j], _controller[j].text));
@@ -94,15 +102,22 @@ class _LoadQuestionReviewState extends State<LoadQuestionReview> {
 
             multiple.forEach((key, value) {
               for (int i = 0; i < value.length; i++) {
-                listReviewAnswer.add(new Answer(2, key, value[i]));
+                listReviewAnswer.add(new Answer(userId, key, value[i]));
               }
             });
-            // print(answer);
-            // print(multiple);
-            for (int x = 0; x < listReviewAnswer.length; x++) {
-              print("${listReviewAnswer[x].questionId} :"
-                  "${listReviewAnswer[x].answer}");
-            }
+            // var x = new AnswerPost(
+            //   userReview: new UserReview(
+            //       status: true, userId: userId, rate: 5, productId: productId),
+            //   reviewAnswers: listReviewAnswer,
+            //   userReviewMedia: null,
+            // );
+            int statusCode = await postReviewBloc.postReview(new AnswerPost(
+              userReview: new UserReview(
+                  status: true, userId: userId, rate: 5, productId: productId),
+              reviewAnswers: listReviewAnswer,
+              userReviewMedia: null,
+            ));
+            print(statusCode);
           },
           child: Text("Đăng review của bạn"),
           color: Colors.orangeAccent,

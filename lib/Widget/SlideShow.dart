@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:page_indicator/page_indicator.dart';
@@ -47,7 +45,7 @@ class _SlideShowState extends State<SlideShow> {
           height: 25.0,
           width: 25.0,
           child: CircularProgressIndicator(
-            valueColor: new AlwaysStoppedAnimation<Color>(Colors.white),
+            valueColor: new AlwaysStoppedAnimation<Color>(Colors.blueAccent),
             strokeWidth: 4.0,
           ),
         )
@@ -78,7 +76,7 @@ class _SlideShowState extends State<SlideShow> {
             Column(
               children: <Widget>[
                 Text(
-                  "No More Movies",
+                  "No More ",
                   style: TextStyle(color: Colors.black45),
                 )
               ],
@@ -90,11 +88,8 @@ class _SlideShowState extends State<SlideShow> {
       return Container(
         height: 135,
         child: PageIndicatorContainer(
-            align: IndicatorAlign.bottom,
+            // align: IndicatorAlign.bottom,
             length: product.take(5).length,
-            indicatorSpace: 8.0,
-            padding: const EdgeInsets.all(5.0),
-            shape: IndicatorShape.circle(size: 5.0),
             child: CarouselSlider.builder(
               itemCount: product.take(5).length,
               options: CarouselOptions(
@@ -103,7 +98,7 @@ class _SlideShowState extends State<SlideShow> {
                   enlargeCenterPage: false,
                   autoPlay: true,
                   autoPlayAnimationDuration:
-                      const Duration(milliseconds: 3000)),
+                      const Duration(milliseconds: 4000)),
               itemBuilder: (context, index) {
                 return GestureDetector(
                   onTap: () {
@@ -129,9 +124,6 @@ class _SlideShowState extends State<SlideShow> {
                                     image: NetworkImage(
                                         product[index].backgroundImageUrl)))),
                       ),
-                      SizedBox(
-                        height: 10.0,
-                      ),
                       Container(
                         decoration: BoxDecoration(),
                       ),
@@ -148,7 +140,7 @@ class _SlideShowState extends State<SlideShow> {
                                   style: TextStyle(
                                       height: 1.5,
                                       color: Colors.white,
-                                      fontWeight: FontWeight.bold,
+                                      fontWeight: FontWeight.w700,
                                       fontSize: 18.0),
                                 ),
                               ],

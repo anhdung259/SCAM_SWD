@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
-import 'package:swd_project/Bloc/Get_Review_Bloc.dart';
 import 'package:swd_project/Components/ProductInfo.dart';
-import 'package:swd_project/Components/ReviewInfo.dart';
+import 'file:///E:/CN7/SWD/swd_project/lib/Components/ListReview/ReviewInfo.dart';
 import 'package:swd_project/Model/Product.dart';
 
 class DetailPage extends StatefulWidget {
@@ -19,12 +18,6 @@ class _DetailPageState extends State<DetailPage> {
   final Product product;
 
   _DetailPageState(this.product);
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    reviewByIdBloc.getReview(product.id);
-  }
 
   @override
   final List<String> _tabs = <String>[
@@ -55,58 +48,77 @@ class _DetailPageState extends State<DetailPage> {
                       centerTitle: false,
                       title: Padding(
                         padding: const EdgeInsets.only(top: 150, bottom: 20),
-                        child: Transform(
-                          transform: Matrix4.translationValues(-35.0, 0.0, 0.0),
-                          child: Row(
-                            children: [
-                              Container(
-                                height: 60,
-                                width: 60,
-                                decoration: BoxDecoration(
-                                    color: Colors.grey[100],
-                                    borderRadius: BorderRadius.circular(5),
-                                    boxShadow: [
-                                      new BoxShadow(
-                                          color:
-                                              Colors.black54.withOpacity(0.5),
-                                          offset: new Offset(1.0, 3.0),
-                                          blurRadius: 3.7),
-                                    ]),
-                                child: Padding(
-                                  padding: const EdgeInsets.all(5.0),
-                                  child: CircleAvatar(
-                                    backgroundColor: Colors.white,
-                                    backgroundImage:
-                                        NetworkImage(product.iconUrl),
-                                    radius: 30,
+                        child: SingleChildScrollView(
+                          child: Transform(
+                            transform:
+                                Matrix4.translationValues(-35.0, 0.0, 0.0),
+                            child: Row(
+                              children: [
+                                Container(
+                                  height: 60,
+                                  width: 60,
+                                  decoration: BoxDecoration(
+                                      color: Colors.grey[100],
+                                      borderRadius: BorderRadius.circular(5),
+                                      boxShadow: [
+                                        new BoxShadow(
+                                            color:
+                                                Colors.black54.withOpacity(0.5),
+                                            offset: new Offset(1.0, 3.0),
+                                            blurRadius: 3.7),
+                                      ]),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(5.0),
+                                    child: CircleAvatar(
+                                      backgroundColor: Colors.white,
+                                      backgroundImage:
+                                          NetworkImage(product.iconUrl),
+                                      radius: 30,
+                                    ),
                                   ),
                                 ),
-                              ),
-                              Padding(
-                                padding:
-                                    const EdgeInsets.only(left: 7, top: 20),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      product.name,
-                                      style: TextStyle(
-                                          color: Colors.white, fontSize: 14),
-                                    ),
-                                    RatingBarIndicator(
-                                      rating: product.rating.toDouble(),
-                                      itemBuilder: (context, index) => Icon(
-                                        Icons.star,
-                                        color: Colors.amber,
+                                Padding(
+                                  padding:
+                                      const EdgeInsets.only(left: 7, top: 20),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        product.name,
+                                        style: TextStyle(
+                                            color: Colors.white, fontSize: 14),
                                       ),
-                                      itemCount: 5,
-                                      itemSize: 12,
-                                      direction: Axis.horizontal,
-                                    ),
-                                  ],
+                                      Row(
+                                        children: [
+                                          RatingBarIndicator(
+                                            rating: product.rating.toDouble(),
+                                            itemBuilder: (context, index) =>
+                                                Icon(
+                                              Icons.star,
+                                              color: Colors.amber,
+                                            ),
+                                            itemCount: 5,
+                                            itemSize: 12,
+                                            direction: Axis.horizontal,
+                                          ),
+                                          Padding(
+                                            padding:
+                                                const EdgeInsets.only(top: 4),
+                                            child: Text(
+                                              " ( 2 người đánh giá)",
+                                              style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 7),
+                                            ),
+                                          ),
+                                        ],
+                                      )
+                                    ],
+                                  ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                         ),
                       ),

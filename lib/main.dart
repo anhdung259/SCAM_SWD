@@ -25,3 +25,14 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+// "id": 0,
+// "questionText": "Bạn muốn gì???",
+// "option1": "Bánh ",
+// "option2": "Đấm",
+// "option3": "Cơm",
+// "option4": "Phở",
+// "option5": "Phò",
+// "selectRange": null,
+// "questionType": "Multiple choice",
+// "status": null
+/// More examples see https://github.com/flutterchina/dio/tree/master/example

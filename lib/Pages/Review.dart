@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:swd_project/Bloc/Get_QuestionReview_Bloc.dart';
-import 'package:swd_project/Bloc/Post_Review_Bloc.dart';
-import 'package:swd_project/Components/TestLoadQuestion.dart';
+import 'package:swd_project/Components/LoadQuestion.dart';
 import 'package:swd_project/Model/Product.dart';
 import 'package:swd_project/Model/QuestionReviewResponse.dart';
 
@@ -53,6 +52,7 @@ class _QuestionReviewPageState extends State<QuestionReviewPage> {
                     padding: const EdgeInsets.only(top: 40, bottom: 30),
                     child: LoadQuestionReview(
                       questions: snapshot.data.questions,
+                      productId: product.id,
                     ),
                   ),
                 ],

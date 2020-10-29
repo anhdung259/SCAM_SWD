@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:swd_project/Model/Review.dart';
+import 'package:jiffy/jiffy.dart';
+import 'package:swd_project/Model/ReviewList.dart';
 
 import 'ReviewOfList.dart';
 
@@ -8,12 +9,14 @@ class ListReview extends StatefulWidget {
   final List<Review> reviews;
 
   const ListReview({Key key, this.reviews}) : super(key: key);
+
   @override
   _ListReviewState createState() => _ListReviewState(reviews);
 }
 
 class _ListReviewState extends State<ListReview> {
   final List<Review> reviews;
+
   _ListReviewState(this.reviews);
 
   @override
@@ -46,7 +49,7 @@ class _ListReviewState extends State<ListReview> {
                         borderRadius: BorderRadius.circular(5),
                         boxShadow: [
                           new BoxShadow(
-                              color: Colors.black54.withOpacity(0.5),
+                              color: Colors.black54.withOpacity(0.1),
                               offset: new Offset(1.0, 3.0),
                               blurRadius: 3.7),
                         ]),
@@ -75,22 +78,27 @@ class _ListReviewState extends State<ListReview> {
                           child: Text(
                             reviews[index].user.name,
                             style: TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.bold,
+                              fontSize: 17,
+                              fontWeight: FontWeight.w600,
                             ),
                           ),
                         ),
                       ],
                     ),
                   ),
-                  Column(
-                    children: [
-                      ReviewOfMember(
-                        reviewByUser: reviews[index].reviewAnswers,
-                        rate: reviews[index].rate,
-                      ),
-                    ],
-                  )
+                  SingleChildScrollView(
+                    scrollDirection: Axis.vertical,
+                    physics: ScrollPhysics(),
+                    child: Stack(
+                      children: [
+                        ReviewOfMember(
+                          reviewByUser: reviews[index].reviewAnswers,
+                          rate: reviews[index].rate,
+                          time: Jiffy(reviews[index].completeOn).yMMMMd,
+                        ),
+                      ],
+                    ),
+                  ),
 
                   // Expanded(
                   //   child: ListProduct(

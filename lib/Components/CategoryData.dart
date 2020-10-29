@@ -22,7 +22,7 @@ class _CategoryListIncludeProductState
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(top: 40, left: 15),
+      padding: const EdgeInsets.only(top: 30, left: 15),
       child: StreamBuilder<CategoryVsProductResponse>(
         stream: cateBloc.listCategoryVsProduct,
         builder: (context, AsyncSnapshot<CategoryVsProductResponse> snapshot) {

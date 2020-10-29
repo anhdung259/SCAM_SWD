@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
-import 'package:swd_project/Bloc/Get_Categories_Bloc.dart';
 import 'package:swd_project/Bloc/Get_Product_Bloc.dart';
 import 'package:swd_project/Components/ListProduct.dart';
 import 'package:swd_project/Components/ProductByCate.dart';
@@ -62,9 +61,9 @@ class _CategoryListProductState extends State<CategoryListProduct>
           return SingleChildScrollView(
             physics: ScrollPhysics(),
             child: Padding(
-              padding: const EdgeInsets.only(bottom: 30),
+              padding: const EdgeInsets.only(bottom: 20),
               child: Container(
-                height: 170,
+                height: 180,
                 child: Column(
                   children: [
                     Row(
@@ -74,10 +73,12 @@ class _CategoryListProductState extends State<CategoryListProduct>
                           padding: const EdgeInsets.only(left: 10),
                           child: Text(
                             categories[index].name,
+                            textAlign: TextAlign.left,
                             style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                            ),
+                                fontSize: 21,
+                                fontWeight: FontWeight.w600,
+                                letterSpacing: 0.27,
+                                color: Colors.blueGrey[800]),
                           ),
                         ),
                         GestureDetector(
@@ -97,7 +98,10 @@ class _CategoryListProductState extends State<CategoryListProduct>
                             padding: const EdgeInsets.only(right: 8.0),
                             child: Text(
                               "Xem tất cả",
-                              style: TextStyle(fontSize: 15),
+                              style: TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.blueGrey[800]),
                             ),
                           ),
                         )

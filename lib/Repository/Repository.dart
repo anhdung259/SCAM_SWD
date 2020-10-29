@@ -2,6 +2,7 @@ import 'package:swd_project/Model/CateVsProductResponse.dart';
 import 'package:swd_project/Model/CategoriesResponse.dart';
 import 'package:swd_project/Model/QuestionReviewResponse.dart';
 import 'package:swd_project/Model/ReviewResponse.dart';
+import 'package:swd_project/Model/UserResponse.dart';
 
 import '../Model/ProductResponse.dart';
 import 'package:http/http.dart' as http;
@@ -14,6 +15,16 @@ class Repository {
   var getProductByCateUrl = '$mainUrl/api/Categories';
   var getListCateIncludeProductUrl = '$mainUrl/api/Categories/top';
   var getListReviewInProductUrl = '$mainUrl/api/Products';
+  var getUserByID = '$mainUrl/api/Users/';
+
+  Future<UserResponse> getUserProfile(int id) async {
+    final response = await http.get(getUserByID + "$id");
+    if (response.statusCode == 200) {
+      return UserResponse.fromJson(response.body);
+    } else {
+      throw Exception("fail to get User");
+    }
+  }
 
   Future<ProductResponse> getProducts() async {
     final response = await http.get(getProductUrl);

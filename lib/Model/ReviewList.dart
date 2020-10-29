@@ -1,5 +1,5 @@
 import 'ReviewAnswer.dart';
-import 'User.dart';
+import 'UserReview.dart';
 
 class Review {
   Review({

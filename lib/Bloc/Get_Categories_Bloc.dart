@@ -2,7 +2,6 @@ import 'package:rxdart/rxdart.dart';
 import 'package:swd_project/Model/CateVsProductResponse.dart';
 import 'package:swd_project/Model/Category.dart';
 import 'package:swd_project/Model/CategoriesResponse.dart';
-import 'package:swd_project/Model/Category_include_product.dart';
 import 'package:swd_project/Repository/Repository.dart';
 
 class CategoryListBloc {
@@ -14,13 +13,7 @@ class CategoryListBloc {
   getListCate() async {
     CategoryResponse listCateResponse = await _cateRepository.getListCate();
     List<Category> listCateAll = listCateResponse.categories;
-    List<Category> listMain = List<Category>();
-    for (int i = 0; i < listCateAll.length; i++) {
-      if (listCateAll[i].categoryId == null) {
-        listMain.add(listCateAll[i]);
-      }
-    }
-    _listCate.sink.add(listMain);
+    _listCate.sink.add(listCateAll);
   }
 
   getListCateIncludeProduct() async {

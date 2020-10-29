@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "660822112140",
+    "firebase_url": "https://scam-c8845.firebaseio.com",
+    "project_id": "scam-c8845",
+    "storage_bucket": "scam-c8845.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:660822112140:android:71b61a8278c5921f0088a9",
+        "android_client_info": {
+          "package_name": "com.example.swd_project"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "660822112140-a33gtp7ngqdmq1j9k3k20nph1n3gh12l.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.swd_project",
+            "certificate_hash": "5c755404dfd669b2adfc7359b5f7dc422f7f260e"
+          }
+        },
+        {
+          "client_id": "660822112140-dqfh665nc63gn7obcfb2b3h67eo3cddm.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBFLPdUcgRVlBCgsXoyLG1s3fl6yvUdz1w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "660822112140-dqfh665nc63gn7obcfb2b3h67eo3cddm.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

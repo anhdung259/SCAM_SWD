@@ -1,9 +1,13 @@
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:swd_project/Components/CategoryListIncludeProduct.dart';
+import 'package:swd_project/Components/CategoryData.dart';
 import 'package:swd_project/Components/SearchBar.dart';
-import 'package:swd_project/Components/SlideShow.dart';
-import 'package:swd_project/Pages/test2.dart';
+
+import 'file:///E:/CN7/SWD/swd_project/lib/Widget/SlideShow.dart';
+import 'package:swd_project/Components/TaskMenu/ListtleList.dart';
+import 'package:swd_project/Components/TaskMenu/SlideMenu.dart';
+import 'package:swd_project/Components/TaskMenu/SignOut.dart';
 
 class MyHomePage extends StatefulWidget {
   @override
@@ -34,10 +38,35 @@ class _MyHomePageState extends State<MyHomePage> {
                 })
           ],
         ),
-        drawer: Drawer(),
+        drawer: Drawer(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              SlideMenu(),
+              Padding(
+                padding: const EdgeInsets.only(bottom: 100),
+                child: ListTitle(),
+              ),
+              SizedBox(
+                height: 5,
+              ),
+              Padding(
+                padding: const EdgeInsets.only(bottom: 20),
+                child: CusListTitle(),
+              ),
+            ],
+          ),
+        ),
         body: Container(
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(50),
+            borderRadius: const BorderRadius.all(Radius.circular(16.0)),
+            boxShadow: <BoxShadow>[
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.07),
+                offset: const Offset(4, 4),
+                blurRadius: 16,
+              ),
+            ],
           ),
           child: ListView(
             controller: _controller,

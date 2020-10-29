@@ -14,11 +14,14 @@ class ReviewList {
     _subject.sink.add(listReview);
   }
 
+  void dainStream() {
+    _subject.value = null;
+  }
   //   _listTextQuestion.sink.add(listTextQuestion);
   //   print(_listTextQuestion.value.length);
   // }
 
-  dispose() {
+  dispose() async {
     _subject.close();
   }
 

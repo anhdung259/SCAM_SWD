@@ -54,7 +54,6 @@ class _ProductByCateState extends State<ProductByCate> {
               })
         ],
       ),
-      drawer: Drawer(),
       body: StreamBuilder<ProductResponse>(
         stream: productBloc.proCate,
         builder: (context, AsyncSnapshot<ProductResponse> snapshot) {
@@ -124,72 +123,75 @@ class _ProductByCateState extends State<ProductByCate> {
     } else
       return Padding(
         padding: const EdgeInsets.all(6.0),
-        child: GridView.builder(
-          scrollDirection: Axis.vertical,
-          gridDelegate:
-              SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
-          itemCount: products.length,
-          physics: ScrollPhysics(),
-          // ngao ngao ko scroll này
+        child: Container(
+          child: GridView.builder(
+            scrollDirection: Axis.vertical,
+            gridDelegate:
+                SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
+            itemCount: products.length,
+            physics: ScrollPhysics(),
+            // ngao ngao ko scroll này
 
-          itemBuilder: (BuildContext context, int index) {
-            return new Card(
-              child: InkResponse(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => DetailPage(
-                        product: products[index],
+            itemBuilder: (BuildContext context, int index) {
+              return Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => DetailPage(
+                          product: products[index],
+                        ),
+                      ),
+                    );
+                  },
+                  child: new GridTile(
+                    child: Container(
+                      decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(5),
+                          boxShadow: [
+                            new BoxShadow(
+                                color: Colors.black54.withOpacity(0.7),
+                                offset: new Offset(0.2, 3.0),
+                                blurRadius: 3.7),
+                          ]),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 10, top: 10),
+                            child: Container(
+                              width: 97,
+                              height: 87,
+                              decoration: BoxDecoration(
+                                  image: DecorationImage(
+                                image: NetworkImage(products[index].iconUrl),
+                                fit: BoxFit.fill,
+                              )),
+                              // backgroundImage:
+                              //     NetworkImage(products[index].iconUrl),
+                              // radius: 56,
+                            ),
+                          ),
+                          Text(
+                            products[index].name,
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 15,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                  );
-                },
-                child: new GridTile(
-                  child: Container(
-                    decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(5),
-                        boxShadow: [
-                          new BoxShadow(
-                              color: Colors.black54.withOpacity(0.7),
-                              offset: new Offset(0.2, 3.0),
-                              blurRadius: 3.7),
-                        ]),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 10, top: 10),
-                          child: Container(
-                            width: 97,
-                            height: 87,
-                            decoration: BoxDecoration(
-                                image: DecorationImage(
-                              image: NetworkImage(products[index].iconUrl),
-                              fit: BoxFit.fill,
-                            )),
-                            // backgroundImage:
-                            //     NetworkImage(products[index].iconUrl),
-                            // radius: 56,
-                          ),
-                        ),
-                        Text(
-                          products[index].name,
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 15,
-                          ),
-                        ),
-                      ],
-                    ),
+                    // child: new Text(products[index].), //just for testing, will fill with image later
                   ),
-                  // child: new Text(products[index].), //just for testing, will fill with image later
                 ),
-              ),
-            );
-          },
+              );
+            },
+          ),
         ),
       );
   }

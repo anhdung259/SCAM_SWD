@@ -23,6 +23,9 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  google_sign_in: ^4.5.5
+  firebase_auth: ^0.18.1+2
+  firebase_core: ^0.5.0+1
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -46,6 +49,7 @@ dependencies:
   chips_choice: ^2.0.1
   carousel_slider: ^2.3.1
   expand_widget: ^1.1.0
+  jiffy: ^3.0.1
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -60,6 +64,11 @@ flutter:
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
+  assets:
+    - logoApp.png
+    - logoFaceBook.png
+    - logoGoogle.png
+    - logoGS.png
 
   # To add assets to your application, add an assets section, like this:
   # assets:
