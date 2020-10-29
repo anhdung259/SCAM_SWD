@@ -24,8 +24,8 @@ Future<String> SignInWithGG() async {
   assert(!user.isAnonymous);
 
   assert(await user.getIdToken() != null);
-
-  print("User Name: $user");
+  String email = user.email;
+  print("User Name: $email");
   return '$user';
 }
 

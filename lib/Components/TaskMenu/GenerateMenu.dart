@@ -48,8 +48,9 @@ class _GenerateMenu extends State<GenerateMenu>
                                   Padding(
                                     padding: const EdgeInsets.all(10),
                                     child: Text(
-                                      categories[index].name.toUpperCase(),
+                                      categories[index].name,
                                       style: TextStyle(
+                                        color: Colors.blueGrey[800],
                                         fontSize: 17,
                                       ),
                                     ),
@@ -73,6 +74,7 @@ class _GenerateMenu extends State<GenerateMenu>
                                         child: Text(
                                           checkSubCate(categories, categories[index].id),
                                           style: TextStyle(
+                                            color: Colors.blueGrey[800],
                                             fontSize: 15,
                                           ),
                                         ),

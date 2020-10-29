@@ -35,4 +35,4 @@ class ReviewBloc {
   }
 }
 
-final reviewbloc = ReviewBloc();
+final reviewBloc = ReviewBloc();

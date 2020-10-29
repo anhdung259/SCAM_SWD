@@ -1,75 +1,135 @@
+import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
-import 'package:smart_select/smart_select.dart';
-import 'choices.dart' as choices;
 
-class FeaturesMultiPopup extends StatefulWidget {
+class MyHomePageSS extends StatefulWidget {
   @override
-  _FeaturesMultiPopupState createState() => _FeaturesMultiPopupState();
+  State createState() {
+    return MyHomePageSSState();
+  }
 }
 
-class _FeaturesMultiPopupState extends State<FeaturesMultiPopup> {
-  List<String> _fruit = [];
-  List<String> _framework = [];
-  Map<int, List<String>> multiple = {};
+class MyHomePageSSState extends State<MyHomePageSS> {
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: <Widget>[
-        const SizedBox(height: 7),
-        SmartSelect<String>.multiple(
-          title: 'Fruit',
-          value: _fruit,
-          onChange: (state) => setState(() {
-            _fruit = state.value;
-            multiple.update(
-              2,
-              (value) => _fruit,
-              ifAbsent: () => _fruit,
-            );
-            print(multiple);
-          }),
-          choiceItems: choices.fruits,
-          tileBuilder: (context, state) {
-            return S2Tile.fromState(
-              state,
-              isTwoLine: true,
-              leading: Container(
-                width: 40,
-                alignment: Alignment.center,
-                child: const Icon(Icons.shopping_cart),
-              ),
-            );
-          },
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Expandable Demo"),
+      ),
+      body: ExpandableTheme(
+        data: const ExpandableThemeData(
+          iconColor: Colors.blue,
+          useInkWell: true,
         ),
-        const Divider(indent: 20),
-        SmartSelect<String>.multiple(
-          title: 'Frameworks',
-          value: _framework,
-          onChange: (state) => setState(() => _framework = state.value),
-          choiceItems: choices.frameworks,
-          modalType: S2ModalType.popupDialog,
-          tileBuilder: (context, state) {
-            return ListTile(
-              title: Text(state.title),
-              subtitle: Text(
-                state.valueDisplay,
-                style: const TextStyle(color: Colors.grey),
-                overflow: TextOverflow.ellipsis,
-                maxLines: 1,
-              ),
-              leading: CircleAvatar(
-                backgroundColor: Colors.blue,
-                child: Text(_framework.length.toString(),
-                    style: TextStyle(color: Colors.white)),
-              ),
-              trailing:
-                  const Icon(Icons.keyboard_arrow_right, color: Colors.grey),
-              onTap: state.showModal,
-            );
-          },
+        child: ListView(
+          physics: const BouncingScrollPhysics(),
+          children: <Widget>[
+            Card2(),
+          ],
         ),
-        const SizedBox(height: 7),
-      ],
+      ),
     );
+  }
+}
+
+const loremIpsum =
+    "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempordassssJKHKKKKKHKHKHKHKHKHKKKKKKKKHKKKJKHHSKAJEDLHakjsdhkljashdkj"
+    "dhAJKDHAKJSDHKJASHDKJas"
+    "'dAHDJghajdgAJHDGHJa incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
+
+class Card2 extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    buildImg(Color color, double height) {
+      return SizedBox(
+          height: height,
+          child: Container(
+            decoration: BoxDecoration(
+              color: color,
+              shape: BoxShape.rectangle,
+            ),
+          ));
+    }
+
+    buildCollapsed1() {
+      return Padding(
+        padding: EdgeInsets.all(10),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Text(
+              loremIpsum,
+              softWrap: true,
+              maxLines: 3,
+            ),
+          ],
+        ),
+      );
+    }
+
+    buildExpanded1() {
+      return Padding(
+        padding: EdgeInsets.all(10),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Text(
+              loremIpsum,
+              softWrap: true,
+              maxLines: 3,
+            ),
+            Text(
+              loremIpsum,
+              softWrap: true,
+              maxLines: 7,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ],
+        ),
+      );
+    }
+
+    return ExpandableNotifier(
+        child: Padding(
+      padding: const EdgeInsets.only(left: 10, right: 10, bottom: 10),
+      child: ScrollOnExpand(
+        child: Card(
+          clipBehavior: Clip.antiAlias,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Expandable(
+                collapsed: buildCollapsed1(),
+                expanded: buildExpanded1(),
+              ),
+              Divider(
+                height: 1,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Builder(
+                    builder: (context) {
+                      var controller = ExpandableController.of(context);
+                      return FlatButton(
+                        child: Text(
+                          controller.expanded ? "Show less" : "Show more",
+                          style: Theme.of(context)
+                              .textTheme
+                              .button
+                              .copyWith(color: Colors.deepPurple),
+                        ),
+                        onPressed: () {
+                          controller.toggle();
+                        },
+                      );
+                    },
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    ));
   }
 }

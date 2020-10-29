@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:swd_project/Components/Profile/Profile.dart';
+import 'package:swd_project/Components/Profile/UserMapModel.dart';
 
 class SlideMenu extends StatefulWidget {
   @override
@@ -23,7 +23,7 @@ class _SlideMenuState extends State<SlideMenu> {
               child: InkWell(
                 onTap: () {
                   Route route =
-                      MaterialPageRoute(builder: (context) => Profile(null));
+                      MaterialPageRoute(builder: (context) => userProfile());
                   Navigator.push(context, route);
                 },
                 splashColor: Color.fromARGB(255, 18, 32, 50),
@@ -40,9 +40,9 @@ class _SlideMenuState extends State<SlideMenu> {
             child: InkWell(
               onTap: () {},
               child: Text(
-                "Name of user",
+                "Trang cá nhân",
                 style: TextStyle(
-                    color: Color.fromARGB(255, 255, 255, 255), fontSize: 15),
+                    color: Colors.white, fontSize: 15),
               ),
             ),
           )

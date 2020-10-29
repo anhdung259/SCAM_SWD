@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:swd_project/Bloc/Get_QuestionReview_Bloc.dart';
 import 'package:swd_project/Model/QuestionReview.dart';
-import 'package:swd_project/Model/QuestionReviewResponse.dart';
 import 'package:swd_project/Model/ReviewAnswer.dart';
 import 'package:swd_project/Widget/MultipleChoice.dart';
 import 'package:swd_project/Widget/RadioButton.dart';
@@ -18,7 +17,7 @@ class LoadQuestionReview extends StatefulWidget {
 class _LoadQuestionReviewState extends State<LoadQuestionReview> {
   final List<QuestionReview> questions;
   List<TextEditingController> _controller;
-  List<ReviewAnswer> listReviewAnswer = [];
+  List<Answer> listReviewAnswer = [];
   Map<int, String> answer = {};
   Map<int, List<String>> multiple = {};
   int _size = 0;
@@ -87,7 +86,7 @@ class _LoadQuestionReviewState extends State<LoadQuestionReview> {
             // }
 
             listReviewAnswer = answer.entries
-                .map((entry) => ReviewAnswer(2, entry.key, entry.value))
+                .map((entry) => Answer(2, entry.key, entry.value))
                 .toList();
             // answer.forEach((key, value) {
             //   listReviewAnswer.add(new ReviewAnswer(2, key, value));
@@ -95,7 +94,7 @@ class _LoadQuestionReviewState extends State<LoadQuestionReview> {
 
             multiple.forEach((key, value) {
               for (int i = 0; i < value.length; i++) {
-                listReviewAnswer.add(new ReviewAnswer(2, key, value[i]));
+                listReviewAnswer.add(new Answer(2, key, value[i]));
               }
             });
             // print(answer);
@@ -142,7 +141,7 @@ class _LoadQuestionReviewState extends State<LoadQuestionReview> {
                     offset: new Offset(1.0, 1.0),
                     blurRadius: 3.7),
               ]),
-          height: 70,
+          height: 100,
           child: TextField(
             maxLines: 5,
             controller: _controller[index],

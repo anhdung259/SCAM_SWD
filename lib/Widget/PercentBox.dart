@@ -19,33 +19,37 @@ class _PercentReviewBoxState extends State<PercentReviewBox> {
   _PercentReviewBoxState(this.percent, this.text);
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-        onTap: () {},
+    return Container(
         child: Row(
-          children: [
-            Expanded(
-              child: CheckboxListTile(
-                title: Text(text),
-                value: _unchecked,
-                onChanged: (check) {
-                  setState(() {
-                    _unchecked = check;
-                  });
-                },
-                controlAffinity: ListTileControlAffinity.leading,
-              ),
-            ),
-            LinearPercentIndicator(
-              width: MediaQuery.of(context).size.width - 170,
-              animation: true,
-              lineHeight: 22.0,
-              animationDuration: 2000,
-              percent: percent,
-              animateFromLastPercent: true,
-              progressColor: Colors.orange[400],
-              // maskFilter: MaskFilter.blur(BlurStyle.solid, 3),
-            ),
-          ],
-        ));
+      children: [
+        Container(
+          width: 128,
+          height: 40,
+          child: CheckboxListTile(
+            title: Text(text),
+            value: _unchecked,
+            onChanged: (check) {
+              setState(() {
+                _unchecked = check;
+              });
+            },
+            controlAffinity: ListTileControlAffinity.leading,
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.only(top: 13),
+          child: LinearPercentIndicator(
+            width: MediaQuery.of(context).size.width - 200,
+            animation: true,
+            lineHeight: 21.0,
+            animationDuration: 2000,
+            percent: percent,
+            animateFromLastPercent: true,
+            progressColor: Colors.orange[400],
+            // maskFilter: MaskFilter.blur(BlurStyle.solid, 3),
+          ),
+        ),
+      ],
+    ));
   }
 }
