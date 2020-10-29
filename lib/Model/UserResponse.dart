@@ -12,6 +12,6 @@ class UserResponse {
         error = "";
 
   UserResponse.withError(String errorValue)
-      : user = new User(),
+      : user = User(),
         error = errorValue;
 }

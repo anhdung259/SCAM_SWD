@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:swd_project/Pages/Homepage.dart';
+
+import 'Components/SignIn/SigninScreen.dart';
 
 void main() async {
   runApp(MyApp());
@@ -21,18 +22,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: MyHomePage(),
+      home: signinScreen(),
     );
   }
 }
-// "id": 0,
-// "questionText": "Bạn muốn gì???",
-// "option1": "Bánh ",
-// "option2": "Đấm",
-// "option3": "Cơm",
-// "option4": "Phở",
-// "option5": "Phò",
-// "selectRange": null,
-// "questionType": "Multiple choice",
-// "status": null
-/// More examples see https://github.com/flutterchina/dio/tree/master/example

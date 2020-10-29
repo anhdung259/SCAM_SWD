@@ -23,7 +23,7 @@ class _SignIn extends State<SignIn> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               Image(
-                image: AssetImage("logoGS.png"),
+                image: AssetImage("logoApp.png"),
                 height: 200,
               ),
               SizedBox(height: 30),
@@ -89,44 +89,44 @@ class _SignIn extends State<SignIn> {
     );
   }
 
-  // //Facebook
-  // Widget _btnFacebook(String url, String text) {
-  //   return Container(
-  //     width: 300,
-  //     child: OutlineButton(
-  //       splashColor: Colors.grey,
-  //       onPressed: () {},
-  //       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(40)),
-  //       highlightElevation: 0,
-  //       borderSide: BorderSide(
-  //         color: Colors.grey,
-  //       ),
-  //       child: Padding(
-  //         padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
-  //         child: Row(
-  //           children: <Widget>[
-  //             Padding(
-  //               padding: const EdgeInsets.only(left: 5),
-  //               child: Image(
-  //                 image: AssetImage(url),
-  //                 height: 35.0,
-  //                 width: 35.0,
-  //               ),
-  //             ),
-  //             Padding(
-  //               padding: const EdgeInsets.only(left: 20),
-  //               child: Text(
-  //                 text,
-  //                 style: TextStyle(
-  //                   fontSize: 20,
-  //                   color: Colors.grey,
-  //                 ),
-  //               ),
-  //             )
-  //           ],
-  //         ),
-  //       ),
-  //     ),
-  //   );
-  // }
+  //Facebook
+  Widget _btnFacebook(String url, String text) {
+    return Container(
+      width: 300,
+      child: OutlineButton(
+        splashColor: Colors.grey,
+        onPressed: () {},
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(40)),
+        highlightElevation: 0,
+        borderSide: BorderSide(
+          color: Colors.grey,
+        ),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
+          child: Row(
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.only(left: 5),
+                child: Image(
+                  image: AssetImage(url),
+                  height: 35.0,
+                  width: 35.0,
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(left: 20),
+                child: Text(
+                  text,
+                  style: TextStyle(
+                    fontSize: 20,
+                    color: Colors.grey,
+                  ),
+                ),
+              )
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 }

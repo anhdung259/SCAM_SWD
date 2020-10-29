@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:swd_project/Bloc/TaskMenu/User_Bloc.dart';
-import 'package:swd_project/Components/Profile/DataProfile.dart';
+import 'package:swd_project/Components/Profile/UserMapModel.dart';
 
 class SlideMenu extends StatefulWidget {
   @override
@@ -8,12 +7,6 @@ class SlideMenu extends StatefulWidget {
 }
 
 class _SlideMenuState extends State<SlideMenu> {
-  @override
-  void initState() {
-    super.initState();
-    userBloc.getUser(1);
-  }
-
   @override
   Widget build(BuildContext context) {
     return DrawerHeader(
@@ -30,7 +23,7 @@ class _SlideMenuState extends State<SlideMenu> {
               child: InkWell(
                 onTap: () {
                   Route route =
-                      MaterialPageRoute(builder: (context) => DetailUser());
+                      MaterialPageRoute(builder: (context) => userProfile());
                   Navigator.push(context, route);
                 },
                 splashColor: Color.fromARGB(255, 18, 32, 50),

@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:swd_project/Bloc/TaskMenu/CheckSubCate.dart';
 import 'package:swd_project/Model/Category.dart';
 
+import '../ProductByCate.dart';
+
 class GenerateMenu extends StatefulWidget {
   final List<Category> categories;
 
@@ -45,43 +47,75 @@ class _GenerateMenu extends State<GenerateMenu>
                             children: [
                               Row(
                                 children: [
-                                  Padding(
-                                    padding: const EdgeInsets.all(10),
+                                  Container(
+                                      child: FlatButton(
+                                    onPressed: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => ProductByCate(
+                                            categoryId: categories[index].id,
+                                            nameCategory:
+                                                categories[index].name,
+                                          ),
+                                        ),
+                                      );
+                                    },
                                     child: Text(
-                                      categories[index].name.toUpperCase(),
+                                      categories[index].name,
                                       style: TextStyle(
+                                        color: Colors.blueGrey[800],
                                         fontSize: 17,
                                       ),
                                     ),
-                                  ),
+                                  )),
                                 ],
                               ),
                             ],
                           ),
                           children: [
-                            if(!checkSubCate(categories, categories[index].id).contains("false"))
-                            ExpansionTile(
-                              title: Column(
-                                mainAxisAlignment:
-                                MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Row(
-                                    children: [
-                                      Padding(
-                                        padding:
-                                        const EdgeInsets.only(left: 40),
-                                        child: Text(
-                                          checkSubCate(categories, categories[index].id),
-                                          style: TextStyle(
-                                            fontSize: 15,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
+                            if (!checkSubCate(categories, categories[index].id)
+                                .contains("false"))
+                              ExpansionTile(
+                                title: Column(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Padding(
+                                            padding:
+                                                const EdgeInsets.only(left: 40),
+                                            child: FlatButton(
+                                              onPressed: () {
+                                                Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        ProductByCate(
+                                                      categoryId:
+                                                          categories[index].id,
+                                                      nameCategory:
+                                                      checkSubCate(categories,
+                                                          categories[index].id),
+                                                    ),
+                                                  ),
+                                                );
+                                              },
+                                              child: Text(
+                                                checkSubCate(categories,
+                                                    categories[index].id),
+                                                style: TextStyle(
+                                                  color: Colors.blueGrey[800],
+                                                  fontSize: 15,
+                                                ),
+                                              ),
+                                            )),
+                                      ],
+                                    ),
+                                  ],
+                                ),
                               ),
-                            ),
                           ],
                         ),
                     ],

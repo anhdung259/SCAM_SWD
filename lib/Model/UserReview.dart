@@ -15,17 +15,17 @@ class User {
     this.userReviews,
   });
 
-  int id;
-  String name;
-  String avatarUrl;
+  dynamic id;
+  dynamic name;
+  dynamic avatarUrl;
   dynamic email;
   dynamic facebook;
   dynamic phone;
   dynamic bio;
   dynamic joinDate;
   dynamic provider;
-  String role;
-  dynamic status;
+  dynamic role;
+  bool status;
   List<dynamic> products;
   List<dynamic> userReviews;
 
