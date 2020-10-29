@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-
 class CusListTitle extends StatefulWidget {
   @override
   _CusListTitleState createState() => _CusListTitleState();
@@ -18,8 +17,8 @@ class _CusListTitleState extends State<CusListTitle> {
           color: Colors.redAccent,
           onPressed: () {},
           child: Text(
-              "Đăng xuất".toUpperCase(),
-              style: TextStyle(
+            "Đăng xuất".toUpperCase(),
+            style: TextStyle(
               color: Colors.white,
               fontSize: 17,
               fontWeight: FontWeight.bold,
