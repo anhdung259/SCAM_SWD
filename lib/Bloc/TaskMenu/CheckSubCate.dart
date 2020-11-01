@@ -1,4 +1,4 @@
-import 'package:swd_project/Model/Category.dart';
+import 'package:swd_project/Model/Category/Category.dart';
 
 String checkSubCate(List<Category> category, int id) {
   String result = "false";
@@ -11,6 +11,7 @@ String checkSubCate(List<Category> category, int id) {
   }
   return result;
 }
+
 String checkSubCateID(List<Category> category, int id) {
   String result = "false";
   for (int i = 0; i < category.length; i++) {
@@ -22,4 +23,3 @@ String checkSubCateID(List<Category> category, int id) {
   }
   return result;
 }
-

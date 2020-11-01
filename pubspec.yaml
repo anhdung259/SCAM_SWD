@@ -52,6 +52,9 @@ dependencies:
   carousel_slider: ^2.3.1
   expand_widget: ^1.1.0
   jiffy: ^3.0.1
+  future_progress_dialog: ^0.1.1
+  rflutter_alert: ^1.1.0
+  pull_to_refresh: ^1.6.2
 dev_dependencies:
   flutter_test:
     sdk: flutter

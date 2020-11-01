@@ -1,10 +1,11 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:page_indicator/page_indicator.dart';
-import 'package:swd_project/Bloc/Get_Product_Bloc.dart';
-import 'package:swd_project/Model/Product.dart';
-import 'package:swd_project/Model/ProductResponse.dart';
-import 'package:swd_project/Pages/DetailProduct.dart';
+import 'package:swd_project/Bloc/get_Product_Bloc.dart';
+import 'package:swd_project/Model/Product/Product.dart';
+import 'package:swd_project/Model/Product/ProductResponse.dart';
+
+import 'package:swd_project/Pages/detail_product.dart';
 
 class SlideShow extends StatefulWidget {
   @override

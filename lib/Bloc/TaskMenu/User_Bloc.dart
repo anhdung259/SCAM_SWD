@@ -1,5 +1,6 @@
 import 'package:rxdart/rxdart.dart';
-import 'package:swd_project/Model/UserResponse.dart';
+import 'package:swd_project/Model/User/UserResponse.dart';
+
 import 'package:swd_project/Repository/Repository.dart';
 
 class UserBloc {

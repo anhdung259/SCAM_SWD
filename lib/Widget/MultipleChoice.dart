@@ -1,7 +1,7 @@
 import 'package:chips_choice/chips_choice.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:swd_project/Model/QuestionReview.dart';
+import 'package:swd_project/Model/QuestionReview/QuestionReview.dart';
 
 // ignore: must_be_immutable
 class MultipleChoice extends StatefulWidget {
