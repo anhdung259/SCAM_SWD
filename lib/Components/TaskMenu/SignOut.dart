@@ -17,7 +17,12 @@ class _CusListTitleState extends State<CusListTitle> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         child: RaisedButton(
           color: Colors.redAccent,
-          onPressed: () {},
+          onPressed: () {
+            SignOutGG();
+            Route route =
+                MaterialPageRoute(builder: (context) => signinScreen());
+            Navigator.push(context, route);
+          },
           child: Text(
               "Đăng xuất".toUpperCase(),
               style: TextStyle(
@@ -29,39 +34,5 @@ class _CusListTitleState extends State<CusListTitle> {
         ),
       ),
     );
-    // return Padding(
-    //   padding: const EdgeInsets.fromLTRB(5, 10, 5, 0),
-    //   child: Container(
-    //     child: InkWell(
-    //       splashColor: Color.fromARGB(255, 18, 32, 50),
-    //       onTap: () {
-    //         SignOutGG();
-    //         Route route =
-    //             MaterialPageRoute(builder: (context) => signinScreen());
-    //         Navigator.push(context, route);
-    //       },
-    //       child: Container(
-    //         child: RaisedButton(
-    //           color: Colors.red,
-    //           shape: RoundedRectangleBorder(
-    //               borderRadius: BorderRadius.circular(20),
-    //               side: BorderSide(
-    //                 color: Colors.blueGrey[800],
-    //                 width: 1,
-    //                 style: BorderStyle.solid,
-    //               )),
-    //           child: Text(
-    //             "Đăng xuất".toUpperCase(),
-    //             style: TextStyle(
-    //               color: Colors.blueGrey[800],
-    //               fontSize: 17,
-    //               fontWeight: FontWeight.bold,
-    //             ),
-    //           ),
-    //         ),
-    //       ),
-    //     ),
-    //   ),
-    // );
   }
 }

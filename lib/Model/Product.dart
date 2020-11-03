@@ -15,7 +15,7 @@ class Product {
   final String description;
   final String url;
   final String backgroundImageUrl;
-  final int rating;
+  final dynamic rating;
   final int companyId;
   final int userId;
 

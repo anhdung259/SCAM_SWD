@@ -25,7 +25,7 @@ Future<String> SignInWithGG() async {
 
   assert(await user.getIdToken() != null);
   String email = user.email;
-  print("User Name: $email");
+  print("User Name: $user");
   return '$user';
 }
 
