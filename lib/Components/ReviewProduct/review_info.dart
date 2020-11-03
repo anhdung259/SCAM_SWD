@@ -2,17 +2,18 @@ import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:jiffy/jiffy.dart';
+import 'package:localstorage/localstorage.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:swd_project/Bloc/get_Review_Bloc.dart';
+import 'package:swd_project/Components/ReviewProduct/filter_star.dart';
 import 'package:swd_project/Model/Product/Product.dart';
 import 'package:swd_project/Model/ReviewAnswer/ReviewAnswer.dart';
 import 'package:swd_project/Model/ReviewAnswer/ReviewList.dart';
-import 'package:swd_project/Model/ReviewAnswer/ReviewResponse.dart';
-import 'package:swd_project/Pages/detail_product.dart';
+import 'package:swd_project/Model/User/UserReview.dart';
 import 'package:swd_project/Pages/review.dart';
 
 class ReviewPage extends StatefulWidget {
   final Product product;
-
   const ReviewPage({Key key, this.product}) : super(key: key);
 
   @override
@@ -20,14 +21,47 @@ class ReviewPage extends StatefulWidget {
 }
 
 class _ReviewPageState extends State<ReviewPage> {
+  final LocalStorage storage = LocalStorage('user');
+  User user;
   final Product product;
-  int userId = 3;
+  int pageSize = 3;
+  int currentPage = 1;
   List<String> listIdQuestion = ["7", "8", "9", "10"];
-
+  bool checkReview = false;
+  RefreshController _controller1 = RefreshController();
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    reviewByIdBloc.getReview(product.id);
+    reviewByIdBloc.dainStream();
+    _getMoreData();
+  }
+
+  void _onLoading() {
+    Future.delayed(const Duration(milliseconds: 2009)).then((val) {
+      _getMoreData();
+    });
+  }
+
+  void _onRefresh() {
+    Future.delayed(const Duration(milliseconds: 2009)).then((val) {
+      _controller1.refreshCompleted();
+//                refresher.sendStatus(RefreshStatus.completed);
+    });
+  }
+
+  void _getMoreData() async {
+    user = User.fromJsonProfile(storage.getItem('user'));
+    reviewByIdBloc.getReview(product.id, currentPage, pageSize);
+    if (mounted) {
+      _controller1.loadComplete();
+      currentPage++;
+    }
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _controller1.dispose();
   }
 
   _ReviewPageState(this.product);
@@ -44,9 +78,9 @@ class _ReviewPageState extends State<ReviewPage> {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(left: 8),
-      child: StreamBuilder<ReviewResponse>(
+      child: StreamBuilder<List<Review>>(
         stream: reviewByIdBloc.subject,
-        builder: (context, AsyncSnapshot<ReviewResponse> snapshot) {
+        builder: (context, AsyncSnapshot<List<Review>> snapshot) {
           if (snapshot.hasData) {
             return _buildReviewWidget(snapshot.data);
           } else if (snapshot.hasError) {
@@ -86,14 +120,19 @@ class _ReviewPageState extends State<ReviewPage> {
     ));
   }
 
-  Widget _buildReviewWidget(ReviewResponse data) {
-    List<Review> reviews = data.reviews;
-    return CustomScrollView(
-      slivers: <Widget>[
-        SliverPadding(
-          padding: EdgeInsets.only(left: 5, right: 10),
-          sliver: SliverList(
-            delegate: SliverChildListDelegate([
+  Widget _buildReviewWidget(List<Review> data) {
+    List<Review> reviews = data;
+    return SmartRefresher(
+      controller: _controller1,
+      onLoading: _onLoading,
+      onRefresh: _onRefresh,
+      enablePullUp: true,
+      enablePullDown: true,
+      child: SingleChildScrollView(
+        child: Container(
+          padding: EdgeInsets.only(right: 12, left: 7, top: 10),
+          child: Column(
+            children: [
               SizedBox(
                 height: 15,
               ),
@@ -110,47 +149,24 @@ class _ReviewPageState extends State<ReviewPage> {
                             blurRadius: 3.7),
                       ]),
                   child: Column(
+                    mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Container(
                         height: 48,
                         width: MediaQuery.of(context).size.width,
-                        child: checkUserReviewed(reviews, userId)
+                        child: checkUserReviewed(
+                                reviews,
+                                User.fromJsonProfile(storage.getItem('user'))
+                                    .id)
                             ? RaisedButton.icon(
                                 // Đã review rồi thì chỉ được update
                                 onPressed: () {
                                   showDialog(
                                       context: context,
                                       builder: (BuildContext context) {
-                                        return AlertDialog(
-                                          insetPadding: EdgeInsets.symmetric(
-                                              horizontal: 10),
-                                          shape: RoundedRectangleBorder(
-                                              borderRadius: BorderRadius.all(
-                                                  Radius.circular(13.0))),
-                                          title: Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .spaceBetween,
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.center,
-                                              children: [
-                                                Center(
-                                                    child: Text(
-                                                        'Update ${product.name}')),
-                                                IconButton(
-                                                    icon: Icon(Icons.close),
-                                                    onPressed: () =>
-                                                        Navigator.of(context)
-                                                            .pop())
-                                              ]),
-                                          content: Container(
-                                            width: double.maxFinite,
-                                            child: QuestionReviewPage(
-                                              product: product,
-                                            ),
-                                          ),
-                                        );
+                                        return dialogReview(context, product,
+                                            "Cập nhật review");
                                       });
                                 },
                                 icon: Icon(
@@ -158,7 +174,7 @@ class _ReviewPageState extends State<ReviewPage> {
                                   color: Colors.white,
                                 ),
                                 label: Text(
-                                  "Update review",
+                                  "Cập nhật review",
                                   style: TextStyle(
                                     fontWeight: FontWeight.w600,
                                     fontSize: 16,
@@ -174,35 +190,8 @@ class _ReviewPageState extends State<ReviewPage> {
                                   showDialog(
                                       context: context,
                                       builder: (BuildContext context) {
-                                        return AlertDialog(
-                                          insetPadding: EdgeInsets.symmetric(
-                                              horizontal: 10),
-                                          shape: RoundedRectangleBorder(
-                                              borderRadius: BorderRadius.all(
-                                                  Radius.circular(13.0))),
-                                          title: Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .spaceBetween,
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.center,
-                                              children: [
-                                                Center(
-                                                    child: Text(
-                                                        'Review ${product.name}')),
-                                                IconButton(
-                                                    icon: Icon(Icons.close),
-                                                    onPressed: () =>
-                                                        Navigator.of(context)
-                                                            .pop())
-                                              ]),
-                                          content: Container(
-                                            width: double.maxFinite,
-                                            child: QuestionReviewPage(
-                                              product: product,
-                                            ),
-                                          ),
-                                        );
+                                        return dialogReview(
+                                            context, product, "Viết review");
                                       });
                                 },
                                 icon: Icon(
@@ -222,15 +211,18 @@ class _ReviewPageState extends State<ReviewPage> {
                               ),
                       ),
                       getFilterBarUI(reviews.length.toString()),
-                      listReview(reviews)
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 40),
+                        child: listReview(reviews),
+                      ),
                     ],
                   ),
                 ),
               ),
-            ]),
+            ],
           ),
         ),
-      ],
+      ),
     );
   }
 
@@ -286,13 +278,12 @@ class _ReviewPageState extends State<ReviewPage> {
                       Radius.circular(4.0),
                     ),
                     onTap: () {
-                      FocusScope.of(context).requestFocus(FocusNode());
-                      Navigator.push<dynamic>(
-                        context,
-                        MaterialPageRoute<dynamic>(
-                            builder: (BuildContext context) => DetailPage(),
-                            fullscreenDialog: true),
-                      );
+                      showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return dialogFilter(
+                                context, product, "Filter review");
+                          });
                     },
                     child: Padding(
                       padding: const EdgeInsets.only(left: 8),
@@ -331,23 +322,21 @@ class _ReviewPageState extends State<ReviewPage> {
       ],
     );
   }
-}
 
-//*
+  //*
 //*
 //*
 //*
 // *
 // list các user review bao ngoài các review bên trong
-Widget listReview(List<Review> reviews) {
-  return ListView.builder(
-    physics: NeverScrollableScrollPhysics(),
-    shrinkWrap: true,
-    itemCount: reviews.length,
-    itemBuilder: (context, index) {
-      return SingleChildScrollView(
-        // physics: ScrollPhysics(),
-        child: Padding(
+  Widget listReview(List<Review> reviews) {
+    return ListView.builder(
+      physics: ClampingScrollPhysics(),
+      scrollDirection: Axis.vertical,
+      shrinkWrap: true,
+      itemCount: reviews.length,
+      itemBuilder: (context, index) {
+        return Padding(
           padding: const EdgeInsets.only(bottom: 30),
           child: Container(
             decoration: BoxDecoration(
@@ -392,40 +381,58 @@ Widget listReview(List<Review> reviews) {
                           ),
                         ),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.only(left: 10, bottom: 30),
-                        child: Text(
-                          reviews[index].user.name,
-                          style: TextStyle(
-                            fontSize: 17,
-                            fontWeight: FontWeight.w600,
+                      Column(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(
+                                left: 10, bottom: 10, top: 10),
+                            child: Text(
+                              reviews[index].user.name,
+                              style: TextStyle(
+                                fontSize: 17,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
                           ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                SingleChildScrollView(
-                  scrollDirection: Axis.vertical,
-                  physics: ScrollPhysics(),
-                  child: Stack(
-                    children: [
-                      reviewOfList(
-                        reviews[index].reviewAnswers,
-                        reviews[index].rate,
-                        Jiffy(reviews[index].completeOn).yMMMMd,
+                          // Padding(
+                          //   padding:
+                          //       const EdgeInsets.only(left: 10, bottom: 10),
+                          //   child: Text(
+                          //     reviews[index]
+                          //             .user
+                          //             .industryExperts[0]
+                          //             .industry
+                          //             .name
+                          //             .isEmpty
+                          //         ? "Chưa có"
+                          //         : reviews[index]
+                          //             .user
+                          //             .industryExperts[0]
+                          //             .industry
+                          //             .name,
+                          //     style: TextStyle(
+                          //       fontSize: 17,
+                          //       fontWeight: FontWeight.w300,
+                          //     ),
+                          //   ),
+                          // ),
+                        ],
                       )
                     ],
                   ),
                 ),
+                reviewOfList(
+                  reviews[index].reviewAnswers,
+                  reviews[index].rate,
+                  Jiffy(reviews[index].completeOn).yMMMMd,
+                )
               ],
             ),
           ),
-        ),
-      );
-    },
-  );
-}
+        );
+      },
+    );
+  }
 
 //*
 //*
@@ -433,37 +440,35 @@ Widget listReview(List<Review> reviews) {
 //*
 // *
 //các câu hỏi và câu trả lời bên trong các list review
-Widget reviewOfList(List<ReviewAnswer> reviewByUser, double rate, String time) {
-  List<String> listIdQuestion = ["7", "8", "9", "10"];
-  return Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      Row(
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(left: 15, top: 10, right: 15),
-            child: starRating(rate),
-          ),
-          Padding(
-            padding: const EdgeInsets.only(top: 16),
-            child: Text(
-              time,
-              style: TextStyle(fontSize: 16),
+  Widget reviewOfList(
+      List<ReviewAnswer> reviewByUser, double rate, String time) {
+    List<String> listIdQuestion = ["7", "8", "9", "10"];
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(left: 15, top: 10, right: 15),
+              child: starRating(rate),
             ),
-          ),
-        ],
-      ),
-      Column(children: [
-        ListView.builder(
-          physics: NeverScrollableScrollPhysics(),
-          shrinkWrap: true,
-          padding: const EdgeInsets.all(10),
-          itemCount: reviewByUser.length,
-          itemBuilder: (context, index) {
-            return SingleChildScrollView(
-              scrollDirection: Axis.vertical,
-              physics: ScrollPhysics(),
-              child: Column(
+            Padding(
+              padding: const EdgeInsets.only(top: 16),
+              child: Text(
+                time,
+                style: TextStyle(fontSize: 16),
+              ),
+            ),
+          ],
+        ),
+        Column(children: [
+          ListView.builder(
+            physics: ClampingScrollPhysics(),
+            shrinkWrap: true,
+            padding: const EdgeInsets.all(10),
+            itemCount: reviewByUser.length,
+            itemBuilder: (context, index) {
+              return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     if (reviewByUser[index]
@@ -477,73 +482,117 @@ Widget reviewOfList(List<ReviewAnswer> reviewByUser, double rate, String time) {
                       textQuestion(reviewByUser[index].question.questionText),
                       textAnswer(reviewByUser[index].answer),
                     ]
-                  ]),
-            );
-          },
-        )
-      ])
-    ],
-  );
-}
+                  ]);
+            },
+          )
+        ])
+      ],
+    );
+  }
 
-Widget textQuestion(String text) {
-  return Padding(
-    padding: const EdgeInsets.only(bottom: 5),
-    child: Text(
-      text,
-      style: TextStyle(
-          color: Colors.black,
-          fontSize: 17,
-          fontWeight: FontWeight.w500,
-          fontStyle: FontStyle.italic),
-    ),
-  );
-}
-
-Widget textAnswer(String text) {
-  return Padding(
-    padding: const EdgeInsets.only(bottom: 7),
-    child: Text(
-      text,
-      textAlign: TextAlign.justify,
-      style: TextStyle(
-        fontWeight: FontWeight.w400,
-        fontSize: 14,
-        letterSpacing: 0.28,
-        color: Colors.black,
-      ),
-    ),
-  );
-}
-
-Widget textTitle(String text) {
-  return Column(
-    children: [
-      Padding(
-        padding: const EdgeInsets.only(bottom: 15),
-        child: Text(
-          "\"$text\"",
-          style: TextStyle(
+  Widget textQuestion(String text) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 5),
+      child: Text(
+        text,
+        style: TextStyle(
             color: Colors.black,
-            fontSize: 21,
+            fontSize: 17,
             fontWeight: FontWeight.w500,
-            letterSpacing: 0.27,
-          ),
-        ),
-      )
-    ],
-  );
-}
+            fontStyle: FontStyle.italic),
+      ),
+    );
+  }
 
-Widget starRating(double rate) {
-  return RatingBarIndicator(
-    rating: rate,
-    itemBuilder: (context, index) => Icon(
-      Icons.star,
-      color: Colors.amber,
-    ),
-    itemCount: 5,
-    itemSize: 25,
-    direction: Axis.horizontal,
-  );
+  Widget textAnswer(String text) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 7),
+      child: Text(
+        text,
+        textAlign: TextAlign.justify,
+        style: TextStyle(
+          fontWeight: FontWeight.w400,
+          fontSize: 14,
+          letterSpacing: 0.28,
+          color: Colors.black,
+        ),
+      ),
+    );
+  }
+
+  Widget textTitle(String text) {
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(bottom: 15),
+          child: Text(
+            "\"$text\"",
+            style: TextStyle(
+              color: Colors.black,
+              fontSize: 21,
+              fontWeight: FontWeight.w500,
+              letterSpacing: 0.27,
+            ),
+          ),
+        )
+      ],
+    );
+  }
+
+  Widget starRating(double rate) {
+    return RatingBarIndicator(
+      rating: rate,
+      itemBuilder: (context, index) => Icon(
+        Icons.star,
+        color: Colors.amber,
+      ),
+      itemCount: 5,
+      itemSize: 25,
+      direction: Axis.horizontal,
+    );
+  }
+
+  Widget dialogReview(BuildContext context, Product product, String title) {
+    return AlertDialog(
+      insetPadding: EdgeInsets.symmetric(horizontal: 10),
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(13.0))),
+      title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Center(child: Text('$title ${product.name}')),
+            IconButton(
+                icon: Icon(Icons.close),
+                onPressed: () => Navigator.of(context).pop())
+          ]),
+      content: Container(
+        width: double.maxFinite,
+        child: QuestionReviewPage(
+          product: product,
+        ),
+      ),
+    );
+  }
+
+  Widget dialogFilter(BuildContext context, Product product, String title) {
+    return AlertDialog(
+      insetPadding: EdgeInsets.symmetric(horizontal: 10),
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(13.0))),
+      title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Center(child: Text('$title ${product.name}')),
+            IconButton(
+                icon: Icon(Icons.close),
+                onPressed: () => Navigator.of(context).pop())
+          ]),
+      content: Container(
+        width: double.maxFinite,
+        child: ListCheckBoxFilterStar(),
+      ),
+    );
+  }
 }

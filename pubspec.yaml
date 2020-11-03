@@ -55,6 +55,7 @@ dependencies:
   future_progress_dialog: ^0.1.1
   rflutter_alert: ^1.1.0
   pull_to_refresh: ^1.6.2
+  localstorage: ^3.0.3+6
 dev_dependencies:
   flutter_test:
     sdk: flutter

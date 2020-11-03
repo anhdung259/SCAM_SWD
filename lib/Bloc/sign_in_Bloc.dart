@@ -1,9 +1,13 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:localstorage/localstorage.dart';
+
+import 'TaskMenu/User_Bloc.dart';
 
 final FirebaseAuth auth = FirebaseAuth.instance;
 final GoogleSignIn ggSign = GoogleSignIn();
+final LocalStorage localStore = new LocalStorage('user');
 
 Future<String> signInWithGG() async {
   Firebase.initializeApp();
@@ -30,10 +34,13 @@ Future<String> signInWithGG() async {
   assert(await user.getIdToken() != null);
   String email = user.email;
   print("User Name: $email");
-  getId().then((value) => print(value));
-  return '$user';
+  getId().then((token) {
+    userBloc.getUserLogin(token);
+  });
+  return "$user";
 }
 
 void signOutGG() async {
   await ggSign.signOut();
+  await localStore.clear();
 }

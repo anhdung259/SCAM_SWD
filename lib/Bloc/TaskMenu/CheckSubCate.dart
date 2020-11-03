@@ -12,12 +12,12 @@ String checkSubCate(List<Category> category, int id) {
   return result;
 }
 
-String checkSubCateID(List<Category> category, int id) {
-  String result = "false";
+int checkSubCateID(List<Category> category, int id) {
+  int result = -1;
   for (int i = 0; i < category.length; i++) {
     if (category[i].categoryId != null) {
       if (category[i].categoryId == id) {
-        result = category[i].name;
+        result = category[i].id;
       }
     }
   }

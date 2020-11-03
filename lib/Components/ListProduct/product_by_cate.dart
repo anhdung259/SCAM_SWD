@@ -1,9 +1,9 @@
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:swd_project/Bloc/get_Product_Bloc.dart';
 import 'package:swd_project/Model/Product/Product.dart';
-import 'package:swd_project/Model/Product/ProductResponse.dart';
 import 'package:swd_project/Pages/detail_product.dart';
 
 import 'search_bar.dart';
@@ -11,29 +11,62 @@ import 'search_bar.dart';
 class ProductByCate extends StatefulWidget {
   final int categoryId;
   final String nameCategory;
-
-  const ProductByCate({Key key, this.categoryId, this.nameCategory})
+  final int currentPage;
+  final int pageSize;
+  const ProductByCate(
+      {Key key,
+      this.categoryId,
+      this.nameCategory,
+      this.pageSize,
+      this.currentPage})
       : super(key: key);
 
   @override
   _ProductByCateState createState() =>
-      _ProductByCateState(categoryId, nameCategory);
+      _ProductByCateState(categoryId, nameCategory, pageSize, currentPage);
 }
 
-class _ProductByCateState extends State<ProductByCate> {
+class _ProductByCateState extends State<ProductByCate>
+    with TickerProviderStateMixin {
   final int categoryId;
+  int pageSize;
+  int currentPage;
   final String nameCategory;
-  _ProductByCateState(this.categoryId, this.nameCategory);
-
+  _ProductByCateState(
+      this.categoryId, this.nameCategory, this.pageSize, this.currentPage);
+  RefreshController _controller1 = RefreshController();
   @override
   void initState() {
     super.initState();
-    productBloc.getProductByCategory(categoryId);
+    _getMoreData();
+    _controller1 = RefreshController();
+  }
+
+  void _onRefresh() {
+    Future.delayed(const Duration(milliseconds: 2009)).then((val) {
+      _controller1.refreshCompleted();
+//                refresher.sendStatus(RefreshStatus.completed);
+    });
+  }
+
+  void _onLoading() {
+    Future.delayed(const Duration(milliseconds: 2009)).then((val) {
+      _getMoreData();
+    });
+  }
+
+  void _getMoreData() async {
+    productBloc.getProductByCategory(categoryId, currentPage, pageSize);
+    if (mounted) {
+      _controller1.loadComplete();
+      currentPage++;
+    }
   }
 
   @override
   void dispose() {
     super.dispose();
+    _controller1.dispose();
   }
 
   @override
@@ -54,13 +87,10 @@ class _ProductByCateState extends State<ProductByCate> {
               })
         ],
       ),
-      body: StreamBuilder<ProductResponse>(
+      body: StreamBuilder<List<Product>>(
         stream: productBloc.proCate,
-        builder: (context, AsyncSnapshot<ProductResponse> snapshot) {
+        builder: (context, AsyncSnapshot<List<Product>> snapshot) {
           if (snapshot.hasData) {
-            if (snapshot.data.error != null && snapshot.data.error.length > 0) {
-              return _buildErrorWidget(snapshot.data.error);
-            }
             return _buildProductWidget(snapshot.data);
           } else if (snapshot.hasError) {
             return _buildErrorWidget(snapshot.error);
@@ -99,9 +129,9 @@ class _ProductByCateState extends State<ProductByCate> {
     ));
   }
 
-  Widget _buildProductWidget(ProductResponse data) {
-    List<Product> products = data.products;
-
+  Widget _buildProductWidget(List<Product> data) {
+    List<Product> products = data;
+    print(products.length);
     if (products.length == 0) {
       return Container(
         width: MediaQuery.of(context).size.width,
@@ -123,72 +153,78 @@ class _ProductByCateState extends State<ProductByCate> {
     } else
       return Padding(
         padding: const EdgeInsets.all(6.0),
-        child: GridView.builder(
-          scrollDirection: Axis.vertical,
-          gridDelegate:
-              SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
-          itemCount: products.length,
-          physics: ScrollPhysics(),
-          // ngao ngao ko scroll này
-
-          itemBuilder: (BuildContext context, int index) {
-            return new Card(
-              child: InkResponse(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => DetailPage(
-                        product: products[index],
+        child: SmartRefresher(
+          enablePullDown: true,
+          enablePullUp: true,
+          controller: _controller1,
+          onRefresh: _onRefresh,
+          onLoading: _onLoading,
+          child: GridView.builder(
+            scrollDirection: Axis.vertical,
+            gridDelegate:
+                SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
+            itemCount: products.length,
+            physics: ScrollPhysics(),
+            // ngao ngao ko scroll này
+            itemBuilder: (BuildContext context, int index) {
+              return new Card(
+                child: InkResponse(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => DetailPage(
+                          product: products[index],
+                        ),
+                      ),
+                    );
+                  },
+                  child: new GridTile(
+                    child: Container(
+                      decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(5),
+                          boxShadow: [
+                            new BoxShadow(
+                                color: Colors.black54.withOpacity(0.7),
+                                offset: new Offset(0.2, 3.0),
+                                blurRadius: 3.7),
+                          ]),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 10, top: 10),
+                            child: Container(
+                              width: 97,
+                              height: 87,
+                              decoration: BoxDecoration(
+                                  image: DecorationImage(
+                                image: NetworkImage(products[index].iconUrl),
+                                fit: BoxFit.fill,
+                              )),
+                              // backgroundImage:
+                              //     NetworkImage(products[index].iconUrl),
+                              // radius: 56,
+                            ),
+                          ),
+                          Text(
+                            products[index].name,
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 15,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                  );
-                },
-                child: new GridTile(
-                  child: Container(
-                    decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(5),
-                        boxShadow: [
-                          new BoxShadow(
-                              color: Colors.black54.withOpacity(0.7),
-                              offset: new Offset(0.2, 3.0),
-                              blurRadius: 3.7),
-                        ]),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 10, top: 10),
-                          child: Container(
-                            width: 97,
-                            height: 87,
-                            decoration: BoxDecoration(
-                                image: DecorationImage(
-                              image: NetworkImage(products[index].iconUrl),
-                              fit: BoxFit.fill,
-                            )),
-                            // backgroundImage:
-                            //     NetworkImage(products[index].iconUrl),
-                            // radius: 56,
-                          ),
-                        ),
-                        Text(
-                          products[index].name,
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 15,
-                          ),
-                        ),
-                      ],
-                    ),
+                    // child: new Text(products[index].), //just for testing, will fill with image later
                   ),
-                  // child: new Text(products[index].), //just for testing, will fill with image later
                 ),
-              ),
-            );
-          },
+              );
+            },
+          ),
         ),
       );
   }

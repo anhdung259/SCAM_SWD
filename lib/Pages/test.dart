@@ -1,135 +1,179 @@
-import 'package:expandable/expandable.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
-class MyHomePageSS extends StatefulWidget {
-  @override
-  State createState() {
-    return MyHomePageSSState();
-  }
-}
+import 'package:localstorage/localstorage.dart';
 
-class MyHomePageSSState extends State<MyHomePageSS> {
+class MyApp extends StatelessWidget {
+  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("Expandable Demo"),
+    return new MaterialApp(
+      title: 'Localstorage Demo',
+      theme: new ThemeData(
+        primarySwatch: Colors.blue,
       ),
-      body: ExpandableTheme(
-        data: const ExpandableThemeData(
-          iconColor: Colors.blue,
-          useInkWell: true,
-        ),
-        child: ListView(
-          physics: const BouncingScrollPhysics(),
-          children: <Widget>[
-            Card2(),
-          ],
-        ),
-      ),
+      home: new HomePage(),
     );
   }
 }
 
-const loremIpsum =
-    "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempordassssJKHKKKKKHKHKHKHKHKHKKKKKKKKHKKKJKHHSKAJEDLHakjsdhkljashdkj"
-    "dhAJKDHAKJSDHKJASHDKJas"
-    "'dAHDJghajdgAJHDGHJa incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
+class HomePage extends StatefulWidget {
+  HomePage({Key key}) : super(key: key);
 
-class Card2 extends StatelessWidget {
+  @override
+  _MyHomePageState createState() => new _MyHomePageState();
+}
+
+class TodoItem {
+  String title;
+  bool done;
+
+  TodoItem({this.title, this.done});
+
+  toJSONEncodable() {
+    Map<String, dynamic> m = new Map();
+
+    m['title'] = title;
+    m['done'] = done;
+
+    return m;
+  }
+}
+
+class TodoList {
+  List<TodoItem> items;
+
+  TodoList() {
+    items = new List();
+  }
+
+  toJSONEncodable() {
+    return items.map((item) {
+      return item.toJSONEncodable();
+    }).toList();
+  }
+}
+
+class _MyHomePageState extends State<HomePage> {
+  final TodoList list = new TodoList();
+  final LocalStorage storage = new LocalStorage('todo_app');
+  bool initialized = false;
+  TextEditingController controller = new TextEditingController();
+
+  _toggleItem(TodoItem item) {
+    setState(() {
+      item.done = !item.done;
+      _saveToStorage();
+    });
+  }
+
+  _addItem(String title) {
+    setState(() {
+      final item = new TodoItem(title: title, done: false);
+      list.items.add(item);
+      _saveToStorage();
+    });
+  }
+
+  _saveToStorage() {
+    storage.setItem('todos', list.toJSONEncodable());
+  }
+
+  _clearStorage() async {
+    await storage.clear();
+
+    setState(() {
+      list.items = storage.getItem('todos') ?? [];
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    buildImg(Color color, double height) {
-      return SizedBox(
-          height: height,
-          child: Container(
-            decoration: BoxDecoration(
-              color: color,
-              shape: BoxShape.rectangle,
-            ),
-          ));
-    }
+    return new Scaffold(
+      appBar: new AppBar(
+        title: new Text('Localstorage demo'),
+      ),
+      body: Container(
+          padding: EdgeInsets.all(10.0),
+          constraints: BoxConstraints.expand(),
+          child: FutureBuilder(
+            future: storage.ready,
+            builder: (BuildContext context, AsyncSnapshot snapshot) {
+              if (snapshot.data == null) {
+                return Center(
+                  child: CircularProgressIndicator(),
+                );
+              }
+              if (!initialized) {
+                var items = storage.getItem('todos');
 
-    buildCollapsed1() {
-      return Padding(
-        padding: EdgeInsets.all(10),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Text(
-              loremIpsum,
-              softWrap: true,
-              maxLines: 3,
-            ),
-          ],
-        ),
-      );
-    }
+                if (items != null) {
+                  list.items = List<TodoItem>.from(
+                    (items as List).map(
+                      (item) => TodoItem(
+                        title: item['title'],
+                        done: item['done'],
+                      ),
+                    ),
+                  );
+                }
 
-    buildExpanded1() {
-      return Padding(
-        padding: EdgeInsets.all(10),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Text(
-              loremIpsum,
-              softWrap: true,
-              maxLines: 3,
-            ),
-            Text(
-              loremIpsum,
-              softWrap: true,
-              maxLines: 7,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ],
-        ),
-      );
-    }
+                initialized = true;
+              }
 
-    return ExpandableNotifier(
-        child: Padding(
-      padding: const EdgeInsets.only(left: 10, right: 10, bottom: 10),
-      child: ScrollOnExpand(
-        child: Card(
-          clipBehavior: Clip.antiAlias,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Expandable(
-                collapsed: buildCollapsed1(),
-                expanded: buildExpanded1(),
-              ),
-              Divider(
-                height: 1,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+              List<Widget> widgets = list.items.map((item) {
+                return CheckboxListTile(
+                  value: item.done,
+                  title: Text(item.title),
+                  selected: item.done,
+                  onChanged: (bool selected) {
+                    _toggleItem(item);
+                  },
+                );
+              }).toList();
+
+              return Column(
                 children: <Widget>[
-                  Builder(
-                    builder: (context) {
-                      var controller = ExpandableController.of(context);
-                      return FlatButton(
-                        child: Text(
-                          controller.expanded ? "Show less" : "Show more",
-                          style: Theme.of(context)
-                              .textTheme
-                              .button
-                              .copyWith(color: Colors.deepPurple),
+                  Expanded(
+                    flex: 1,
+                    child: ListView(
+                      children: widgets,
+                      itemExtent: 50.0,
+                    ),
+                  ),
+                  ListTile(
+                    title: TextField(
+                      controller: controller,
+                      decoration: InputDecoration(
+                        labelText: 'What to do?',
+                      ),
+                      onEditingComplete: _save,
+                    ),
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                        IconButton(
+                          icon: Icon(Icons.save),
+                          onPressed: _save,
+                          tooltip: 'Save',
                         ),
-                        onPressed: () {
-                          controller.toggle();
-                        },
-                      );
-                    },
+                        IconButton(
+                          icon: Icon(Icons.delete),
+                          onPressed: _clearStorage,
+                          tooltip: 'Clear storage',
+                        )
+                      ],
+                    ),
                   ),
                 ],
-              ),
-            ],
-          ),
-        ),
-      ),
-    ));
+              );
+            },
+          )),
+    );
+  }
+
+  void _save() {
+    _addItem(controller.value.text);
+    controller.clear();
   }
 }

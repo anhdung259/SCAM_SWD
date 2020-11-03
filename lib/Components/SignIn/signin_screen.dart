@@ -31,7 +31,6 @@ class _signinScreenState extends State<signinScreen>
 
   @override
   Widget build(BuildContext context) {
-    _scale = 1 - _animation.value;
     return Scaffold(
       backgroundColor: Colors.white,
       body: Center(

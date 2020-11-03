@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
+import 'package:localstorage/localstorage.dart';
 import 'package:swd_project/Bloc/get_Product_Bloc.dart';
 import 'package:swd_project/Components/ListProduct/list_product.dart';
 import 'package:swd_project/Components/ListProduct/product_by_cate.dart';
@@ -19,7 +20,7 @@ class CategoryListProduct extends StatefulWidget {
 class _CategoryListProductState extends State<CategoryListProduct>
     with SingleTickerProviderStateMixin {
   final List<CategoryWithProduct> categories;
-
+  final LocalStorage store = LocalStorage('user');
   _CategoryListProductState(this.categories);
 
   @override
@@ -84,6 +85,8 @@ class _CategoryListProductState extends State<CategoryListProduct>
                                 builder: (context) => ProductByCate(
                                   categoryId: categories[index].id,
                                   nameCategory: categories[index].name,
+                                  pageSize: 3,
+                                  currentPage: 1,
                                 ),
                               ),
                             );

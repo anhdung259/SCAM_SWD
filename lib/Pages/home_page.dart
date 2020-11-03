@@ -1,9 +1,8 @@
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'file:///E:/CN7/SWD/swd_project/lib/Components/Category/category_data.dart';
-import 'file:///E:/CN7/SWD/swd_project/lib/Components/ListProduct/search_bar.dart';
-
+import 'package:swd_project/Components/Category/category_data.dart';
+import 'package:swd_project/Components/ListProduct/search_bar.dart';
 import 'package:swd_project/Components/TaskMenu/listtle_list.dart';
 import 'package:swd_project/Components/TaskMenu/slide_menu.dart';
 import 'package:swd_project/Components/TaskMenu/sign_out.dart';
@@ -15,11 +14,6 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-  }
-
   final _controller = ScrollController();
   @override
   Widget build(BuildContext context) {
@@ -44,21 +38,15 @@ class _MyHomePageState extends State<MyHomePage> {
           ],
         ),
         drawer: Drawer(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.end,
+          child: ListView(
+            padding: EdgeInsets.zero,
             children: [
               SlideMenu(),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 100),
-                child: ListTitle(),
-              ),
+              ListTitle(),
               SizedBox(
                 height: 5,
               ),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 20),
-                child: CusListTitle(),
-              ),
+              CusListTitle(),
             ],
           ),
         ),

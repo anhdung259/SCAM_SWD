@@ -1,9 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:swd_project/Bloc/TaskMenu/CheckSubCate.dart';
+import 'package:swd_project/Bloc/get_Product_Bloc.dart';
+import 'package:swd_project/Components/ListProduct/product_by_cate.dart';
 import 'package:swd_project/Model/Category/Category.dart';
-
-import '../ListProduct/product_by_cate.dart';
 
 class GenerateMenu extends StatefulWidget {
   final List<Category> categories;
@@ -57,9 +57,12 @@ class _GenerateMenu extends State<GenerateMenu>
                                             categoryId: categories[index].id,
                                             nameCategory:
                                                 categories[index].name,
+                                            pageSize: 3,
+                                            currentPage: 1,
                                           ),
                                         ),
                                       );
+                                      productBloc.dainStream();
                                     },
                                     child: Text(
                                       categories[index].name,
@@ -94,14 +97,24 @@ class _GenerateMenu extends State<GenerateMenu>
                                                     builder: (context) =>
                                                         ProductByCate(
                                                       categoryId:
-                                                          categories[index].id,
+                                                          checkSubCateID(
+                                                              categories,
+                                                              categories[index]
+                                                                  .id),
                                                       nameCategory:
                                                           checkSubCate(
                                                               categories,
                                                               categories[index]
                                                                   .id),
+                                                      pageSize: 3,
+                                                      currentPage: 1,
                                                     ),
                                                   ),
+                                                );
+                                                productBloc.dainStream();
+                                                print(
+                                                  checkSubCateID(categories,
+                                                      categories[index].id),
                                                 );
                                               },
                                               child: Text(

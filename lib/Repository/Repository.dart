@@ -14,13 +14,25 @@ class Repository {
   var getListCateUrl = '$mainUrl/api/Categories';
   var getProductByCateUrl = '$mainUrl/api/Categories';
   var getListCateIncludeProductUrl = '$mainUrl/api/Categories/top';
-  var getUserByID = '$mainUrl/api/Users/';
+  var getUser = '$mainUrl/api/Users/auth?';
 
   Future<UserResponse> getUserProfile(int id) async {
-    final response = await http.get(getUserByID + "$id");
+    final response = await http.get(getUser + "$id");
     if (response.statusCode == 200) {
       return UserResponse.fromJson(response.body);
     } else {
+      throw Exception("fail to get User");
+    }
+  }
+
+  // https://scam2020.azurewebsites.net/api/Users/auth?token=
+  Future<UserResponse> login(String token) async {
+    final response = await http.post(getUser + "token=$token");
+    if (response.statusCode == 200) {
+      print(response.statusCode);
+      return UserResponse.fromJson(response.body);
+    } else {
+      print(response.statusCode);
       throw Exception("fail to get User");
     }
   }
@@ -57,8 +69,15 @@ class Repository {
     }
   }
 
-  Future<ProductResponse> getProductByCate(int id) async {
-    final response = await http.get(getProductByCateUrl + "/$id" + "/Products");
+  Future<ProductResponse> getProductByCate(
+      int id, int pageCurrent, int pageSize) async {
+    final response = await http.get(
+      getProductByCateUrl +
+          "/$id" +
+          "/Products" +
+          "?pageIndex=$pageCurrent" +
+          "&pageSize=$pageSize",
+    );
 
     if (response.statusCode == 200) {
       return ProductResponse.fromJson(response.body);
@@ -78,9 +97,14 @@ class Repository {
     }
   }
 
-  Future<ReviewResponse> getListReviewInProduct(int idProduct) async {
-    final response =
-        await http.get(getListReviewInProductUrl + "/$idProduct" + "/reviews");
+  // https://scam2020.azurewebsites.net/api/Products/2/reviews?pageNum=1&pageSize=1
+  Future<ReviewResponse> getListReviewInProduct(
+      int idProduct, int currentPage, int pageSize) async {
+    final response = await http.get(getListReviewInProductUrl +
+        "/$idProduct" +
+        "/reviews" +
+        "?pageNum=$currentPage" +
+        "&pageSize=$pageSize");
 
     if (response.statusCode == 200) {
       return ReviewResponse.fromJson(response.body);

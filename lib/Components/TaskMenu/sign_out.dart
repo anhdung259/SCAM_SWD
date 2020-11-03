@@ -1,5 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:swd_project/Bloc/sign_in_Bloc.dart';
+import 'package:swd_project/Components/SignIn/signin_screen.dart';
 
 class CusListTitle extends StatefulWidget {
   @override
@@ -15,7 +17,12 @@ class _CusListTitleState extends State<CusListTitle> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         child: RaisedButton(
           color: Colors.redAccent,
-          onPressed: () {},
+          onPressed: () {
+            signOutGG();
+            Route route =
+                MaterialPageRoute(builder: (context) => signinScreen());
+            Navigator.push(context, route);
+          },
           child: Text(
             "Đăng xuất".toUpperCase(),
             style: TextStyle(

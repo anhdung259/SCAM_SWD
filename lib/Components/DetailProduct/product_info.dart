@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:swd_project/Bloc/get_Review_Bloc.dart';
 import 'package:swd_project/Model/Product/Product.dart';
 
 import 'show_more.dart';
@@ -16,11 +15,11 @@ class _ProductInfoState extends State<ProductInfo> {
   final Product product;
   _ProductInfoState(this.product);
   @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    reviewByIdBloc.getReview(product.id);
-  }
+  // void initState() {
+  //   // TODO: implement initState
+  //   super.initState();
+  //   reviewByIdBloc.getReview(product.id);
+  // }
 
   @override
   Widget build(BuildContext context) {

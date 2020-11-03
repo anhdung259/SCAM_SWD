@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:localstorage/localstorage.dart';
 import 'package:swd_project/Components/Profile/user_map_model.dart';
+import 'package:swd_project/Model/User/UserReview.dart';
 
 class SlideMenu extends StatefulWidget {
   @override
@@ -7,6 +9,8 @@ class SlideMenu extends StatefulWidget {
 }
 
 class _SlideMenuState extends State<SlideMenu> {
+  final LocalStorage storage = new LocalStorage('user');
+
   @override
   Widget build(BuildContext context) {
     return DrawerHeader(
@@ -16,19 +20,18 @@ class _SlideMenuState extends State<SlideMenu> {
       child: Column(
         children: [
           Material(
-            borderRadius: BorderRadius.all(Radius.circular(60)),
             elevation: 10,
             child: Padding(
               padding: EdgeInsets.all(8.0),
               child: InkWell(
                 onTap: () {
                   Route route =
-                      MaterialPageRoute(builder: (context) => userProfile());
+                      MaterialPageRoute(builder: (context) => UserProfile());
                   Navigator.push(context, route);
                 },
                 splashColor: Color.fromARGB(255, 18, 32, 50),
-                child: Image.asset(
-                  "logoApp.png",
+                child: Image.network(
+                  User.fromJsonProfile(storage.getItem('user')).avatarUrl,
                   width: 80,
                   height: 80,
                 ),
@@ -40,7 +43,7 @@ class _SlideMenuState extends State<SlideMenu> {
             child: InkWell(
               onTap: () {},
               child: Text(
-                "Name of user",
+                User.fromJsonProfile(storage.getItem('user')).name,
                 style: TextStyle(
                     color: Color.fromARGB(255, 255, 255, 255), fontSize: 15),
               ),

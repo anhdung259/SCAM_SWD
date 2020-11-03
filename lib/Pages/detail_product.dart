@@ -2,9 +2,8 @@ import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:swd_project/Bloc/get_Categories_Bloc.dart';
-import 'package:swd_project/Bloc/get_Review_Bloc.dart';
 import 'package:swd_project/Components/DetailProduct/product_info.dart';
-import 'file:///E:/CN7/SWD/swd_project/lib/Components/ReviewProduct/review_info.dart';
+import 'package:swd_project/Components/ReviewProduct/review_info.dart';
 import 'package:swd_project/Model/Product/Product.dart';
 
 import 'package:swd_project/Pages/home_page.dart';
@@ -23,9 +22,9 @@ class _DetailPageState extends State<DetailPage> {
   final int page;
   _DetailPageState(this.product, this.page);
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    reviewByIdBloc.getReview(product.id);
+  void initState() {
+    // TODO: implement initState
+    super.initState();
   }
 
   @override

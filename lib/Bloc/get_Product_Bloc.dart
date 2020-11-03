@@ -7,9 +7,9 @@ class ProductListBloc {
   Repository _productRepository = Repository();
   final BehaviorSubject<ProductResponse> _subject =
       BehaviorSubject<ProductResponse>();
-  final BehaviorSubject<ProductResponse> _proByCate =
-      BehaviorSubject<ProductResponse>();
-
+  final BehaviorSubject<List<Product>> _proByCate =
+      BehaviorSubject<List<Product>>();
+  List<Product> listAll = [];
   getProduct() async {
     ProductResponse productList = await _productRepository.getProducts();
     _subject.sink.add(productList);
@@ -22,13 +22,16 @@ class ProductListBloc {
     return prod;
   }
 
-  getProductByCategory(int id) async {
-    ProductResponse productList = await _productRepository.getProductByCate(id);
-    _proByCate.sink.add(productList);
+  getProductByCategory(int id, int pageCurrent, int pageSize) async {
+    ProductResponse productList =
+        await _productRepository.getProductByCate(id, pageCurrent, pageSize);
+    listAll.addAll(productList.products);
+    _proByCate.sink.add(listAll);
   }
 
   void dainStream() {
     _proByCate.value = null;
+    listAll.clear();
   }
 
   dispose() async {
@@ -38,7 +41,7 @@ class ProductListBloc {
   }
 
   BehaviorSubject<ProductResponse> get subject => _subject.stream;
-  BehaviorSubject<ProductResponse> get proCate => _proByCate.stream;
+  BehaviorSubject<List<Product>> get proCate => _proByCate.stream;
 }
 
 final productBloc = ProductListBloc();

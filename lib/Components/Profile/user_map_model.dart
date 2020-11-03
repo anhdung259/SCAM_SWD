@@ -1,18 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:swd_project/Bloc/TaskMenu/User_Bloc.dart';
-import 'package:swd_project/Model/User/UserResponse.dart';
+import 'package:localstorage/localstorage.dart';
 import 'package:swd_project/Model/User/UserReview.dart';
 
-class userProfile extends StatefulWidget {
+class UserProfile extends StatefulWidget {
   @override
-  _userProfile createState() => _userProfile();
+  _UserProfile createState() => _UserProfile();
 }
 
-class _userProfile extends State<userProfile> {
+class _UserProfile extends State<UserProfile> {
+  final LocalStorage storage = LocalStorage('user');
   @override
   void initState() {
     super.initState();
-    userBloc.getUser(3);
   }
 
   static const double _imageHeight = 256.0;
@@ -29,11 +28,16 @@ class _userProfile extends State<userProfile> {
         iconTheme: new IconThemeData(color: Colors.black),
         centerTitle: true,
       ),
-      body: StreamBuilder<UserResponse>(
-          stream: userBloc.userProfile,
-          builder: (context, AsyncSnapshot<UserResponse> response) {
-            if (response.hasData) {
-              User user = response.data.user;
+      body: FutureBuilder(
+          future: storage.ready,
+          builder: (context, AsyncSnapshot snapshot) {
+            if (snapshot.data == null) {
+              return Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+            if (snapshot.hasData) {
+              var user = User.fromJsonProfile(storage.getItem('user'));
               List<String> ListRowIfo = [
                 checkNull(user.email),
                 checkNull(user.facebook),
@@ -57,8 +61,8 @@ class _userProfile extends State<userProfile> {
                   _buildBottomPart(ListRowIfo, ListRowTitle),
                 ],
               );
-            } else if (response.hasError) {
-              return _buildErrorWidget(response.error);
+            } else if (snapshot.hasError) {
+              return _buildErrorWidget(snapshot.error);
             } else {
               return _buildLoadingWidget();
             }

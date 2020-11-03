@@ -17,6 +17,12 @@ class _ListProductState extends State<ListProduct> {
   _ListProductState(this.productCategory);
 
   @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Container(
       height: 130,

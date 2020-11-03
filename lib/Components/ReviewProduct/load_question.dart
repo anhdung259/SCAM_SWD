@@ -2,11 +2,13 @@ import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:future_progress_dialog/future_progress_dialog.dart';
+import 'package:localstorage/localstorage.dart';
 import 'package:swd_project/Bloc/get_QuestionReview_Bloc.dart';
 import 'package:swd_project/Bloc/post_Review_Bloc.dart';
 import 'package:swd_project/Model/Product/Product.dart';
 import 'package:swd_project/Model/QuestionReview/QuestionReview.dart';
 import 'package:swd_project/Model/ReviewAnswer/ReviewAnswer.dart';
+import 'package:swd_project/Model/User/UserReview.dart';
 import 'package:swd_project/Pages/detail_product.dart';
 import 'package:swd_project/Widget/MultipleChoice.dart';
 import 'package:swd_project/Widget/RadioButton.dart';
@@ -14,7 +16,6 @@ import 'package:swd_project/Widget/RadioButton.dart';
 class LoadQuestionReview extends StatefulWidget {
   final List<QuestionReview> questions;
   final Product product;
-
   const LoadQuestionReview({Key key, this.questions, this.product})
       : super(key: key);
 
@@ -24,10 +25,11 @@ class LoadQuestionReview extends StatefulWidget {
 }
 
 class _LoadQuestionReviewState extends State<LoadQuestionReview> {
+  final LocalStorage storage = LocalStorage('user');
   final List<QuestionReview> questions;
   final Product product;
+  int userId;
   double rate;
-  int userId = 2;
 
   _LoadQuestionReviewState(this.questions, this.product);
 
@@ -92,11 +94,17 @@ class _LoadQuestionReviewState extends State<LoadQuestionReview> {
         RaisedButton.icon(
           onPressed: () {
             listReviewAnswer = answer.entries
-                .map((entry) => Answer(2, entry.key, entry.value))
+                .map((entry) => Answer(
+                    User.fromJsonProfile(storage.getItem('user')).id,
+                    entry.key,
+                    entry.value))
                 .toList();
             multiple.forEach((key, value) {
               for (int i = 0; i < value.length; i++) {
-                listReviewAnswer.add(new Answer(userId, key, value[i]));
+                listReviewAnswer.add(new Answer(
+                    User.fromJsonProfile(storage.getItem('user')).id,
+                    key,
+                    value[i]));
               }
             });
             showProgress(context);
@@ -119,7 +127,10 @@ class _LoadQuestionReviewState extends State<LoadQuestionReview> {
     return Future(() async {
       await await postReviewBloc.postReview(new AnswerPost(
         userReview: new UserReview(
-            status: true, userId: userId, rate: rate, productId: product.id),
+            status: true,
+            userId: User.fromJsonProfile(storage.getItem('user')).id,
+            rate: rate,
+            productId: product.id),
         reviewAnswers: listReviewAnswer,
         userReviewMedia: null,
       ));
