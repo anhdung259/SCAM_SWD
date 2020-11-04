@@ -85,7 +85,7 @@ class _CategoryListProductState extends State<CategoryListProduct>
                                 builder: (context) => ProductByCate(
                                   categoryId: categories[index].id,
                                   nameCategory: categories[index].name,
-                                  pageSize: 3,
+                                  pageSize: 6,
                                   currentPage: 1,
                                 ),
                               ),

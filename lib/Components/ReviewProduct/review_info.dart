@@ -44,7 +44,10 @@ class _ReviewPageState extends State<ReviewPage> {
 
   void _onRefresh() {
     Future.delayed(const Duration(milliseconds: 2009)).then((val) {
-      _controller1.refreshCompleted();
+      if(mounted) {
+        _controller1.refreshCompleted();
+        _getMoreData();
+      }
 //                refresher.sendStatus(RefreshStatus.completed);
     });
   }

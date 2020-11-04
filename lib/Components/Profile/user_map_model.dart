@@ -18,17 +18,8 @@ class _UserProfile extends State<UserProfile> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        title: Text(
-          "Trang cá nhân",
-          style: TextStyle(color: Colors.black),
-        ),
-        iconTheme: new IconThemeData(color: Colors.black),
-        centerTitle: true,
-      ),
-      body: FutureBuilder(
+    return Container(
+      child: FutureBuilder(
           future: storage.ready,
           builder: (context, AsyncSnapshot snapshot) {
             if (snapshot.data == null) {
@@ -52,14 +43,16 @@ class _UserProfile extends State<UserProfile> {
                 "Join date",
                 "Provider"
               ];
-              return Stack(
-                children: <Widget>[
-                  _buildTimeline(),
-                  _buildImage(),
-                  _buildProfileRow(checkNull(user.name), checkNull(user.bio),
-                      checkNull(user.avatarUrl)),
-                  _buildBottomPart(ListRowIfo, ListRowTitle),
-                ],
+              return Container(
+                child: Stack(
+                  children: <Widget>[
+                    _buildTimeline(),
+                    _buildImage(),
+                    _buildProfileRow(checkNull(user.name), checkNull(user.bio),
+                        checkNull(user.avatarUrl)),
+                    _buildBottomPart(ListRowIfo, ListRowTitle),
+                  ],
+                ),
               );
             } else if (snapshot.hasError) {
               return _buildErrorWidget(snapshot.error);
