@@ -11,6 +11,7 @@ class Review {
     this.status,
     this.user,
     this.reviewAnswers,
+    this.userReviewMedia,
     this.rate,
   });
 
@@ -22,6 +23,7 @@ class Review {
   User user;
   double rate;
   List<ReviewAnswer> reviewAnswers;
+  List<UserReviewMedia> userReviewMedia;
 
   factory Review.fromJson(Map<String, dynamic> json) => Review(
         id: json["id"],
@@ -33,5 +35,7 @@ class Review {
         rate: json["rate"],
         reviewAnswers: List<ReviewAnswer>.from(
             json["reviewAnswers"].map((x) => ReviewAnswer.fromJson(x))),
+        userReviewMedia: List<UserReviewMedia>.from(
+            json["userReviewMedia"].map((x) => UserReviewMedia.fromJson(x))),
       );
 }

@@ -71,10 +71,10 @@ class _CategoryListProductState extends State<CategoryListProduct>
                             categories[index].name,
                             textAlign: TextAlign.left,
                             style: TextStyle(
-                                fontSize: 21,
+                                fontSize: 18,
                                 fontWeight: FontWeight.w600,
                                 letterSpacing: 0.27,
-                                color: Colors.blueGrey[800]),
+                                color: Colors.blueGrey[900]),
                           ),
                         ),
                         GestureDetector(
@@ -85,7 +85,7 @@ class _CategoryListProductState extends State<CategoryListProduct>
                                 builder: (context) => ProductByCate(
                                   categoryId: categories[index].id,
                                   nameCategory: categories[index].name,
-                                  pageSize: 3,
+                                  pageSize: 9,
                                   currentPage: 1,
                                 ),
                               ),
@@ -99,7 +99,7 @@ class _CategoryListProductState extends State<CategoryListProduct>
                               style: TextStyle(
                                   fontSize: 15,
                                   fontWeight: FontWeight.w500,
-                                  color: Colors.blueGrey[800]),
+                                  color: Colors.blueGrey[700]),
                             ),
                           ),
                         )

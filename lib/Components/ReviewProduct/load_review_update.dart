@@ -3,53 +3,53 @@ import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:future_progress_dialog/future_progress_dialog.dart';
 import 'package:localstorage/localstorage.dart';
-import 'package:swd_project/Bloc/post_Review_Bloc.dart';
+import 'package:darq/darq.dart';
+import 'package:swd_project/Bloc/update_Review_Bloc.dart';
 import 'package:swd_project/Model/Product/Product.dart';
 import 'package:swd_project/Model/QuestionReview/QuestionReview.dart';
 import 'package:swd_project/Model/ReviewAnswer/ReviewAnswer.dart';
+import 'package:swd_project/Model/ReviewAnswer/ReviewList.dart';
 import 'package:swd_project/Model/User/UserReview.dart';
 import 'package:swd_project/Pages/detail_product.dart';
 import 'package:swd_project/Widget/MultipleChoice.dart';
 import 'package:swd_project/Widget/RadioButton.dart';
 import 'package:sweetalert/sweetalert.dart';
 
-class LoadQuestionReview extends StatefulWidget {
-  final List<QuestionReview> questions;
+class UpdateReview extends StatefulWidget {
+  final Review review;
   final Product product;
 
-  const LoadQuestionReview({Key key, this.questions, this.product})
-      : super(key: key);
+  const UpdateReview({Key key, this.review, this.product}) : super(key: key);
 
   @override
-  _LoadQuestionReviewState createState() =>
-      _LoadQuestionReviewState(questions, product);
+  _UpdateReviewState createState() => _UpdateReviewState(review, product);
 }
 
-class _LoadQuestionReviewState extends State<LoadQuestionReview> {
+class _UpdateReviewState extends State<UpdateReview> {
   final LocalStorage storage = LocalStorage('user');
   var _formKey = GlobalKey<FormState>();
-  final List<QuestionReview> questions;
+  final Review review;
   final Product product;
+
   int userId;
   double rate;
 
-  _LoadQuestionReviewState(this.questions, this.product);
+  _UpdateReviewState(this.review, this.product);
 
-  List<TextEditingController> _controller;
-  List<Answer> listReviewAnswer = [];
+  // List<TextEditingController> _controller;
+  List<AnswerVer2> listReviewAnswer = [];
   Map<int, String> answer = {};
-  Map<int, List<String>> multipleAll = {};
   Map<int, List<String>> multiple = {};
+  Map<int, List<String>> multipleAll = {};
+  List<int> listReviewAnswerId = [];
+  // int _size = 0;
   List<String> check = [];
-  int _size = 0;
 
-  getSizeList() {
-    for (int i = 0; i < questions.length; i++) {
-      if (questions[i].questionType.contains("Text")) {
-        _size++;
-      }
-    }
-    return _size;
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    // getAnswerMultiple(17);
   }
 
   testStatus(String value) {
@@ -59,18 +59,31 @@ class _LoadQuestionReviewState extends State<LoadQuestionReview> {
     return false;
   }
 
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    _controller =
-        List.generate(getSizeList(), (index) => TextEditingController());
+  getAnswerMultiple(int idQuestion) {
+    List<String> listAnswerMp = [];
+    List<ReviewAnswer> list = review.reviewAnswers
+        .where((e) => e.questionId == idQuestion && e.status == true)
+        .toList();
+    for (int i = 0; i < list.length; i++) {
+      listAnswerMp.add(list[i].answer);
+    }
+    return listAnswerMp;
   }
 
-  addDataAnswer() {
+  getRvId(String answer) {
+    List<ReviewAnswer> list = review.reviewAnswers
+        .where((e) => e.question.questionType.contains("Multiple choice"))
+        .toList();
+    for (int i = 0; i < list.length; i++) {
+      if (list[i].answer == answer) {
+        return list[i].id;
+      }
+    }
+  }
+
+  updateData() {
     listReviewAnswer = answer.entries
-        .map((entry) => Answer(User.fromJsonProfile(storage.getItem('user')).id,
-            entry.key, entry.value, false))
+        .map((entry) => AnswerVer2(entry.key, entry.value, false))
         .toList();
     multiple.forEach((key, value) {
       for (int i = 0; i < value.length; i++) {
@@ -80,17 +93,17 @@ class _LoadQuestionReviewState extends State<LoadQuestionReview> {
 
     multipleAll.forEach((key, value) {
       for (int i = 0; i < value.length; i++) {
-        listReviewAnswer.add(new Answer(
-            User.fromJsonProfile(storage.getItem('user')).id,
-            key,
-            value[i],
-            testStatus(value[i])));
+        listReviewAnswer.add(
+            new AnswerVer2(getRvId(value[i]), value[i], testStatus(value[i])));
       }
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    List<ReviewAnswer> listDistinct = review.reviewAnswers
+        .distinct((e) => e.questionId)
+        .toList(); //những thằng có nhiều questionId
     return Form(
       key: _formKey,
       child: Column(
@@ -99,7 +112,7 @@ class _LoadQuestionReviewState extends State<LoadQuestionReview> {
               physics: NeverScrollableScrollPhysics(),
               shrinkWrap: true,
               padding: const EdgeInsets.all(5),
-              itemCount: questions.length,
+              itemCount: listDistinct.length,
               itemBuilder: (context, index) {
                 return SingleChildScrollView(
                   scrollDirection: Axis.vertical,
@@ -107,31 +120,43 @@ class _LoadQuestionReviewState extends State<LoadQuestionReview> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      if (questions[index].questionType.contains("Text"))
-                        textField(questions[index], index)
-                      else if (questions[index].questionType.contains("Yes/No"))
-                        yesNoQuestion(questions[index])
-                      else if (questions[index]
+                      if (listDistinct[index]
+                          .question
+                          .questionType
+                          .contains("Text"))
+                        textField(listDistinct[index].question, index,
+                            listDistinct[index].answer, listDistinct[index].id)
+                      else if (listDistinct[index]
+                          .question
+                          .questionType
+                          .contains("Yes/No"))
+                        yesNoQuestion(listDistinct[index].question,
+                            listDistinct[index].answer, listDistinct[index].id)
+                      else if (listDistinct[index]
+                          .question
                           .questionType
                           .contains("Multiple choice"))
-                        multipleQuestion(questions[index], questions[index].id)
+                        multipleQuestion(
+                            listDistinct[index].question,
+                            getAnswerMultiple(listDistinct[index].questionId),
+                            listDistinct[index].questionId),
                     ],
                   ),
                 );
               }),
-          ratingQuestion(),
+          ratingQuestion(review.rate),
           SizedBox(
             height: 20,
           ),
           RaisedButton.icon(
             onPressed: () {
               if (_formKey.currentState.validate()) {
-                addDataAnswer();
+                updateData();
                 showProgress(context);
               }
             },
             label: Text(
-              "Đăng review",
+              "Cập nhật review",
               style: TextStyle(color: Colors.white),
             ),
             icon: Icon(
@@ -147,16 +172,17 @@ class _LoadQuestionReviewState extends State<LoadQuestionReview> {
 
   Future getFuture() {
     return Future(() async {
-      await await postReviewBloc.postReview(new AnswerPost(
-        userReview: new UserReview(
+      await await updateReviewBloc.updateReview(new AnswerUpdate(
+        userUpdateReview: new UserUpdateReview(
+            id: review.id,
             status: true,
             userId: User.fromJsonProfile(storage.getItem('user')).id,
-            rate: rate,
+            rate: rate == null ? review.rate : rate,
             productId: product.id),
         reviewAnswers: listReviewAnswer,
         userReviewMedia: null,
       ));
-      return 'Đăng bài review thành công';
+      return 'Cập nhật review thành công';
     });
   }
 
@@ -174,7 +200,7 @@ class _LoadQuestionReviewState extends State<LoadQuestionReview> {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (context) => new DetailPage(
+            builder: (BuildContext context) => new DetailPage(
               page: 1,
               product: product,
             ),
@@ -185,7 +211,8 @@ class _LoadQuestionReviewState extends State<LoadQuestionReview> {
     });
   }
 
-  Widget textField(QuestionReview questionReview, int index) {
+  Widget textField(QuestionReview questionReview, int index, String answerUser,
+      int userReviewId) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -214,6 +241,7 @@ class _LoadQuestionReviewState extends State<LoadQuestionReview> {
           height: 100,
           child: TextFormField(
             maxLines: 7,
+            initialValue: answerUser ?? "empty",
             textAlign: TextAlign.left,
             decoration: InputDecoration(
               contentPadding: EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
@@ -224,10 +252,8 @@ class _LoadQuestionReviewState extends State<LoadQuestionReview> {
               }
               return null;
             },
-            controller: _controller[index],
             onChanged: (value) {
-              answer.update(questionReview.id, (v) => value,
-                  ifAbsent: () => value);
+              answer.update(userReviewId, (v) => value, ifAbsent: () => value);
             },
           ),
         ),
@@ -235,12 +261,14 @@ class _LoadQuestionReviewState extends State<LoadQuestionReview> {
     );
   }
 
-  Widget ratingQuestion() {
+  Widget ratingQuestion(
+    double rateUpdate,
+  ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.only(top: 8, left: 8, bottom: 20),
+          padding: const EdgeInsets.only(left: 8, top: 8),
           child: Text(
             "Bạn đánh giá bao nhiêu sao cho sản phẩm ?",
             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
@@ -248,7 +276,7 @@ class _LoadQuestionReviewState extends State<LoadQuestionReview> {
         ),
         Container(
           child: RatingBar(
-            initialRating: 0,
+            initialRating: rateUpdate,
             minRating: 1,
             direction: Axis.horizontal,
             allowHalfRating: true,
@@ -271,7 +299,7 @@ class _LoadQuestionReviewState extends State<LoadQuestionReview> {
     );
   }
 
-  Widget yesNoQuestion(QuestionReview qr) {
+  Widget yesNoQuestion(QuestionReview qr, String answerUser, int userReviewId) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -283,14 +311,15 @@ class _LoadQuestionReviewState extends State<LoadQuestionReview> {
           ),
         ),
         RadioButton(
-          questionId: qr.id,
+          questionId: userReviewId,
           answer: answer,
+          answerUser: answerUser,
         ),
       ],
     );
   }
 
-  Widget multipleQuestion(QuestionReview qr, int idReview) {
+  Widget multipleQuestion(QuestionReview qr, List<String> listAnswer, int id) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -307,8 +336,9 @@ class _LoadQuestionReviewState extends State<LoadQuestionReview> {
               MultipleChoice(
                 qr: qr,
                 answerMultiple: multiple,
-                userReviewId: idReview,
+                answerFromUser: listAnswer,
                 answerMultipleAll: multipleAll,
+                userReviewId: id,
               ),
             ],
           ),

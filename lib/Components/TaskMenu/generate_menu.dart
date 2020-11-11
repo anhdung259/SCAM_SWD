@@ -57,7 +57,7 @@ class _GenerateMenu extends State<GenerateMenu>
                                             categoryId: categories[index].id,
                                             nameCategory:
                                                 categories[index].name,
-                                            pageSize: 3,
+                                            pageSize: 9,
                                             currentPage: 1,
                                           ),
                                         ),

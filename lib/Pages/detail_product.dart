@@ -1,26 +1,27 @@
-import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
-import 'package:swd_project/Bloc/get_Categories_Bloc.dart';
 import 'package:swd_project/Components/DetailProduct/product_info.dart';
+import 'package:swd_project/Components/Pricing/Pricing_show.dart';
 import 'package:swd_project/Components/ReviewProduct/review_info.dart';
 import 'package:swd_project/Model/Product/Product.dart';
-
-import 'package:swd_project/Pages/home_page.dart';
 
 class DetailPage extends StatefulWidget {
   final Product product;
   final int page;
-  const DetailPage({Key key, this.product, this.page}) : super(key: key);
+  final bool checkFilter;
+  const DetailPage({Key key, this.product, this.page, this.checkFilter})
+      : super(key: key);
 
   @override
-  _DetailPageState createState() => _DetailPageState(product, page);
+  _DetailPageState createState() =>
+      _DetailPageState(product, page, checkFilter);
 }
 
 class _DetailPageState extends State<DetailPage> {
   final Product product;
   final int page;
-  _DetailPageState(this.product, this.page);
+  final bool checkFilter;
+  _DetailPageState(this.product, this.page, this.checkFilter);
   @override
   void initState() {
     // TODO: implement initState
@@ -29,9 +30,9 @@ class _DetailPageState extends State<DetailPage> {
 
   @override
   final List<String> _tabs = <String>[
-    "Product Information",
-    "Reviews",
-    "Pricing",
+    "Thông tin",
+    "Đánh giá",
+    "Giá",
   ];
 
   @override
@@ -62,6 +63,7 @@ class _DetailPageState extends State<DetailPage> {
                             transform:
                                 Matrix4.translationValues(-35.0, 0.0, 0.0),
                             child: Row(
+                              mainAxisSize: MainAxisSize.min,
                               children: [
                                 Container(
                                   height: 60,
@@ -117,16 +119,6 @@ class _DetailPageState extends State<DetailPage> {
                         ),
                       ),
                     ),
-                    leading: IconButton(
-                      icon: Icon(EvaIcons.arrowBack),
-                      onPressed: () {
-                        cateBloc.getListCateIncludeProduct();
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => MyHomePage()),
-                        );
-                      },
-                    ),
                     bottom: TabBar(
                       indicatorColor: Colors.orange,
                       indicatorSize: TabBarIndicatorSize.tab,
@@ -158,8 +150,13 @@ class _DetailPageState extends State<DetailPage> {
                 ProductInfo(
                   product: product,
                 ),
-                ReviewPage(product: product),
-                ProductInfo(
+                ReviewPage(
+                  product: product,
+                  currentPage: 1,
+                  pageSize: 3,
+                  checkFilter: checkFilter ?? true,
+                ),
+                SlideShowPricing(
                   product: product,
                 )
               ]),

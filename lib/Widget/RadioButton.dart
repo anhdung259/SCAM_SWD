@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:group_radio_button/group_radio_button.dart';
 
+// ignore: must_be_immutable
 class RadioButton extends StatefulWidget {
   Map<int, String> answer = {};
   final int questionId;
+  String answerUser;
 
-  RadioButton({Key key, this.questionId, this.answer}) : super(key: key);
+  RadioButton({Key key, this.questionId, this.answer, this.answerUser})
+      : super(key: key);
   @override
-  _RadioButtonState createState() => _RadioButtonState(questionId, answer);
+  _RadioButtonState createState() =>
+      _RadioButtonState(questionId, answer, answerUser);
 }
 
 enum SingingCharacter { Yes, No }
@@ -15,18 +19,17 @@ enum SingingCharacter { Yes, No }
 class _RadioButtonState extends State<RadioButton> {
   Map<int, String> answer = {};
   final int questionId;
-  String _verticalGroupValue = "";
+  String answerUser;
+  String _verticalGroupValue = " ";
   List<String> _option = ["Có", "Không"];
-  SingingCharacter _choiceText = SingingCharacter.Yes;
-
-  _RadioButtonState(this.questionId, this.answer);
+  _RadioButtonState(this.questionId, this.answer, this.answerUser);
   @override
   Widget build(BuildContext context) {
     return RadioGroup<String>.builder(
       spacebetween: 30,
-      groupValue: _verticalGroupValue,
+      groupValue: answerUser == null ? _verticalGroupValue : answerUser,
       onChanged: (value) => setState(() {
-        _verticalGroupValue = value;
+        answerUser == null ? _verticalGroupValue = value : answerUser = value;
         setState(() {
           answer.update(questionId, (v) => value, ifAbsent: () => value);
         });

@@ -102,7 +102,31 @@ class ProductSearch extends SearchDelegate<String> {
 
   @override
   Widget buildResults(BuildContext context) {
-    throw UnimplementedError();
+    return Padding(
+      padding: const EdgeInsets.only(top: 300),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Container(
+            width: MediaQuery.of(context).size.width,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                Column(
+                  children: <Widget>[
+                    Text(
+                      "Không tìm thấy kết quả nào",
+                      style: TextStyle(color: Colors.black45),
+                    )
+                  ],
+                )
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
 

@@ -16,8 +16,8 @@ class UserBloc {
 
   getUserLogin(String token) async {
     UserResponse userLogin = await _userRepository.login(token);
-    storage.setItem('user', userLogin.user.toJson());
-    print(storage.getItem('user'));
+    await storage.setItem('user', userLogin.user.toJson());
+    print(userLogin.user.toJson());
   }
 
   dispose() async {

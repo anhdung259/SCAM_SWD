@@ -1,6 +1,5 @@
 import 'package:avatar_glow/avatar_glow.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:swd_project/Bloc/sign_in_Bloc.dart';
 import 'package:swd_project/Pages/home_page.dart';
 
@@ -59,25 +58,29 @@ class _signinScreenState extends State<signinScreen>
               height: 20,
             ),
             Text(
-              "Chào mừng bạn",
-              style: GoogleFonts.merriweather(
-                fontWeight: FontWeight.bold,
-                fontSize: 35,
-                color: Colors.blueGrey,
-              ),
+              "GS",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                  fontSize: 33,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.blueGrey,
+                  fontStyle: FontStyle.normal,
+                  letterSpacing: 0.27),
             ),
             Text(
-              "tới GS",
-              style: GoogleFonts.merriweather(
-                fontWeight: FontWeight.bold,
-                fontSize: 35,
-                color: Colors.blueGrey,
-              ),
+              "Good Software,Good Service!",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w800,
+                  color: Colors.blueGrey,
+                  fontStyle: FontStyle.italic,
+                  letterSpacing: 0.27),
             ),
             SizedBox(
               height: 230,
             ),
-            _btnGoogleSignIn("logoGoogle.png", "Sign in with Google"),
+            _btnGoogleSignIn("logoGoogle.png", "Đăng nhập với Google"),
             SizedBox(
               height: 30,
             ),
@@ -90,7 +93,7 @@ class _signinScreenState extends State<signinScreen>
               ),
             ),
             Text(
-              "sản phẩm công nghệ hàng đầu việt nam",
+              "sản phẩm công nghệ hàng đầu Việt nam",
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 10,
@@ -111,13 +114,14 @@ class _signinScreenState extends State<signinScreen>
         onPressed: () {
           signInWithGG().then((result) {
             if (result != null) {
-              Navigator.of(context).push(
+              Navigator.of(context).pushAndRemoveUntil(
                 MaterialPageRoute(
                   builder: (context) {
                     return MyHomePage();
                   },
                 ),
-              );
+                (Route<dynamic> route) => false,
+              ).then((value) => null);
             }
           });
         },
@@ -143,9 +147,10 @@ class _signinScreenState extends State<signinScreen>
                 child: Text(
                   text,
                   style: TextStyle(
-                    fontSize: 20,
-                    color: Colors.blueGrey,
-                  ),
+                      fontSize: 20,
+                      color: Colors.blueGrey,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: 0.26),
                 ),
               )
             ],

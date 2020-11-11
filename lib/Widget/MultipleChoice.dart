@@ -6,23 +6,46 @@ import 'package:swd_project/Model/QuestionReview/QuestionReview.dart';
 // ignore: must_be_immutable
 class MultipleChoice extends StatefulWidget {
   final QuestionReview qr;
-
+  int userReviewId;
+  List<String> answerFromUser = [];
   Map<int, List<String>> answerMultiple = {};
-
-  MultipleChoice({Key key, this.qr, this.answerMultiple}) : super(key: key);
+  Map<int, List<String>> answerMultipleAll = {};
+  List<int> listReviewAnswerId = [];
+  MultipleChoice(
+      {Key key,
+      this.qr,
+      this.answerMultiple,
+      this.answerFromUser,
+      this.userReviewId,
+      this.answerMultipleAll,
+      this.listReviewAnswerId})
+      : super(key: key);
 
   @override
-  _MultipleChoiceState createState() =>
-      _MultipleChoiceState(qr, answerMultiple);
+  _MultipleChoiceState createState() => _MultipleChoiceState(qr, answerMultiple,
+      answerFromUser, userReviewId, answerMultipleAll, listReviewAnswerId);
+}
+
+class Multiple {
+  bool status;
+  String answer;
+
+  Multiple(this.status, this.answer);
 }
 
 class _MultipleChoiceState extends State<MultipleChoice> {
   QuestionReview qr;
   Map<int, List<String>> answerMultiple = {};
+  Map<int, List<String>> answerMultipleAll = {};
 
-  _MultipleChoiceState(this.qr, this.answerMultiple);
+  List<String> answerFromUser = [];
+  int userReviewId;
+  _MultipleChoiceState(this.qr, this.answerMultiple, this.answerFromUser,
+      this.userReviewId, this.answerMultipleAll, this.listReviewAnswerId);
   List<String> tags = [];
   List<String> options = [];
+  List<Multiple> optionMultiple = [];
+  List<int> listReviewAnswerId = [];
   @override
   void initState() {
     // TODO: implement initState
@@ -47,10 +70,14 @@ class _MultipleChoiceState extends State<MultipleChoice> {
           brightness: Brightness.dark,
         ),
         wrapped: true,
-        value: tags,
+        value: answerFromUser,
         onChanged: (val) => setState(() {
-          tags = val;
-          answerMultiple.update(qr.id, (value) => tags, ifAbsent: () => tags);
+          answerFromUser = val;
+          answerMultiple.update(userReviewId, (value) => answerFromUser,
+              ifAbsent: () => answerFromUser);
+
+          answerMultipleAll.update(userReviewId, (value) => options,
+              ifAbsent: () => options);
         }),
         choiceItems: C2Choice.listFrom<String, String>(
           source: options,

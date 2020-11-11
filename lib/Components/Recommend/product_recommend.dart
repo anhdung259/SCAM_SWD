@@ -1,20 +1,22 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:swd_project/Bloc/get_Review_Bloc.dart';
-import 'package:swd_project/Model/Category/Category_include_product.dart';
+import 'package:swd_project/Model/Product/Product.dart';
 import 'package:swd_project/Pages/detail_product.dart';
 
-class ListProduct extends StatefulWidget {
-  final List<ProductCategory> productCategory;
+class ListProductRecommend extends StatefulWidget {
+  final List<Product> products;
 
-  const ListProduct({Key key, this.productCategory}) : super(key: key);
+  const ListProductRecommend({Key key, this.products}) : super(key: key);
   @override
-  _ListProductState createState() => _ListProductState(productCategory);
+  _ListProductRecommendState createState() =>
+      _ListProductRecommendState(products);
 }
 
-class _ListProductState extends State<ListProduct> {
-  final List<ProductCategory> productCategory;
-  _ListProductState(this.productCategory);
+class _ListProductRecommendState extends State<ListProductRecommend> {
+  final List<Product> products;
+  _ListProductRecommendState(this.products);
 
   @override
   void initState() {
@@ -25,16 +27,16 @@ class _ListProductState extends State<ListProduct> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 130,
+      height: 150,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
-        itemCount: productCategory.length,
+        itemCount: products.take(5).length,
         physics: ScrollPhysics(),
         // ngao ngao ko scroll này
         itemBuilder: (BuildContext context, int index) {
           return Container(
             padding: EdgeInsets.all(4),
-            width: 160,
+            width: 250,
             height: 100,
             child: new GestureDetector(
               onTap: () {
@@ -42,7 +44,7 @@ class _ListProductState extends State<ListProduct> {
                   context,
                   MaterialPageRoute(
                     builder: (context) => DetailPage(
-                      product: productCategory[index].product,
+                      product: products[index],
                     ),
                   ),
                 );
@@ -67,19 +69,28 @@ class _ListProductState extends State<ListProduct> {
                         padding: const EdgeInsets.only(bottom: 15),
                         child: Container(
                           width: 96,
-                          height: 92,
+                          height: 90,
                           decoration: BoxDecoration(
                               image: DecorationImage(
-                            image: NetworkImage(
-                                productCategory[index].product.iconUrl),
+                            image: NetworkImage(products[index].iconUrl),
                             fit: BoxFit.fill,
                           )),
                         ),
                       ),
+                      RatingBarIndicator(
+                        rating: products[index].rating.toDouble(),
+                        itemBuilder: (context, index) => Icon(
+                          Icons.star,
+                          color: Colors.amber,
+                        ),
+                        itemCount: 5,
+                        itemSize: 17,
+                        direction: Axis.horizontal,
+                      ),
                       Padding(
                         padding: const EdgeInsets.only(bottom: 5),
                         child: Text(
-                          productCategory[index].product.name,
+                          products[index].name,
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontWeight: FontWeight.w400,

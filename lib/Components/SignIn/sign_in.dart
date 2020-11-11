@@ -45,7 +45,7 @@ class _SignIn extends State<SignIn> {
         onPressed: () {
           signInWithGG().then((result) {
             if (result != null) {
-              Navigator.of(context).push(
+              Navigator.of(context).pushReplacement(
                 MaterialPageRoute(
                   builder: (context) {
                     return MyHomePage();

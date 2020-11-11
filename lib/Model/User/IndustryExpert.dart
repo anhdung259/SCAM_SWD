@@ -11,8 +11,8 @@ class IndustryExpert {
 
   int industryId;
   int userId;
-  String expertLevel;
-  String interestLevel;
+  int expertLevel;
+  int interestLevel;
   bool status;
   int id;
   Industry industry;

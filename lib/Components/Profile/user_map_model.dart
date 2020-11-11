@@ -31,11 +31,6 @@ class _UserProfile extends State<UserProfile> {
       body: FutureBuilder(
           future: storage.ready,
           builder: (context, AsyncSnapshot snapshot) {
-            if (snapshot.data == null) {
-              return Center(
-                child: CircularProgressIndicator(),
-              );
-            }
             if (snapshot.hasData) {
               var user = User.fromJsonProfile(storage.getItem('user'));
               List<String> ListRowIfo = [

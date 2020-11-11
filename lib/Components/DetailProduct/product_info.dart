@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:swd_project/Components/DetailProduct/media_list.dart';
+import 'package:swd_project/Components/FeatureProduct/list_feature.dart';
 import 'package:swd_project/Model/Product/Product.dart';
 
 import 'show_more.dart';
@@ -7,13 +9,16 @@ class ProductInfo extends StatefulWidget {
   final Product product;
 
   const ProductInfo({Key key, this.product}) : super(key: key);
+
   @override
   _ProductInfoState createState() => _ProductInfoState(product);
 }
 
 class _ProductInfoState extends State<ProductInfo> {
   final Product product;
+
   _ProductInfoState(this.product);
+
   @override
   // void initState() {
   //   // TODO: implement initState
@@ -33,20 +38,8 @@ class _ProductInfoState extends State<ProductInfo> {
           padding: EdgeInsets.all(0.0),
           sliver: SliverList(
             delegate: SliverChildListDelegate([
-              Row(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(left: 10, top: 20),
-                    child: Text(
-                      "Product Details",
-                      style:
-                          TextStyle(fontSize: 23, fontWeight: FontWeight.bold),
-                    ),
-                  )
-                ],
-              ),
               SizedBox(
-                height: 20,
+                height: 10,
               ),
               Container(
                 decoration: BoxDecoration(
@@ -61,6 +54,9 @@ class _ProductInfoState extends State<ProductInfo> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    MediaList(
+                      media: product.productMedia,
+                    ),
                     ShowMore(
                       title: "${product.name} Overview",
                       text: product.overview,
@@ -68,10 +64,14 @@ class _ProductInfoState extends State<ProductInfo> {
                     SizedBox(
                       height: 5.0,
                     ),
-                    ShowMore(
-                      text: product.description,
-                      title: "Description",
-                    ),
+                    if (!product.description.isEmpty)
+                      ShowMore(
+                        text: product.description,
+                        title: "Description",
+                      )
+                    else
+                      Container(),
+                    FeatureList(product: product)
                   ],
                 ),
               ),

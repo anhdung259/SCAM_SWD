@@ -5,7 +5,6 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:swd_project/Bloc/get_Product_Bloc.dart';
 import 'package:swd_project/Model/Product/Product.dart';
 import 'package:swd_project/Pages/detail_product.dart';
-
 import 'search_bar.dart';
 
 class ProductByCate extends StatefulWidget {
@@ -152,7 +151,7 @@ class _ProductByCateState extends State<ProductByCate>
       );
     } else
       return Padding(
-        padding: const EdgeInsets.all(6.0),
+        padding: const EdgeInsets.all(13.0),
         child: SmartRefresher(
           enablePullDown: true,
           enablePullUp: true,
@@ -183,21 +182,21 @@ class _ProductByCateState extends State<ProductByCate>
                     child: Container(
                       decoration: BoxDecoration(
                           color: Colors.white,
-                          borderRadius: BorderRadius.circular(5),
+                          shape: BoxShape.circle,
                           boxShadow: [
                             new BoxShadow(
-                                color: Colors.black54.withOpacity(0.7),
-                                offset: new Offset(0.2, 3.0),
-                                blurRadius: 3.7),
+                                color: Colors.white.withOpacity(0.2),
+                                offset: new Offset(0.1, 2.0),
+                                blurRadius: 3.8),
                           ]),
                       child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          Padding(
-                            padding: const EdgeInsets.only(bottom: 10, top: 10),
+                          Center(
                             child: Container(
                               width: 97,
-                              height: 87,
+                              height: 88,
                               decoration: BoxDecoration(
                                   image: DecorationImage(
                                 image: NetworkImage(products[index].iconUrl),
@@ -208,12 +207,15 @@ class _ProductByCateState extends State<ProductByCate>
                               // radius: 56,
                             ),
                           ),
-                          Text(
-                            products[index].name,
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 15,
+                          Padding(
+                            padding: const EdgeInsets.only(top: 20),
+                            child: Text(
+                              products[index].name,
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 15,
+                              ),
                             ),
                           ),
                         ],
