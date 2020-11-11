@@ -1,8 +1,13 @@
+import 'dart:io';
+
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:future_progress_dialog/future_progress_dialog.dart';
 import 'package:localstorage/localstorage.dart';
+import 'package:swd_project/Bloc/Upload/Upload_Media_Bloc.dart';
 import 'package:swd_project/Bloc/get_QuestionReview_Bloc.dart';
 import 'package:swd_project/Bloc/post_Review_Bloc.dart';
 import 'package:swd_project/Model/Product/Product.dart';
@@ -16,6 +21,7 @@ import 'package:swd_project/Widget/RadioButton.dart';
 class LoadQuestionReview extends StatefulWidget {
   final List<QuestionReview> questions;
   final Product product;
+
   const LoadQuestionReview({Key key, this.questions, this.product})
       : super(key: key);
 
@@ -25,6 +31,15 @@ class LoadQuestionReview extends StatefulWidget {
 }
 
 class _LoadQuestionReviewState extends State<LoadQuestionReview> {
+  //upload
+  Set<String> urls = Set();
+  List<File> _selectedFiles = [];
+  List<StorageUploadTask> _tasks = [];
+  List<Widget> uploadingFiles = [];
+  List<Widget> uploadedFiles = [];
+
+  //upload
+
   final LocalStorage storage = LocalStorage('user');
   final List<QuestionReview> questions;
   final Product product;
@@ -61,6 +76,28 @@ class _LoadQuestionReviewState extends State<LoadQuestionReview> {
         List.generate(getSizeList(), (index) => TextEditingController());
   }
 
+  //Upload
+  Widget futureBuilderUpload(File file) {
+    return FutureBuilder(
+      future: uploadImages(file, _tasks),
+      builder: (BuildContext context, AsyncSnapshot snapshot) {
+        Widget child = snapshot.data == null ? Text('Loading') : snapshot.data;
+        return child;
+      },
+    );
+  }
+
+  Widget futureBuilderDownload(StorageUploadTask task) {
+    return FutureBuilder(
+      future: fetchImages(task),
+      builder: (BuildContext context, AsyncSnapshot snapshot) {
+        Widget child = snapshot.data == null ? Text('Loading') : snapshot.data;
+        return child;
+      },
+    );
+  }
+
+  //Upload
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -91,8 +128,54 @@ class _LoadQuestionReviewState extends State<LoadQuestionReview> {
                 ),
               );
             }),
+        ButtonTheme(
+          minWidth: 200,
+          height: 50,
+          child: RaisedButton(
+            color: Colors.green,
+            child: Text(
+              "Upload",
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            onPressed: () async {
+              List<Widget> tempFiles = [];
+              FilePickerResult result = await FilePicker.platform.pickFiles(
+                type: FileType.custom,
+                allowedExtensions: ['mp4', 'jpg', 'png'],
+                allowMultiple: true,
+              );
+              if (result != null) {
+                setState(() {
+                  _selectedFiles.clear();
+                  _selectedFiles =
+                      result.paths.map((path) => File(path)).toList();
+                });
+                for (File file in _selectedFiles) {
+                  tempFiles.add(futureBuilderUpload(file));
+                }
+                setState(() {
+                  uploadingFiles = tempFiles;
+                });
+              }
+            },
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+                side: BorderSide(color: Colors.green)),
+          ),
+        ),
+        Padding(
+            padding: EdgeInsets.all(2.0),
+            child: Column(
+              children: uploadingFiles,
+            )),
         RaisedButton.icon(
           onPressed: () {
+            if (_tasks[_tasks.length - 1].isComplete){
+              setState(() {
+                getLinkLocation(_tasks[_tasks.length - 1])
+                    .then((value) => print('get url aaaaaaaaa: $value'));
+              });
+            }
             listReviewAnswer = answer.entries
                 .map((entry) => Answer(
                     User.fromJsonProfile(storage.getItem('user')).id,

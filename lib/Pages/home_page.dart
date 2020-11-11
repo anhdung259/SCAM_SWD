@@ -36,19 +36,19 @@ class _MyHomePageState extends State<MyHomePage> {
               })
         ],
       ),
-      drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: [
-            SlideMenu(),
-            ListTitle(),
-            SizedBox(
-              height: 5,
-            ),
-            CusListTitle(),
-          ],
-        ),
-      ),
+      // drawer: Drawer(
+      //   child: ListView(
+      //     padding: EdgeInsets.zero,
+      //     children: [
+      //       SlideMenu(),
+      //       ListTitle(),
+      //       SizedBox(
+      //         height: 5,
+      //       ),
+      //       CusListTitle(),
+      //     ],
+      //   ),
+      // ),
       body: _showContent,
       bottomNavigationBar: CurvedNavigationBar(
         index: 0,

@@ -3,12 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:swd_project/Bloc/sign_in_Bloc.dart';
 import 'package:swd_project/Components/SignIn/signin_screen.dart';
 
-class CusListTitle extends StatefulWidget {
+class CusLogoutBtn extends StatefulWidget {
   @override
-  _CusListTitleState createState() => _CusListTitleState();
+  _CusLogoutBtnState createState() => _CusLogoutBtnState();
 }
 
-class _CusListTitleState extends State<CusListTitle> {
+class _CusLogoutBtnState extends State<CusLogoutBtn> {
   @override
   Widget build(BuildContext context) {
     return Padding(

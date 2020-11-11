@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:localstorage/localstorage.dart';
+import 'package:swd_project/Components/TaskMenu/sign_out.dart';
 import 'package:swd_project/Model/User/UserReview.dart';
 
 class UserProfile extends StatefulWidget {
@@ -157,6 +158,7 @@ class _UserProfile extends State<UserProfile> {
           children: <Widget>[
             _buildMyTaskHeader(),
             _buildTaskList(userInfo, title),
+            Center(child: CusLogoutBtn(),),
           ],
         ),
       );
