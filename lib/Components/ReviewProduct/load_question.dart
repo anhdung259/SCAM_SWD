@@ -1,8 +1,13 @@
+import 'dart:io';
+
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:future_progress_dialog/future_progress_dialog.dart';
 import 'package:localstorage/localstorage.dart';
+import 'package:swd_project/Bloc/Media/MediaBoc.dart';
 import 'package:swd_project/Bloc/post_Review_Bloc.dart';
 import 'package:swd_project/Model/Product/Product.dart';
 import 'package:swd_project/Model/QuestionReview/QuestionReview.dart';
@@ -42,6 +47,14 @@ class _LoadQuestionReviewState extends State<LoadQuestionReview> {
   Map<int, List<String>> multiple = {};
   List<String> check = [];
   int _size = 0;
+  Set<String> urls = Set();
+  List<File> _selectedFiles = [];
+  List<StorageUploadTask> _tasks = [];
+  List<Widget> uploadingFiles = [];
+  List<Widget> uploadedFiles = [];
+  //goi link media cho nay
+  List<String> listURL;
+
 
   getSizeList() {
     for (int i = 0; i < questions.length; i++) {
@@ -89,6 +102,27 @@ class _LoadQuestionReviewState extends State<LoadQuestionReview> {
     });
   }
 
+
+  Widget futureBuilderUpload(File file) {
+    return FutureBuilder(
+      future: uploadImages(file, _tasks),
+      builder: (BuildContext context, AsyncSnapshot snapshot) {
+        Widget child = snapshot.data == null ? Text('Loading') : snapshot.data;
+        return child;
+      },
+    );
+  }
+
+  Widget futureBuilderDownload(StorageUploadTask task) {
+    return FutureBuilder(
+      future: fetchImages(task),
+      builder: (BuildContext context, AsyncSnapshot snapshot) {
+        Widget child = snapshot.data == null ? Text('Loading') : snapshot.data;
+        return child;
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Form(
@@ -120,11 +154,60 @@ class _LoadQuestionReviewState extends State<LoadQuestionReview> {
                 );
               }),
           ratingQuestion(),
+          ButtonTheme(
+            minWidth: 200,
+            height: 50,
+            child: RaisedButton(
+              color: Colors.green,
+              child: Text(
+                "Upload",
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              onPressed: () async {
+                List<Widget> tempFiles = [];
+                FilePickerResult result = await FilePicker.platform.pickFiles(
+                  type: FileType.custom,
+                  allowedExtensions: ['mp4', 'jpg', 'png'],
+                  allowMultiple: true,
+                );
+                if (result != null) {
+                  setState(() {
+                    _selectedFiles.clear();
+                    _selectedFiles =
+                        result.paths.map((path) => File(path)).toList();
+                  });
+                  for (File file in _selectedFiles) {
+                    tempFiles.add(futureBuilderUpload(file));
+                  }
+                  setState(() {
+                    uploadingFiles = tempFiles;
+                  });
+                }
+              },
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  side: BorderSide(color: Colors.green)),
+            ),
+          ),
+          Padding(
+              padding: EdgeInsets.all(2.0),
+              child: Column(
+                children: uploadingFiles,
+              )),
           SizedBox(
             height: 20,
           ),
           RaisedButton.icon(
-            onPressed: () {
+            onPressed: () async{
+              List<String> temps = [];
+              for(StorageUploadTask t in _tasks){
+                if (t.isComplete){
+                  await getLinkLocation(t).then((value) => temps.add(value));
+                }
+              }
+              setState(() {
+                listURL = temps;
+              });
               if (_formKey.currentState.validate()) {
                 addDataAnswer();
                 showProgress(context);

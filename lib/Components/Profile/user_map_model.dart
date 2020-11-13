@@ -10,62 +10,54 @@ class UserProfile extends StatefulWidget {
 
 class _UserProfile extends State<UserProfile> {
   final LocalStorage storage = LocalStorage('user');
+
   @override
   void initState() {
     super.initState();
   }
 
   static const double _imageHeight = 256.0;
+  User detaiUser;
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        title: Text(
-          "Trang cá nhân",
-          style: TextStyle(color: Colors.black),
-        ),
-        iconTheme: new IconThemeData(color: Colors.black),
-        centerTitle: true,
-      ),
-      body: FutureBuilder(
-          future: storage.ready,
-          builder: (context, AsyncSnapshot snapshot) {
-            if (snapshot.hasData) {
-              var user = User.fromJsonProfile(storage.getItem('user'));
-              List<String> ListRowIfo = [
-                checkNull(user.email),
-                checkNull(user.facebook),
-                checkNull(user.phone),
-                checkNull(user.joinDate),
-                checkNull(user.provider)
-              ];
-              List<String> ListRowTitle = [
-                "Email",
-                "Facebook",
-                "Phone",
-                "Join date",
-                "Provider"
-              ];
-              return Stack(
-                children: <Widget>[
-                  _buildTimeline(),
-                  _buildImage(),
-                  _buildProfileRow(checkNull(user.name), checkNull(user.bio),
-                      checkNull(user.avatarUrl)),
-                  _buildBottomPart(ListRowIfo, ListRowTitle),
-                ],
-              );
-            } else if (snapshot.hasError) {
-              return BuildError(
-                error: snapshot.error,
-              );
-            } else {
-              return BuildLoading();
-            }
-          }),
-    );
+    return FutureBuilder(
+        future: storage.ready,
+        builder: (context, AsyncSnapshot snapshot) {
+          if (snapshot.hasData) {
+            var user = User.fromJsonProfile(storage.getItem('user'));
+            detaiUser = user;
+            List<String> ListRowIfo = [
+              checkNull(user.email),
+              checkNull(user.facebook),
+              checkNull(user.phone),
+              checkNull(user.joinDate),
+              checkNull(user.provider)
+            ];
+            List<String> ListRowTitle = [
+              "Email",
+              "Facebook",
+              "Phone",
+              "Join date",
+              "Provider"
+            ];
+            return Stack(
+              children: <Widget>[
+                _buildTimeline(),
+                _buildImage(),
+                _buildProfileRow(checkNull(user.name), checkNull(user.bio),
+                    checkNull(user.avatarUrl)),
+                _buildBottomPart(ListRowIfo, ListRowTitle),
+              ],
+            );
+          } else if (snapshot.hasError) {
+            return BuildError(
+              error: snapshot.error,
+            );
+          } else {
+            return BuildLoading();
+          }
+        });
   }
 
   Widget _buildImage() => ClipPath(
@@ -153,9 +145,49 @@ class _UserProfile extends State<UserProfile> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Text(
-              'Thông Tin',
-              style: TextStyle(fontSize: 26.0, fontWeight: FontWeight.w400),
+            Row(
+              children: [
+                Text(
+                  'Thông Tin',
+                  style: TextStyle(fontSize: 26.0, fontWeight: FontWeight.w400),
+                ),
+                IconButton(icon: Icon(Icons.edit, size: 15,), onPressed: () {
+
+                  showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: Text("Edit profile"),
+                          content: Container(
+                            height: 200,
+                            child: Column(
+                              children: [
+                                TextField(
+                                  decoration: InputDecoration(
+                                      labelText: "fullname"
+                                  ),
+                                ),
+                                TextField(
+                                  decoration: InputDecoration(
+                                      labelText: "phone"
+                                  ),
+                                ),
+                                TextField(
+                                  decoration: InputDecoration(
+                                      labelText: "birthday"
+                                  ),
+                                )
+                              ],
+                            ),
+                          ),
+                          actions: [
+                            TextButton(onPressed: (){Navigator.pop(context, false);}, child: Text("Cancel".toUpperCase())),
+                            TextButton(onPressed: (){}, child: Text("Update".toUpperCase()))
+                          ],
+                        );
+                      });
+                }),
+              ],
             ),
             SizedBox(
               height: 5,
@@ -218,13 +250,6 @@ class TaskRow extends StatelessWidget {
                           fontSize: 12.0, fontWeight: FontWeight.w300),
                     ),
                   ],
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                child: Icon(
-                  Icons.edit,
-                  size: 20,
                 ),
               ),
             ],

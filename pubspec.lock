@@ -113,6 +113,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.0"
+  curved_navigation_bar:
+    dependency: "direct main"
+    description:
+      name: curved_navigation_bar
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.3.4"
   darq:
     dependency: "direct main"
     description:
@@ -176,6 +183,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "5.2.1"
+  file_picker:
+    dependency: "direct main"
+    description:
+      name: file_picker
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.13"
   firebase_auth:
     dependency: "direct main"
     description:
@@ -218,6 +232,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.2.1"
+  firebase_storage:
+    dependency: "direct main"
+    description:
+      name: firebase_storage
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "4.0.1"
   flinq:
     dependency: "direct main"
     description:
@@ -244,6 +265,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "4.0.0+4"
+  flutter_plugin_android_lifecycle:
+    dependency: transitive
+    description:
+      name: flutter_plugin_android_lifecycle
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.11"
   flutter_rating_bar:
     dependency: "direct main"
     description:
