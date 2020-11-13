@@ -5,6 +5,7 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:swd_project/Bloc/get_Product_Bloc.dart';
 import 'package:swd_project/Model/Product/Product.dart';
 import 'package:swd_project/Pages/detail_product.dart';
+import 'package:swd_project/Widget/load_and_error-process.dart';
 import 'search_bar.dart';
 
 class ProductByCate extends StatefulWidget {
@@ -92,40 +93,15 @@ class _ProductByCateState extends State<ProductByCate>
           if (snapshot.hasData) {
             return _buildProductWidget(snapshot.data);
           } else if (snapshot.hasError) {
-            return _buildErrorWidget(snapshot.error);
+            return BuildError(
+              error: snapshot.error,
+            );
           } else {
-            return _buildLoadingWidget();
+            return BuildLoading();
           }
         },
       ),
     );
-  }
-
-  Widget _buildLoadingWidget() {
-    return Center(
-        child: Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        SizedBox(
-          height: 25.0,
-          width: 25.0,
-          child: CircularProgressIndicator(
-            valueColor: new AlwaysStoppedAnimation<Color>(Colors.blueAccent),
-            strokeWidth: 4.0,
-          ),
-        )
-      ],
-    ));
-  }
-
-  Widget _buildErrorWidget(String error) {
-    return Center(
-        child: Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Text("Error occurred: $error"),
-      ],
-    ));
   }
 
   Widget _buildProductWidget(List<Product> data) {

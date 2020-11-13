@@ -4,6 +4,7 @@ import 'package:swd_project/Components/ReviewProduct/load_question.dart';
 
 import 'package:swd_project/Model/Product/Product.dart';
 import 'package:swd_project/Model/QuestionReview/QuestionReviewResponse.dart';
+import 'package:swd_project/Widget/load_and_error-process.dart';
 
 class QuestionReviewPage extends StatefulWidget {
   final Product product;
@@ -58,39 +59,14 @@ class _QuestionReviewPageState extends State<QuestionReviewPage> {
               ),
             );
           } else if (snapshot.hasError) {
-            return _buildErrorWidget(snapshot.error);
+            return BuildError(
+              error: snapshot.error,
+            );
           } else {
-            return _buildLoadingWidget();
+            return BuildLoading();
           }
         },
       ),
     );
-  }
-
-  Widget _buildLoadingWidget() {
-    return Center(
-        child: Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        SizedBox(
-          height: 25.0,
-          width: 25.0,
-          child: CircularProgressIndicator(
-            valueColor: new AlwaysStoppedAnimation<Color>(Colors.blueGrey),
-            strokeWidth: 4.0,
-          ),
-        )
-      ],
-    ));
-  }
-
-  Widget _buildErrorWidget(String error) {
-    return Center(
-        child: Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Text("Error occured: $error"),
-      ],
-    ));
   }
 }

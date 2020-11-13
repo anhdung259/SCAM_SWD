@@ -14,10 +14,6 @@ class QuestionList {
     _subject.sink.add(listQuestion);
   }
 
-  //   _listTextQuestion.sink.add(listTextQuestion);
-  //   print(_listTextQuestion.value.length);
-  // }
-
   dispose() {
     _subject.close();
   }

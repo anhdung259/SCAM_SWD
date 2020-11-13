@@ -171,15 +171,14 @@ class _LoadQuestionReviewState extends State<LoadQuestionReview> {
     SweetAlert.show(context, title: result, style: SweetAlertStyle.success,
         onPress: (bool isConfirm) {
       if (isConfirm) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => new DetailPage(
-              page: 1,
-              product: product,
+        Navigator.of(context).pushAndRemoveUntil(
+            new MaterialPageRoute(
+              builder: (context) => new DetailPage(
+                page: 1,
+                product: product,
+              ),
             ),
-          ),
-        );
+            (Route<dynamic> route) => route.isFirst);
       }
       return false;
     });
@@ -247,7 +246,7 @@ class _LoadQuestionReviewState extends State<LoadQuestionReview> {
           ),
         ),
         Container(
-          child: RatingBar(
+          child: RatingBar.builder(
             initialRating: 0,
             minRating: 1,
             direction: Axis.horizontal,

@@ -20,10 +20,9 @@ class ReviewList {
     _subject.sink.add(listAll);
   }
 
-  getReviewFilter(int id, int currentPage, int pageSize, int rate1, int rate2,
-      int rate3, int rate4, int rate5) async {
+  getReviewFilter(int id, int currentPage, int pageSize, String filter) async {
     ReviewResponse listReview = await _reviewRepository.getListReviewFilter(
-        id, currentPage, pageSize, rate1, rate2, rate3, rate4, rate5);
+        id, currentPage, pageSize, filter);
     listAll.addAll(listReview.reviews);
     _subject.sink.add(listAll);
   }
@@ -50,10 +49,6 @@ class ReviewList {
     _reviewUser.value = null;
     _subject.value = null;
   }
-
-  //   _listTextQuestion.sink.add(listTextQuestion);
-  //   print(_listTextQuestion.value.length);
-  // }
 
   dispose() async {
     _subject.close();

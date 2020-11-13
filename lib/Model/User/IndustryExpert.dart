@@ -55,8 +55,9 @@ class Industry {
         id: json["id"],
         name: json["name"],
         status: json["status"],
-        industryExperts:
-            List<dynamic>.from(json["industryExperts"].map((x) => x)),
+        industryExperts: json["industryExperts"] == null
+            ? null
+            : List<dynamic>.from(json["industryExperts"].map((x) => x)),
       );
 
   Map<String, dynamic> toJson() => {

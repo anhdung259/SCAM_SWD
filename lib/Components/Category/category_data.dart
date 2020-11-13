@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:swd_project/Bloc/get_Categories_Bloc.dart';
 import 'package:swd_project/Model/Category/CateVsProductResponse.dart';
 import 'package:swd_project/Model/Category/Category_include_product.dart';
+import 'package:swd_project/Widget/load_and_error-process.dart';
 
 import 'category_include_product.dart';
 
@@ -34,40 +35,15 @@ class _CategoryListIncludeProductState
           if (snapshot.hasData) {
             return _buildCategoryWidget(snapshot.data);
           } else if (snapshot.hasError) {
-            return _buildErrorWidget(snapshot.error);
+            return BuildError(
+              error: snapshot.error,
+            );
           } else {
-            return _buildLoadingWidget();
+            return BuildLoading();
           }
         },
       ),
     );
-  }
-
-  Widget _buildLoadingWidget() {
-    return Center(
-        child: Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        SizedBox(
-          height: 25.0,
-          width: 25.0,
-          child: CircularProgressIndicator(
-            valueColor: new AlwaysStoppedAnimation<Color>(Colors.blueAccent),
-            strokeWidth: 4.0,
-          ),
-        )
-      ],
-    ));
-  }
-
-  Widget _buildErrorWidget(String error) {
-    return Center(
-        child: Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Text("Error occured: $error"),
-      ],
-    ));
   }
 
   Widget _buildCategoryWidget(CategoryVsProductResponse data) {

@@ -57,7 +57,6 @@ class _MediaListState extends State<MediaList> {
                             loadVideo(media[index])
                         ]),
                   ),
-                  // child: new Text(products[index].), //just for testing, will fill with image later
                 ),
               ),
             );

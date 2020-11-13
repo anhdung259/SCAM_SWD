@@ -11,63 +11,57 @@ import 'package:swd_project/Model/Product/Product.dart';
 import 'package:swd_project/Model/ReviewAnswer/ReviewAnswer.dart';
 import 'package:swd_project/Model/ReviewAnswer/ReviewList.dart';
 import 'package:swd_project/Model/User/UserReview.dart';
-import 'package:swd_project/Pages/detail_product.dart';
 import 'package:swd_project/Pages/review.dart';
 import 'package:swd_project/Pages/update_review.dart';
+import 'package:swd_project/Widget/load_and_error-process.dart';
 
 class ReviewPage extends StatefulWidget {
   final Product product;
   final int pageSize;
   final int currentPage;
-  final bool checkFilter;
+  final String queryFilter;
   const ReviewPage(
       {Key key,
       this.product,
       this.pageSize,
       this.currentPage,
-      this.checkFilter})
+      this.queryFilter})
       : super(key: key);
 
   @override
   _ReviewPageState createState() =>
-      _ReviewPageState(product, pageSize, currentPage, checkFilter);
+      _ReviewPageState(product, pageSize, currentPage, queryFilter);
 }
 
 class _ReviewPageState extends State<ReviewPage> {
   final LocalStorage storage = LocalStorage('user');
   User user;
   final Product product;
-  final bool checkFilter;
   int count;
   int pageSize;
   int currentPage;
-
+  final String queryFilter;
   _ReviewPageState(
-      this.product, this.pageSize, this.currentPage, this.checkFilter);
+      this.product, this.pageSize, this.currentPage, this.queryFilter);
 
   List<String> listIdQuestion = ["7", "8", "9", "10"];
   List<Review> listAllReview = [];
   List<Review> reviews;
   int reviewId;
   bool checkReview = false;
+
   RefreshController _controller1 = RefreshController();
   @override
   void didChangeDependencies() {
     // TODO: implement didChangeDependencies
     super.didChangeDependencies();
     reviewByIdBloc.dainStream();
-
-    if (checkFilter) {
-      _getMoreData();
-    } else {
-      _getMoreDataFliter();
-    }
-    print(checkFilter);
+    _getMoreDataFliter();
   }
 
   void _onLoading() {
     Future.delayed(const Duration(milliseconds: 2000)).then((val) {
-      _getMoreData();
+      _getMoreDataFliter();
     });
   }
 
@@ -75,15 +69,16 @@ class _ReviewPageState extends State<ReviewPage> {
     Future.delayed(const Duration(milliseconds: 2000)).then((val) {
       if (mounted) {
         _controller1.refreshCompleted();
-        _getMoreData();
+        _getMoreDataFliter();
       }
 
 //                refresher.sendStatus(RefreshStatus.completed);
     });
   }
 
-  void _getMoreData() async {
-    reviewByIdBloc.getReview(product.id, currentPage, pageSize);
+  void _getMoreDataFliter() async {
+    reviewByIdBloc.getReviewFilter(
+        product.id, currentPage, pageSize, queryFilter);
     reviewByIdBloc.getSizeListReview(product.id).then((value) {
       if (mounted) {
         setState(() {
@@ -130,40 +125,15 @@ class _ReviewPageState extends State<ReviewPage> {
           if (snapshot.hasData) {
             return _buildReviewWidget(snapshot.data);
           } else if (snapshot.hasError) {
-            return _buildErrorWidget(snapshot.error);
+            return BuildError(
+              error: snapshot.error,
+            );
           } else {
-            return _buildLoadingWidget();
+            return BuildLoading();
           }
         },
       ),
     );
-  }
-
-  Widget _buildLoadingWidget() {
-    return Center(
-        child: Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        SizedBox(
-          height: 25.0,
-          width: 25.0,
-          child: CircularProgressIndicator(
-            valueColor: new AlwaysStoppedAnimation<Color>(Colors.blueAccent),
-            strokeWidth: 4.0,
-          ),
-        )
-      ],
-    ));
-  }
-
-  Widget _buildErrorWidget(String error) {
-    return Center(
-        child: Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Text("Error occured: $error"),
-      ],
-    ));
   }
 
   Widget _buildReviewWidget(List<Review> data) {
@@ -208,7 +178,6 @@ class _ReviewPageState extends State<ReviewPage> {
                             ? RaisedButton.icon(
                                 // Đã review rồi thì chỉ được update
                                 onPressed: () {
-                                  print(reviewId);
                                   showDialog(
                                       context: context,
                                       builder: (BuildContext context) {
@@ -429,6 +398,8 @@ class _ReviewPageState extends State<ReviewPage> {
                         ),
                       ),
                       Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Padding(
                             padding: const EdgeInsets.only(
@@ -441,28 +412,27 @@ class _ReviewPageState extends State<ReviewPage> {
                               ),
                             ),
                           ),
-                          // Padding(
-                          //   padding:
-                          //       const EdgeInsets.only(left: 10, bottom: 10),
-                          //   child: Text(
-                          //     reviews[index]
-                          //             .user
-                          //             .industryExperts[0]
-                          //             .industry
-                          //             .name
-                          //             .isEmpty
-                          //         ? "Chưa có"
-                          //         : reviews[index]
-                          //             .user
-                          //             .industryExperts[0]
-                          //             .industry
-                          //             .name,
-                          //     style: TextStyle(
-                          //       fontSize: 17,
-                          //       fontWeight: FontWeight.w300,
-                          //     ),
-                          //   ),
-                          // ),
+                          Padding(
+                            padding: const EdgeInsets.only(left: 10),
+                            child: Container(
+                              width: 200,
+                              height: 20,
+                              child: ListView.builder(
+                                  itemCount: reviews[index]
+                                      .user
+                                      .industryExperts
+                                      .length,
+                                  scrollDirection: Axis.horizontal,
+                                  physics: NeverScrollableScrollPhysics(),
+                                  itemBuilder: (context, i) {
+                                    return Text(reviews[index]
+                                        .user
+                                        .industryExperts[i]
+                                        .industry
+                                        .name);
+                                  }),
+                            ),
+                          ),
                         ],
                       )
                     ],
@@ -671,7 +641,7 @@ class _ReviewPageState extends State<ReviewPage> {
 
   Widget dialogFilter(BuildContext context, Product product, String title) {
     return AlertDialog(
-      insetPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+      insetPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 90),
       shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(13.0))),
       title: Row(
@@ -689,45 +659,11 @@ class _ReviewPageState extends State<ReviewPage> {
           ]),
       content: Container(
         width: double.maxFinite,
-        child: ListCheckBoxFilterStar(),
+        child: Filter(
+          product: product,
+          reviews: listAllReview,
+        ),
       ),
-      actions: [
-        RaisedButton(onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => new DetailPage(
-                page: 1,
-                product: product,
-                checkFilter: false,
-              ),
-            ),
-          );
-        }),
-      ],
     );
-  }
-
-  void _getMoreDataFliter() async {
-    print("aaaa");
-    reviewByIdBloc.getReview(product.id, 1, 1);
-    reviewByIdBloc.getSizeListReview(product.id).then((value) {
-      if (mounted) {
-        setState(() {
-          count = value;
-        });
-      }
-    });
-    reviewByIdBloc.getAllList(product.id).then((list) {
-      if (mounted) {
-        setState(() {
-          listAllReview = list;
-        });
-      }
-    });
-    if (mounted) {
-      _controller1.loadComplete();
-      currentPage++;
-    }
   }
 }

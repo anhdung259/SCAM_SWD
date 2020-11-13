@@ -60,6 +60,7 @@ dependencies:
   sweetalert: ^0.0.1
   flinq: ^1.1.1
   darq: ^0.4.0+1
+  dropdown_search: ^0.4.6
   youtube_player_flutter: ^7.0.0+7
   videos_player: ^0.1.3
 dev_dependencies:

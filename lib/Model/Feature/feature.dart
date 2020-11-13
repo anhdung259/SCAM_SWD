@@ -1,19 +1,20 @@
 class Feature {
-  Feature({
-    this.id,
-    this.productId,
-    this.featureId,
-    this.rate,
-    this.status,
-    this.feature,
-    this.product,
-  });
+  Feature(
+      {this.id,
+      this.productId,
+      this.featureId,
+      this.rate,
+      this.status,
+      this.feature,
+      this.product,
+      this.rateCount});
 
   int id;
   int productId;
   int featureId;
   double rate;
   bool status;
+  int rateCount;
   FeatureClass feature;
   dynamic product;
 
@@ -23,6 +24,7 @@ class Feature {
         featureId: json["featureId"] == null ? null : json["featureId"],
         rate: json["rate"] == null ? null : json["rate"],
         status: json["status"] == null ? null : json["status"],
+        rateCount: json["rateCount"] == null ? null : json["rateCount"],
         feature: json["feature"] == null
             ? null
             : FeatureClass.fromJson(json["feature"]),

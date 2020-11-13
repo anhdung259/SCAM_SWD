@@ -42,6 +42,7 @@ class _UpdateReviewState extends State<UpdateReview> {
   Map<int, List<String>> multiple = {};
   Map<int, List<String>> multipleAll = {};
   List<int> listReviewAnswerId = [];
+
   // int _size = 0;
   List<String> check = [];
 
@@ -197,15 +198,14 @@ class _UpdateReviewState extends State<UpdateReview> {
     SweetAlert.show(context, title: result, style: SweetAlertStyle.success,
         onPress: (bool isConfirm) {
       if (isConfirm) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (BuildContext context) => new DetailPage(
-              page: 1,
-              product: product,
+        Navigator.of(context).pushAndRemoveUntil(
+            new MaterialPageRoute(
+              builder: (BuildContext context) => new DetailPage(
+                page: 1,
+                product: product,
+              ),
             ),
-          ),
-        );
+            (Route<dynamic> route) => route.isFirst);
       }
       return false;
     });
@@ -219,7 +219,9 @@ class _UpdateReviewState extends State<UpdateReview> {
         Padding(
             padding: const EdgeInsets.all(8.0),
             child: Text.rich(TextSpan(children: [
-              TextSpan(text: "* ", style: TextStyle(color: Colors.red)),
+              TextSpan(
+                  text: "* ",
+                  style: TextStyle(color: Colors.red, fontSize: 17)),
               TextSpan(
                 text: questionReview.questionText,
                 style: TextStyle(
@@ -275,7 +277,7 @@ class _UpdateReviewState extends State<UpdateReview> {
           ),
         ),
         Container(
-          child: RatingBar(
+          child: RatingBar.builder(
             initialRating: rateUpdate,
             minRating: 1,
             direction: Axis.horizontal,

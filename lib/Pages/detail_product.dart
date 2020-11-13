@@ -8,20 +8,20 @@ import 'package:swd_project/Model/Product/Product.dart';
 class DetailPage extends StatefulWidget {
   final Product product;
   final int page;
-  final bool checkFilter;
-  const DetailPage({Key key, this.product, this.page, this.checkFilter})
+  final String queryFilter;
+  const DetailPage({Key key, this.product, this.page, this.queryFilter})
       : super(key: key);
 
   @override
   _DetailPageState createState() =>
-      _DetailPageState(product, page, checkFilter);
+      _DetailPageState(product, page, queryFilter);
 }
 
 class _DetailPageState extends State<DetailPage> {
   final Product product;
   final int page;
-  final bool checkFilter;
-  _DetailPageState(this.product, this.page, this.checkFilter);
+  final String queryFilter;
+  _DetailPageState(this.product, this.page, this.queryFilter);
   @override
   void initState() {
     // TODO: implement initState
@@ -120,6 +120,8 @@ class _DetailPageState extends State<DetailPage> {
                       ),
                     ),
                     bottom: TabBar(
+                      labelPadding: EdgeInsets.only(right: 38, left: 34),
+                      indicatorPadding: EdgeInsets.zero,
                       indicatorColor: Colors.orange,
                       indicatorSize: TabBarIndicatorSize.tab,
                       indicatorWeight: 3.0,
@@ -154,7 +156,8 @@ class _DetailPageState extends State<DetailPage> {
                   product: product,
                   currentPage: 1,
                   pageSize: 3,
-                  checkFilter: checkFilter ?? true,
+                  queryFilter:
+                      queryFilter ?? "rates=5&rates=4&rates=3&rates=2&rates=1&",
                 ),
                 SlideShowPricing(
                   product: product,

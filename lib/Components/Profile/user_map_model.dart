@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:localstorage/localstorage.dart';
 import 'package:swd_project/Model/User/UserReview.dart';
+import 'package:swd_project/Widget/load_and_error-process.dart';
 
 class UserProfile extends StatefulWidget {
   @override
@@ -57,39 +58,14 @@ class _UserProfile extends State<UserProfile> {
                 ],
               );
             } else if (snapshot.hasError) {
-              return _buildErrorWidget(snapshot.error);
+              return BuildError(
+                error: snapshot.error,
+              );
             } else {
-              return _buildLoadingWidget();
+              return BuildLoading();
             }
           }),
     );
-  }
-
-  Widget _buildLoadingWidget() {
-    return Center(
-        child: Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        SizedBox(
-          height: 25.0,
-          width: 25.0,
-          child: CircularProgressIndicator(
-            valueColor: new AlwaysStoppedAnimation<Color>(Colors.blueAccent),
-            strokeWidth: 4.0,
-          ),
-        )
-      ],
-    ));
-  }
-
-  Widget _buildErrorWidget(String error) {
-    return Center(
-        child: Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Text("Error occured: $error"),
-      ],
-    ));
   }
 
   Widget _buildImage() => ClipPath(

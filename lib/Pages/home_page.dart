@@ -9,6 +9,7 @@ import 'package:swd_project/Components/TaskMenu/listtle_list.dart';
 import 'package:swd_project/Components/TaskMenu/slide_menu.dart';
 import 'package:swd_project/Components/TaskMenu/sign_out.dart';
 import 'package:swd_project/Model/User/UserReview.dart';
+import 'package:swd_project/Widget/load_and_error-process.dart';
 import 'package:swd_project/Widget/slide_show.dart';
 
 class MyHomePage extends StatefulWidget {
@@ -87,37 +88,12 @@ class _MyHomePageState extends State<MyHomePage> {
               userId: user.id,
             );
           } else if (snapshot.hasError) {
-            return _buildErrorWidget(snapshot.error);
+            return BuildError(
+              error: snapshot.error,
+            );
           } else {
-            return _buildLoadingWidget();
+            return BuildLoading();
           }
         });
-  }
-
-  Widget _buildLoadingWidget() {
-    return Center(
-        child: Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        SizedBox(
-          height: 25.0,
-          width: 25.0,
-          child: CircularProgressIndicator(
-            valueColor: new AlwaysStoppedAnimation<Color>(Colors.blueAccent),
-            strokeWidth: 4.0,
-          ),
-        )
-      ],
-    ));
-  }
-
-  Widget _buildErrorWidget(String error) {
-    return Center(
-        child: Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Text("Error occured: $error"),
-      ],
-    ));
   }
 }

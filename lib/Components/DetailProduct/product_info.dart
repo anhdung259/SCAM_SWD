@@ -18,14 +18,6 @@ class _ProductInfoState extends State<ProductInfo> {
   final Product product;
 
   _ProductInfoState(this.product);
-
-  @override
-  // void initState() {
-  //   // TODO: implement initState
-  //   super.initState();
-  //   reviewByIdBloc.getReview(product.id);
-  // }
-
   @override
   Widget build(BuildContext context) {
     return CustomScrollView(
@@ -54,9 +46,11 @@ class _ProductInfoState extends State<ProductInfo> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    MediaList(
-                      media: product.productMedia,
-                    ),
+                    product.productMedia.isEmpty
+                        ? Container()
+                        : MediaList(
+                            media: product.productMedia,
+                          ),
                     ShowMore(
                       title: "${product.name} Overview",
                       text: product.overview,
@@ -64,13 +58,12 @@ class _ProductInfoState extends State<ProductInfo> {
                     SizedBox(
                       height: 5.0,
                     ),
-                    if (!product.description.isEmpty)
-                      ShowMore(
-                        text: product.description,
-                        title: "Description",
-                      )
-                    else
-                      Container(),
+                    product.description.isEmpty
+                        ? Container()
+                        : ShowMore(
+                            text: product.description,
+                            title: "Description",
+                          ),
                     FeatureList(product: product)
                   ],
                 ),

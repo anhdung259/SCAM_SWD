@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:swd_project/Model/Category/CateVsProductResponse.dart';
 import 'package:swd_project/Model/Category/CategoriesResponse.dart';
 import 'package:swd_project/Model/Feature/FeatureResponse.dart';
+import 'package:swd_project/Model/Industry/industry.dart';
 import 'package:swd_project/Model/Pricing/PrincingResponse.dart';
 import 'package:swd_project/Model/Product/ProductResponse.dart';
 import 'package:swd_project/Model/QuestionReview/QuestionReviewResponse.dart';
@@ -145,30 +146,15 @@ class Repository {
     }
   }
 
-//https://scam2020.azurewebsites.net/api/Products/40/reviews/rates?rates=1&rates=2&rates=0&rates=0&rates=0&pageNum=1&pageSize=3
+  // https://scam2020.azurewebsites.net/api/Products/40/Reviews/filter?industryID=1&rates=5&pageNum=1&pageSize=10
   Future<ReviewResponse> getListReviewFilter(
-      int idProduct,
-      int currentPage,
-      int pageSize,
-      int rate1,
-      int rate2,
-      int rate3,
-      int rate4,
-      int rate5) async {
-    if (rate1 == null) rate1 = 0;
-    if (rate2 == null) rate2 = 0;
-    if (rate3 == null) rate3 = 0;
-    if (rate4 == null) rate4 = 0;
-    if (rate5 == null) rate5 = 0;
+      int idProduct, int currentPage, int pageSize, String filter) async {
     final response = await http.get(getListReviewInProductUrl +
         "/$idProduct" +
-        "/reviews" +
-        "/rates?rates=$rate1" +
-        "&rates=$rate2" +
-        "&rates=$rate3" +
-        "&rates=$rate4" +
-        "&rates=$rate5"
-            "&pageNum=$currentPage" +
+        "/Reviews" +
+        "/filter?" +
+        filter +
+        "pageNum=$currentPage" +
         "&pageSize=$pageSize");
 
     if (response.statusCode == 200) {
@@ -183,7 +169,7 @@ class Repository {
         "/$idProduct" +
         "/reviews" +
         "?pageNum=1" +
-        "&pageSize=1000");
+        "&pageSize=100000000");
 
     if (response.statusCode == 200) {
       return ReviewResponse.fromJson(response.body);
@@ -210,6 +196,21 @@ class Repository {
 
     if (response.statusCode == 200) {
       return FeatureResponse.fromJson(response.body);
+    } else {
+      throw Exception('Failed to load feature');
+    }
+  }
+
+//https://scam2020.azurewebsites.net/api/UserReviews/40/Reviews/industries
+  Future<List<IndustryClass>> getIndustry(int productId) async {
+    final response =
+        await http.get(getReviewUser + "/$productId" + "/Reviews/industries");
+
+    if (response.statusCode == 200) {
+      return json
+          .decode(response.body)
+          .map<IndustryClass>((item) => IndustryClass.fromJson(item))
+          .toList();
     } else {
       throw Exception('Failed to load feature');
     }
