@@ -14,6 +14,7 @@ class ProductListBloc {
   final BehaviorSubject<List<Product>> _proByCate =
       BehaviorSubject<List<Product>>();
   List<Product> listAll = [];
+
   getProduct() async {
     ProductResponse productList = await _productRepository.getProducts();
     _subject.sink.add(productList);

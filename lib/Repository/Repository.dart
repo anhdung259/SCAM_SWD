@@ -26,7 +26,7 @@ class Repository {
   var getReviewUser = '$mainUrl/api/UserReviews';
   var getPricingList = '$mainUrl/api/Products';
   final LocalStorage _storage = LocalStorage('token');
-  var getRecommend = '$mainUrl/api/Products/Recommendation';
+  var getRecommend = '$mainUrl/api/Products/Recommendations';
 
   // https://scam2020.azurewebsites.net/api/Users/auth?token=
   Future<String> login(String token) async {
@@ -67,7 +67,7 @@ class Repository {
   }
 
   Future<ProductDetailResponse> getProductDetail(int productId) async {
-    final response = await http.get(getProductUrl + "/$productId/detail");
+    final response = await http.get(getProductUrl + "/$productId/details");
 
     if (response.statusCode == 200) {
       return ProductDetailResponse.fromJson(response.body);
@@ -186,7 +186,7 @@ class Repository {
     final response = await http.get(getListReviewInProductUrl +
         "/$idProduct" +
         "/Reviews" +
-        "/filter?" +
+        "/filters?" +
         filter +
         "pageNum=$currentPage" +
         "&pageSize=$pageSize");

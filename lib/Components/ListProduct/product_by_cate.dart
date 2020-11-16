@@ -67,6 +67,7 @@ class _ProductByCateState extends State<ProductByCate>
   void dispose() {
     super.dispose();
     _controller1.dispose();
+    productBloc.dainStream();
   }
 
   @override

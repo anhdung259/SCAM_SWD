@@ -28,8 +28,6 @@ class _DetailPageState extends State<DetailPage> {
   final int page;
   final String queryFilter;
   bool checkInterest;
-  bool c = false;
-
   _DetailPageState(this.product, this.page, this.queryFilter);
 
   @override
@@ -39,6 +37,12 @@ class _DetailPageState extends State<DetailPage> {
     productBloc.dainStream();
     productBloc.getProductDetail(product.id);
     checkInterestProduct();
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
   }
 
   @override

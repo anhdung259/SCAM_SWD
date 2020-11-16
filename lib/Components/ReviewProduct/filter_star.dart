@@ -160,7 +160,7 @@ class _FilterState extends State<Filter> {
   getPercent(String starPercent) {
     double rate = double.parse(starPercent);
     return reviews
-            .where((r) => r.rate.roundToDouble() == rate)
+            .where((r) => r.rate.floorToDouble() == rate)
             .toList()
             .length /
         reviews.length;
@@ -168,6 +168,6 @@ class _FilterState extends State<Filter> {
 
   getNumPeople(String starPercent) {
     double rate = double.parse(starPercent);
-    return reviews.where((r) => r.rate.roundToDouble() == rate).toList().length;
+    return reviews.where((r) => r.rate.floorToDouble() == rate).toList().length;
   }
 }

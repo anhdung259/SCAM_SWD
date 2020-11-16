@@ -90,7 +90,6 @@ class _CategoryListProductState extends State<CategoryListProduct>
                                 ),
                               ),
                             );
-                            productBloc.dainStream();
                           },
                           child: Padding(
                             padding: const EdgeInsets.only(right: 8.0),
