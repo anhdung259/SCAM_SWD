@@ -1,9 +1,9 @@
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:future_progress_dialog/future_progress_dialog.dart';
 import 'package:localstorage/localstorage.dart';
 import 'package:darq/darq.dart';
+import 'package:smooth_star_rating/smooth_star_rating.dart';
 import 'package:swd_project/Bloc/update_Review_Bloc.dart';
 import 'package:swd_project/Model/Product/Product.dart';
 import 'package:swd_project/Model/QuestionReview/QuestionReview.dart';
@@ -277,22 +277,21 @@ class _UpdateReviewState extends State<UpdateReview> {
           ),
         ),
         Container(
-          child: RatingBar.builder(
-            initialRating: rateUpdate,
-            minRating: 1,
-            direction: Axis.horizontal,
+          child: SmoothStarRating(
+            rating: rateUpdate,
+            isReadOnly: false,
+            size: 50,
+            color: Colors.yellow,
+            borderColor: Colors.grey,
+            filledIconData: Icons.star,
+            halfFilledIconData: Icons.star_half,
+            defaultIconData: Icons.star_border,
+            starCount: 5,
             allowHalfRating: true,
-            itemCount: 5,
-            itemPadding: EdgeInsets.symmetric(horizontal: 4.0),
-            itemBuilder: (context, _) => Icon(
-              Icons.star,
-              color: Colors.amber,
-            ),
-            onRatingUpdate: (rating) {
-              // answer.update(qr.id, (v) => rating.toString(),
-              //     ifAbsent: () => rating.toString());
+            spacing: 2.0,
+            onRated: (value) {
               setState(() {
-                rate = rating;
+                rate = value;
               });
             },
           ),

@@ -7,6 +7,8 @@ class ProductListBloc {
   Repository _productRepository = Repository();
   final BehaviorSubject<ProductResponse> _subject =
       BehaviorSubject<ProductResponse>();
+  final BehaviorSubject<ProductDetailResponse> _proDetail =
+      BehaviorSubject<ProductDetailResponse>();
   final BehaviorSubject<ProductResponse> _proRmm =
       BehaviorSubject<ProductResponse>();
   final BehaviorSubject<List<Product>> _proByCate =
@@ -17,9 +19,9 @@ class ProductListBloc {
     _subject.sink.add(productList);
   }
 
-  getProductRecommend(int userId) async {
+  getProductRecommend() async {
     ProductResponse productList =
-        await _productRepository.getProductRecommend(userId);
+        await _productRepository.getProductRecommend();
     _proRmm.sink.add(productList);
   }
 
@@ -37,8 +39,15 @@ class ProductListBloc {
     _proByCate.sink.add(listAll);
   }
 
+  getProductDetail(int productId) async {
+    ProductDetailResponse proDetail =
+        await _productRepository.getProductDetail(productId);
+    _proDetail.sink.add(proDetail);
+  }
+
   void dainStream() {
     _proByCate.value = null;
+    _proDetail.value = null;
     listAll.clear();
   }
 
@@ -46,12 +55,14 @@ class ProductListBloc {
     await _subject.drain();
     _subject.close();
     _proRmm.close();
+    _proDetail.close();
     _proByCate.close();
   }
 
   BehaviorSubject<ProductResponse> get subject => _subject.stream;
   BehaviorSubject<ProductResponse> get productRcm => _proRmm.stream;
   BehaviorSubject<List<Product>> get proCate => _proByCate.stream;
+  BehaviorSubject<ProductDetailResponse> get prodDetail => _proDetail.stream;
 }
 
 final productBloc = ProductListBloc();

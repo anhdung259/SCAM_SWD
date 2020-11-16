@@ -7,7 +7,6 @@ import 'package:swd_project/Model/Industry/industry.dart';
 import 'package:swd_project/Model/Product/Product.dart';
 import 'package:swd_project/Model/ReviewAnswer/ReviewList.dart';
 import 'package:swd_project/Pages/detail_product.dart';
-import 'package:swd_project/Pages/home_page.dart';
 
 class Filter extends StatefulWidget {
   final Product product;
@@ -72,7 +71,7 @@ class _FilterState extends State<Filter> {
                         animation: true,
                         lineHeight: 21.0,
                         animationDuration: 1000,
-                        percent: getPercent(key),
+                        percent: getPercent(key) ?? 0,
                         center: Text((getPercent(key) * 100).toString() + "%",
                             style: TextStyle(color: Colors.white)),
                         animateFromLastPercent: true,

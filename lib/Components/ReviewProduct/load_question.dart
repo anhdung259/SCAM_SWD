@@ -1,12 +1,11 @@
 import 'dart:io';
-
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:future_progress_dialog/future_progress_dialog.dart';
 import 'package:localstorage/localstorage.dart';
+import 'package:smooth_star_rating/smooth_star_rating.dart';
 import 'package:swd_project/Bloc/Media/MediaBoc.dart';
 import 'package:swd_project/Bloc/post_Review_Bloc.dart';
 import 'package:swd_project/Model/Product/Product.dart';
@@ -42,6 +41,7 @@ class _LoadQuestionReviewState extends State<LoadQuestionReview> {
 
   List<TextEditingController> _controller;
   List<Answer> listReviewAnswer = [];
+  List<UserReviewMedia> listReviewMedia = [];
   Map<int, String> answer = {};
   Map<int, List<String>> multipleAll = {};
   Map<int, List<String>> multiple = {};
@@ -52,9 +52,9 @@ class _LoadQuestionReviewState extends State<LoadQuestionReview> {
   List<StorageUploadTask> _tasks = [];
   List<Widget> uploadingFiles = [];
   List<Widget> uploadedFiles = [];
+
   //goi link media cho nay
   List<String> listURL;
-
 
   getSizeList() {
     for (int i = 0; i < questions.length; i++) {
@@ -90,7 +90,7 @@ class _LoadQuestionReviewState extends State<LoadQuestionReview> {
         check.add(value[i]);
       }
     });
-
+//get multiple questions
     multipleAll.forEach((key, value) {
       for (int i = 0; i < value.length; i++) {
         listReviewAnswer.add(new Answer(
@@ -100,8 +100,17 @@ class _LoadQuestionReviewState extends State<LoadQuestionReview> {
             testStatus(value[i])));
       }
     });
+    //get video and img
+    // List<String> temps = [];
+    // for (StorageUploadTask t in _tasks) {
+    //   if (t.isComplete) {
+    //     await getLinkLocation(t).then((value) => temps.add(value));
+    //   }
+    // }
+    // setState(() {
+    //   listURL = temps;
+    // });
   }
-
 
   Widget futureBuilderUpload(File file) {
     return FutureBuilder(
@@ -154,14 +163,18 @@ class _LoadQuestionReviewState extends State<LoadQuestionReview> {
                 );
               }),
           ratingQuestion(),
-          ButtonTheme(
-            minWidth: 200,
-            height: 50,
-            child: RaisedButton(
-              color: Colors.green,
-              child: Text(
-                "Upload",
-                style: TextStyle(fontWeight: FontWeight.bold),
+          Padding(
+            padding: const EdgeInsets.only(left: 160),
+            child: RaisedButton.icon(
+              color: Colors.black54,
+              label: Text(
+                "Upload media",
+                style:
+                    TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+              ),
+              icon: Icon(
+                Icons.camera_alt,
+                color: Colors.white,
               ),
               onPressed: () async {
                 List<Widget> tempFiles = [];
@@ -185,8 +198,8 @@ class _LoadQuestionReviewState extends State<LoadQuestionReview> {
                 }
               },
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  side: BorderSide(color: Colors.green)),
+                borderRadius: BorderRadius.circular(10),
+              ),
             ),
           ),
           Padding(
@@ -197,31 +210,53 @@ class _LoadQuestionReviewState extends State<LoadQuestionReview> {
           SizedBox(
             height: 20,
           ),
-          RaisedButton.icon(
-            onPressed: () async{
-              List<String> temps = [];
-              for(StorageUploadTask t in _tasks){
-                if (t.isComplete){
-                  await getLinkLocation(t).then((value) => temps.add(value));
+          Container(
+            width: 400,
+            height: 50,
+            child: RaisedButton.icon(
+              onPressed: () async {
+                List<String> temps = [];
+                for (StorageUploadTask t in _tasks) {
+                  if (t.isComplete) {
+                    await getLinkLocation(t).then((value) => temps.add(value));
+                  }
                 }
-              }
-              setState(() {
-                listURL = temps;
-              });
-              if (_formKey.currentState.validate()) {
-                addDataAnswer();
-                showProgress(context);
-              }
-            },
-            label: Text(
-              "Đăng review",
-              style: TextStyle(color: Colors.white),
+                setState(() {
+                  if (_formKey.currentState.validate()) {
+                    listURL = temps;
+                  } else {
+                    showErrorDialog(context);
+                  }
+                });
+                for (int i = 0; i < listURL.length; i++) {
+                  listReviewMedia.add(UserReviewMedia(
+                      title: "VideoUpload",
+                      url: listURL[i],
+                      mediaType: listURL[i].contains('.jpg') ||
+                              listURL[i].contains('.png') ||
+                              listURL[i].contains('.jpeg')
+                          ? 'image'
+                          : 'video',
+                      id: i,
+                      userReviewId: 1));
+                }
+                if (_formKey.currentState.validate()) {
+                  addDataAnswer();
+                  showProgress(context);
+                } else {
+                  showErrorDialog(context);
+                }
+              },
+              label: Text(
+                "Đăng review",
+                style: TextStyle(color: Colors.white, fontSize: 18),
+              ),
+              icon: Icon(
+                EvaIcons.arrowCircleUp,
+                color: Colors.white,
+              ),
+              color: Color.fromARGB(255, 18, 32, 50),
             ),
-            icon: Icon(
-              EvaIcons.arrowCircleUp,
-              color: Colors.white,
-            ),
-            color: Color.fromARGB(255, 18, 32, 50),
           )
         ],
       ),
@@ -230,14 +265,11 @@ class _LoadQuestionReviewState extends State<LoadQuestionReview> {
 
   Future getFuture() {
     return Future(() async {
-      await await postReviewBloc.postReview(new AnswerPost(
-        userReview: new UserReview(
-            status: true,
-            userId: User.fromJsonProfile(storage.getItem('user')).id,
-            rate: rate,
-            productId: product.id),
+      await postReviewBloc.postReview(new AnswerPost(
+        userReview:
+            new UserReview(status: true, rate: rate, productId: product.id),
         reviewAnswers: listReviewAnswer,
-        userReviewMedia: null,
+        userReviewMedia: listReviewMedia,
       ));
       return 'Đăng bài review thành công';
     });
@@ -262,6 +294,17 @@ class _LoadQuestionReviewState extends State<LoadQuestionReview> {
               ),
             ),
             (Route<dynamic> route) => route.isFirst);
+      }
+      return false;
+    });
+  }
+
+  void showErrorDialog(BuildContext context) {
+    SweetAlert.show(context,
+        title: "Vui lòng không để trống!",
+        style: SweetAlertStyle.error, onPress: (bool isConfirm) {
+      if (isConfirm) {
+        Navigator.of(context).pop();
       }
       return false;
     });
@@ -302,7 +345,7 @@ class _LoadQuestionReviewState extends State<LoadQuestionReview> {
             ),
             validator: (value) {
               if (value.length == 0) {
-                return 'Vui lòng không để trống!';
+                return 'Không để trống mục này!';
               }
               return null;
             },
@@ -329,22 +372,21 @@ class _LoadQuestionReviewState extends State<LoadQuestionReview> {
           ),
         ),
         Container(
-          child: RatingBar.builder(
-            initialRating: 0,
-            minRating: 1,
-            direction: Axis.horizontal,
+          child: SmoothStarRating(
+            rating: 0,
+            isReadOnly: false,
+            size: 50,
+            color: Colors.yellow,
+            borderColor: Colors.grey,
+            filledIconData: Icons.star,
+            halfFilledIconData: Icons.star_half,
+            defaultIconData: Icons.star_border,
+            starCount: 5,
             allowHalfRating: true,
-            itemCount: 5,
-            itemPadding: EdgeInsets.symmetric(horizontal: 4.0),
-            itemBuilder: (context, _) => Icon(
-              Icons.star,
-              color: Colors.amber,
-            ),
-            onRatingUpdate: (rating) {
-              // answer.update(qr.id, (v) => rating.toString(),
-              //     ifAbsent: () => rating.toString());
+            spacing: 2.0,
+            onRated: (value) {
               setState(() {
-                rate = rating;
+                rate = value;
               });
             },
           ),

@@ -8,16 +8,21 @@ class UserBloc {
   Repository _userRepository = Repository();
   final BehaviorSubject<UserResponse> _userBehavior =
       BehaviorSubject<UserResponse>();
-  final LocalStorage storage = new LocalStorage('user');
-  getUser(int id) async {
-    UserResponse user = await _userRepository.getUserProfile(id);
-    _userBehavior.sink.add(user);
-  }
+
+  // final LocalStorage storage = new LocalStorage('user');
+  final LocalStorage storageToken = new LocalStorage('token');
+  final LocalStorage storageUser = new LocalStorage('user');
+
+  // getUser(int id) async {
+  //   UserResponse user = await _userRepository.getUserProfile(id);
+  //   _userBehavior.sink.add(user);
+  // }
 
   getUserLogin(String token) async {
-    UserResponse userLogin = await _userRepository.login(token);
-    await storage.setItem('user', userLogin.user.toJson());
-    print(userLogin.user.toJson());
+    String tokenUser = await _userRepository.login(token);
+    await storageToken.setItem('token', tokenUser);
+    UserResponse userProfile = await _userRepository.getProfileUser(tokenUser);
+    await storageUser.setItem('user', userProfile.user.toJson());
   }
 
   dispose() async {

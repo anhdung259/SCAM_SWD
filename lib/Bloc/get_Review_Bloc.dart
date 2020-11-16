@@ -28,15 +28,24 @@ class ReviewList {
   }
 
 //to update review
-  getReviewUser(int reviewId) async {
+  getReviewUser(int productId) async {
     ReviewUpdateResponse review =
-        await _reviewRepository.getReviewUserUpdate(reviewId);
+        await _reviewRepository.getReviewUserUpdate(productId);
     _reviewUser.sink.add(review);
   }
 
   Future<int> getSizeListReview(int id) async {
     ReviewResponse listReview = await _reviewRepository.getListReview(id);
     return listReview.reviews.length;
+  }
+
+  Future<bool> checkReview(int productId) async {
+    ReviewUpdateResponse reviewUpdateResponse =
+        await _reviewRepository.getReviewUserUpdate(productId);
+    if (reviewUpdateResponse.review.rate == null) {
+      return false;
+    }
+    return true;
   }
 
   Future<List<Review>> getAllList(int id) async {

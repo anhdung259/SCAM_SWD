@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:swd_project/Bloc/get_Review_Bloc.dart';
 import 'package:swd_project/Model/Category/Category_include_product.dart';
 import 'package:swd_project/Pages/detail_product.dart';
 
@@ -46,7 +45,6 @@ class _ListProductState extends State<ListProduct> {
                     ),
                   ),
                 );
-                reviewByIdBloc.dainStream();
               },
               child: new GridTile(
                 child: Container(

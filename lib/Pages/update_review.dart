@@ -6,27 +6,23 @@ import 'package:swd_project/Model/ReviewAnswer/ReviewUpdateResponse.dart';
 
 class UpdateReviewPage extends StatefulWidget {
   final Product product;
-  final int reviewId;
-  const UpdateReviewPage({Key key, this.product, this.reviewId})
-      : super(key: key);
+  const UpdateReviewPage({Key key, this.product}) : super(key: key);
 
   @override
-  _UpdateReviewPageState createState() =>
-      _UpdateReviewPageState(product, reviewId);
+  _UpdateReviewPageState createState() => _UpdateReviewPageState(product);
 }
 
 class _UpdateReviewPageState extends State<UpdateReviewPage> {
   final Product product;
-  final int reviewId;
   int size;
 
-  _UpdateReviewPageState(this.product, this.reviewId);
+  _UpdateReviewPageState(this.product);
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    reviewByIdBloc.getReviewUser(reviewId);
+    reviewByIdBloc.getReviewUser(product.id);
   }
 
   @override

@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:localstorage/localstorage.dart';
 import 'package:swd_project/Model/Category/CateVsProductResponse.dart';
 import 'package:swd_project/Model/Category/CategoriesResponse.dart';
 import 'package:swd_project/Model/Feature/FeatureResponse.dart';
@@ -20,23 +21,30 @@ class Repository {
   var getListCateUrl = '$mainUrl/api/Categories';
   var getProductByCateUrl = '$mainUrl/api/Categories';
   var getListCateIncludeProductUrl = '$mainUrl/api/Categories/top';
-  var getUser = '$mainUrl/api/Users/auth?';
+  var getToken = '$mainUrl/api/Users/Authenticate?';
+  var getUser = '$mainUrl/api/Users/profile?';
   var getReviewUser = '$mainUrl/api/UserReviews';
   var getPricingList = '$mainUrl/api/Products';
+  final LocalStorage _storage = LocalStorage('token');
+  var getRecommend = '$mainUrl/api/Products/Recommendation';
 
-  Future<UserResponse> getUserProfile(int id) async {
-    final response = await http.get(getUser + "$id");
+  // https://scam2020.azurewebsites.net/api/Users/auth?token=
+  Future<String> login(String token) async {
+    final response = await http.post(getToken + "idtoken=$token");
     if (response.statusCode == 200) {
-      print(json.decode(response.body));
-      return UserResponse.fromJson(response.body);
+      return response.body;
     } else {
+      print(response.statusCode);
       throw Exception("fail to get User");
     }
   }
 
-  // https://scam2020.azurewebsites.net/api/Users/auth?token=
-  Future<UserResponse> login(String token) async {
-    final response = await http.post(getUser + "token=$token");
+  Future<UserResponse> getProfileUser(String token) async {
+    final response = await http.post(getUser + "token=$token", headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      'Authorization': 'Bearer ${_storage.getItem('token')}',
+    });
     if (response.statusCode == 200) {
       print(response.statusCode);
       return UserResponse.fromJson(response.body);
@@ -58,14 +66,31 @@ class Repository {
     }
   }
 
-  Future<ProductResponse> getProductRecommend(int userId) async {
-    final response =
-        await http.get(getProductUrl + "/Recommend?userID=$userId");
+  Future<ProductDetailResponse> getProductDetail(int productId) async {
+    final response = await http.get(getProductUrl + "/$productId/detail");
 
     if (response.statusCode == 200) {
-      return ProductResponse.fromJson(response.body);
+      return ProductDetailResponse.fromJson(response.body);
     } else {
       throw Exception('Failed to load post');
+    }
+  }
+
+  Future<ProductResponse> getProductRecommend() async {
+    String token = await _storage.getItem('token');
+    print(token);
+    final response = await http.get(getRecommend, headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      'Authorization': 'Bearer ${_storage.getItem('token')}',
+    });
+
+    if (response.statusCode == 200) {
+      print(response.statusCode);
+      return ProductResponse.fromJson(response.body);
+    } else {
+      print(response.statusCode);
+      throw Exception(response.reasonPhrase);
     }
   }
 
@@ -92,16 +117,21 @@ class Repository {
   Future<ProductResponse> getProductByCate(
       int id, int pageCurrent, int pageSize) async {
     final response = await http.get(
-      getProductByCateUrl +
-          "/$id" +
-          "/Products" +
-          "?pageIndex=$pageCurrent" +
-          "&pageSize=$pageSize",
-    );
+        getProductByCateUrl +
+            "/$id" +
+            "/Products" +
+            "?pageIndex=$pageCurrent" +
+            "&pageSize=$pageSize",
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': 'Bearer ${_storage.getItem('token')}',
+        });
 
     if (response.statusCode == 200) {
       return ProductResponse.fromJson(response.body);
     } else {
+      print(_storage.getItem('token'));
       throw Exception('Failed to load post');
     }
   }
@@ -135,14 +165,18 @@ class Repository {
 
   //get review to update
   //https://scam2020.azurewebsites.net/api/UserReviews/282/user-answer
-  Future<ReviewUpdateResponse> getReviewUserUpdate(int reviewId) async {
-    final response =
-        await http.get(getReviewUser + "/$reviewId" + "/user-answer");
+  Future<ReviewUpdateResponse> getReviewUserUpdate(int productId) async {
+    final response = await http
+        .get(getReviewUser + "/$productId" + "/user-answer", headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      'Authorization': 'Bearer ${_storage.getItem('token')}',
+    });
 
     if (response.statusCode == 200) {
       return ReviewUpdateResponse.fromJson(response.body);
     } else {
-      throw Exception(response.statusCode);
+      return ReviewUpdateResponse.withError(response.statusCode.toString());
     }
   }
 

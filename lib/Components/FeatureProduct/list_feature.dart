@@ -3,13 +3,16 @@ import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:future_progress_dialog/future_progress_dialog.dart';
+import 'package:localstorage/localstorage.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
-import 'package:swd_project/Bloc/get_feature_Bloc.dart';
-import 'package:swd_project/Model/Feature/FeatureResponse.dart';
+import 'package:smooth_star_rating/smooth_star_rating.dart';
+import 'package:swd_project/Bloc/post_Feature_review_Bloc.dart';
 import 'package:swd_project/Model/Feature/feature.dart';
 import 'package:swd_project/Model/Product/Product.dart';
-import 'package:swd_project/Widget/load_and_error-process.dart';
+import 'package:swd_project/Model/User/UserReview.dart';
+import 'package:swd_project/Pages/detail_product.dart';
+import 'package:sweetalert/sweetalert.dart';
 
 class FeatureList extends StatefulWidget {
   final Product product;
@@ -22,40 +25,22 @@ class FeatureList extends StatefulWidget {
 
 class _FeatureListState extends State<FeatureList> {
   Product product;
-  List<Feature> features = [];
+  final LocalStorage storage = LocalStorage('user');
+  List<ProductFeature> features = [];
+  List<FeatureReview> listFeatureReview = [];
+
   _FeatureListState(this.product);
+
+  Map<int, String> answer = {};
 
   @override
   void initState() {
     super.initState();
-    featureBloc.restart();
-    featureBloc.getListFeature(product.id);
+    features = product.productFeatures;
   }
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<FeatureResponse>(
-        stream: featureBloc.listFeature,
-        builder: (context, AsyncSnapshot<FeatureResponse> snapshot) {
-          if (snapshot.hasData) {
-            if (snapshot.data.error != null && snapshot.data.error.length > 0) {
-              return BuildError(
-                error: snapshot.data.error,
-              );
-            }
-            features = snapshot.data.featureList;
-            return _buildFeatureWidget();
-          } else if (snapshot.hasError) {
-            return BuildError(
-              error: snapshot.error,
-            );
-          } else {
-            return BuildLoading();
-          }
-        });
-  }
-
-  Widget _buildFeatureWidget() {
     if (features.length == 0) {
       return Container(
         width: MediaQuery.of(context).size.width,
@@ -154,7 +139,7 @@ class _FeatureListState extends State<FeatureList> {
                                 animationDuration: 1000,
                                 percent: features[index].rate / 100,
                                 center: new Text(
-                                  "${features[index].rate}%",
+                                  "${features[index].rate.toStringAsFixed(2)}%",
                                   style: TextStyle(color: Colors.white),
                                 ),
                                 animateFromLastPercent: true,
@@ -205,6 +190,7 @@ class _FeatureListState extends State<FeatureList> {
       return Padding(
         padding: const EdgeInsets.all(5.0),
         child: Column(
+          mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Container(
@@ -239,41 +225,102 @@ class _FeatureListState extends State<FeatureList> {
                       Padding(
                         padding: const EdgeInsets.only(bottom: 40),
                         child: Container(
-                          child: RatingBar.builder(
-                            initialRating: 0,
-                            minRating: 1,
-                            direction: Axis.horizontal,
-                            allowHalfRating: true,
-                            itemCount: 5,
-                            itemPadding: EdgeInsets.symmetric(horizontal: 4.0),
-                            itemBuilder: (context, _) => Icon(
-                              Icons.star,
-                              color: Colors.amber,
-                            ),
-                            onRatingUpdate: (rating) {
-                              // answer.update(qr.id, (v) => rating.toString(),
-                              //     ifAbsent: () => rating.toString());
-                              // setState(() {
-                              //   rate = rating;
-                              // });
-                            },
-                          ),
-                        ),
+                            child: SmoothStarRating(
+                          rating: 0,
+                          isReadOnly: false,
+                          size: 50,
+                          color: Colors.yellow,
+                          borderColor: Colors.grey,
+                          filledIconData: Icons.star,
+                          halfFilledIconData: Icons.star_half,
+                          defaultIconData: Icons.star_border,
+                          starCount: 5,
+                          allowHalfRating: true,
+                          spacing: 2.0,
+                          onRated: (value) {
+                            answer.update(features[index].feature.id,
+                                (v) => value.toString(),
+                                ifAbsent: () => value.toString());
+                          },
+                        )),
                       ),
                     ],
                   );
                 },
               ),
             ),
+            Container(
+              width: 400,
+              height: 50,
+              child: RaisedButton.icon(
+                onPressed: () async {
+                  getDataReview();
+                  showProgress(context);
+                },
+                label: Text(
+                  "Đánh giá tính năng",
+                  style: TextStyle(color: Colors.white, fontSize: 18),
+                ),
+                icon: Icon(
+                  EvaIcons.arrowCircleUp,
+                  color: Colors.white,
+                ),
+                color: Color.fromARGB(255, 18, 32, 50),
+              ),
+            )
           ],
         ),
       );
   }
 
+  getDataReview() {
+    listFeatureReview = answer.entries
+        .map(
+          (entry) => FeatureReview(
+              featureId: entry.key,
+              id: 0,
+              productId: product.id,
+              rate: entry.value,
+              userId: User.fromJsonProfile(storage.getItem('user')).id),
+        )
+        .toList();
+  }
+
+  Future getFuture() {
+    return Future(() async {
+      await postFeatureReviewBloc.postFeatureReview(listFeatureReview);
+      return 'Đánh giá thành công';
+    });
+  }
+
+  Future<void> showProgress(BuildContext context) async {
+    var result = await showDialog(
+        context: context,
+        child: FutureProgressDialog(getFuture(), message: Text('Loading...')));
+    showResultDialog(context, result);
+  }
+
+  void showResultDialog(BuildContext context, String result) {
+    SweetAlert.show(context, title: result, style: SweetAlertStyle.success,
+        onPress: (bool isConfirm) {
+      if (isConfirm) {
+        Navigator.of(context).pushAndRemoveUntil(
+            new MaterialPageRoute(
+              builder: (context) => new DetailPage(
+                page: 0,
+                product: product,
+              ),
+            ),
+            (Route<dynamic> route) => route.isFirst);
+      }
+      return false;
+    });
+  }
+
   Widget dialogUpdateReview(
       BuildContext context, Product product, String title) {
     return AlertDialog(
-      insetPadding: EdgeInsets.symmetric(horizontal: 5, vertical: 90),
+      insetPadding: EdgeInsets.symmetric(horizontal: 0, vertical: 90),
       shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(13.0))),
       title: Row(

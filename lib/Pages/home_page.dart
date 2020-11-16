@@ -2,18 +2,10 @@ import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:localstorage/localstorage.dart';
-import 'package:swd_project/Components/Category/category_data.dart';
 import 'package:swd_project/Components/ListProduct/search_bar.dart';
 import 'package:swd_project/Components/Profile/user_map_model.dart';
-import 'package:swd_project/Components/Recommend/recommend_by_industry.dart';
 import 'package:swd_project/Components/TaskMenu/listtle_list.dart';
-import 'package:swd_project/Components/TaskMenu/slide_menu.dart';
-import 'package:swd_project/Components/TaskMenu/sign_out.dart';
-import 'package:swd_project/Model/User/UserReview.dart';
-import 'package:swd_project/Pages/home_conttent.dart';
-import 'package:swd_project/Widget/load_and_error-process.dart';
-import 'package:swd_project/Widget/slide_show.dart';
+import 'package:swd_project/Pages/home_content.dart';
 
 class MyHomePage extends StatefulWidget {
   @override
@@ -21,7 +13,11 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -49,19 +45,6 @@ class _MyHomePageState extends State<MyHomePage> {
               })
         ],
       ),
-      // drawer: Drawer(
-      //   child: ListView(
-      //     padding: EdgeInsets.zero,
-      //     children: [
-      //       SlideMenu(),
-      //       ListTitle(),
-      //       SizedBox(
-      //         height: 5,
-      //       ),
-      //       CusListTitle(),
-      //     ],
-      //   ),
-      // ),
       body: _showContent,
       bottomNavigationBar: CurvedNavigationBar(
         index: 0,
@@ -96,7 +79,6 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-
   Widget _showContent = new homeContent();
   final _listCategory = new ListTitle();
   final _home = new homeContent();
@@ -107,17 +89,14 @@ class _MyHomePageState extends State<MyHomePage> {
       case 0:
         {
           return _home;
-          break;
         }
       case 1:
         {
           return _listCategory;
-          break;
         }
       case 2:
         {
           return _profile;
-          break;
         }
       default:
         break;

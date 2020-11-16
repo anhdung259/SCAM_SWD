@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:localstorage/localstorage.dart';
+import 'package:swd_project/Components/TaskMenu/sign_out.dart';
 import 'package:swd_project/Model/User/UserReview.dart';
 import 'package:swd_project/Widget/load_and_error-process.dart';
 
@@ -17,7 +18,7 @@ class _UserProfile extends State<UserProfile> {
   }
 
   static const double _imageHeight = 256.0;
-  User detaiUser;
+  User detailUser;
 
   @override
   Widget build(BuildContext context) {
@@ -26,14 +27,15 @@ class _UserProfile extends State<UserProfile> {
         builder: (context, AsyncSnapshot snapshot) {
           if (snapshot.hasData) {
             var user = User.fromJsonProfile(storage.getItem('user'));
-            detaiUser = user;
-            List<String> ListRowIfo = [
+            detailUser = user;
+            List<String> ListRowInfo = [
               checkNull(user.email),
               checkNull(user.facebook),
               checkNull(user.phone),
               checkNull(user.joinDate),
               checkNull(user.provider)
             ];
+            // ignore: non_constant_identifier_names
             List<String> ListRowTitle = [
               "Email",
               "Facebook",
@@ -47,7 +49,8 @@ class _UserProfile extends State<UserProfile> {
                 _buildImage(),
                 _buildProfileRow(checkNull(user.name), checkNull(user.bio),
                     checkNull(user.avatarUrl)),
-                _buildBottomPart(ListRowIfo, ListRowTitle),
+                _buildBottomPart(ListRowInfo, ListRowTitle),
+                CusListTitle()
               ],
             );
           } else if (snapshot.hasError) {
@@ -151,42 +154,49 @@ class _UserProfile extends State<UserProfile> {
                   'Thông Tin',
                   style: TextStyle(fontSize: 26.0, fontWeight: FontWeight.w400),
                 ),
-                IconButton(icon: Icon(Icons.edit, size: 15,), onPressed: () {
-
-                  showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return AlertDialog(
-                          title: Text("Edit profile"),
-                          content: Container(
-                            height: 200,
-                            child: Column(
-                              children: [
-                                TextField(
-                                  decoration: InputDecoration(
-                                      labelText: "fullname"
-                                  ),
+                IconButton(
+                    icon: Icon(
+                      Icons.edit,
+                      size: 15,
+                    ),
+                    onPressed: () {
+                      showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: Text("Edit profile"),
+                              content: Container(
+                                height: 200,
+                                child: Column(
+                                  children: [
+                                    TextField(
+                                      decoration: InputDecoration(
+                                          labelText: "fullname"),
+                                    ),
+                                    TextField(
+                                      decoration:
+                                          InputDecoration(labelText: "phone"),
+                                    ),
+                                    TextField(
+                                      decoration: InputDecoration(
+                                          labelText: "birthday"),
+                                    )
+                                  ],
                                 ),
-                                TextField(
-                                  decoration: InputDecoration(
-                                      labelText: "phone"
-                                  ),
-                                ),
-                                TextField(
-                                  decoration: InputDecoration(
-                                      labelText: "birthday"
-                                  ),
-                                )
+                              ),
+                              actions: [
+                                TextButton(
+                                    onPressed: () {
+                                      Navigator.pop(context, false);
+                                    },
+                                    child: Text("Cancel".toUpperCase())),
+                                TextButton(
+                                    onPressed: () {},
+                                    child: Text("Update".toUpperCase()))
                               ],
-                            ),
-                          ),
-                          actions: [
-                            TextButton(onPressed: (){Navigator.pop(context, false);}, child: Text("Cancel".toUpperCase())),
-                            TextButton(onPressed: (){}, child: Text("Update".toUpperCase()))
-                          ],
-                        );
-                      });
-                }),
+                            );
+                          });
+                    }),
               ],
             ),
             SizedBox(

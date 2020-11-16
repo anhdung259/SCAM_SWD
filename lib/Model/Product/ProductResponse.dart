@@ -19,3 +19,18 @@ class ProductResponse {
       : products = List(),
         error = errorValue;
 }
+
+class ProductDetailResponse {
+  final Product productDetail;
+  final String error;
+
+  ProductDetailResponse(this.productDetail, this.error);
+
+  ProductDetailResponse.fromJson(String response)
+      : productDetail = Product.fromJson(json.decode(response)),
+        error = "";
+
+  ProductDetailResponse.withError(String errorValue)
+      : productDetail = Product(),
+        error = errorValue;
+}

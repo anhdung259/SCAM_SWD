@@ -31,7 +31,7 @@ class User {
   List<IndustryExpert> industryExperts;
 
   factory User.fromJson(Map<String, dynamic> json) => User(
-        id: json["id"],
+        id: json["id"] == null ? null : json["id"],
         name: json["name"],
         avatarUrl: json["avatarUrl"],
         email: json["email"],

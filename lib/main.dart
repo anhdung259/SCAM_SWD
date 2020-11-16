@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:avatar_glow/avatar_glow.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:localstorage/localstorage.dart';
 import 'package:swd_project/Bloc/sign_in_Bloc.dart';
 import 'package:swd_project/Components/SignIn/signin_screen.dart';
 import 'Pages/home_page.dart';
@@ -10,6 +11,7 @@ import 'Pages/home_page.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+  final LocalStorage _storage = LocalStorage('token');
   runApp(MyApp());
 }
 
@@ -22,24 +24,6 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-//
-// class MyRoute extends StatefulWidget {
-//   @override
-//   _MyRouteState createState() => _MyRouteState();
-// }
-//
-// class _MyRouteState extends State<MyRoute> {
-//   Widget result;
-//   @override
-//   Widget build(BuildContext context) {
-//     checkLogin().then((value) => setState(() {
-//           result = value;
-//         }));
-//     return Container(
-//       child: result,
-//     );
-//   }
-// }
 
 class SplashScreen extends StatefulWidget {
   @override

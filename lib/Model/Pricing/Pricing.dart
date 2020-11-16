@@ -40,19 +40,6 @@ class Pricing {
             : List<ProductPriceInfo>.from(json["productPriceInfos"]
                 .map((x) => ProductPriceInfo.fromJson(x))),
       );
-
-  // Map<String, dynamic> toJson() => {
-  //   "id": id == null ? null : id,
-  //   "productId": productId == null ? null : productId,
-  //   "priceTypeId": priceTypeId == null ? null : priceTypeId,
-  //   "price": price == null ? null : price,
-  //   "description": description == null ? null : description,
-  //   "discount": discount == null ? null : discount,
-  //   "status": status == null ? null : status,
-  //   "priceType": priceType == null ? null : priceType.toJson(),
-  //   "product": product,
-  //   "productPriceInfos": productPriceInfos == null ? null : List<dynamic>.from(productPriceInfos.map((x) => x.toJson())),
-  // };
 }
 
 class PriceType {

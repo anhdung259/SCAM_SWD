@@ -8,20 +8,24 @@ class BuildLoading extends StatefulWidget {
 class _BuildLoadingState extends State<BuildLoading> {
   @override
   Widget build(BuildContext context) {
-    return Center(
-        child: Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        SizedBox(
-          height: 25.0,
-          width: 25.0,
-          child: CircularProgressIndicator(
-            valueColor: new AlwaysStoppedAnimation<Color>(Colors.grey),
-            strokeWidth: 4.0,
-          ),
-        )
-      ],
-    ));
+    return Container(
+      color: Colors.white,
+      child: Center(
+          child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          SizedBox(
+            height: 25.0,
+            width: 25.0,
+            child: CircularProgressIndicator(
+              valueColor: new AlwaysStoppedAnimation<Color>(
+                  Colors.grey.withOpacity(0.3)),
+              strokeWidth: 4.0,
+            ),
+          )
+        ],
+      )),
+    );
   }
 }
 

@@ -3,11 +3,8 @@ import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:swd_project/Bloc/get_pricing_bloc.dart';
 import 'package:swd_project/Model/Pricing/Pricing.dart';
-import 'package:swd_project/Model/Pricing/PrincingResponse.dart';
 import 'package:swd_project/Model/Product/Product.dart';
-import 'package:swd_project/Widget/load_and_error-process.dart';
 
 class SlideShowPricing extends StatefulWidget {
   final Product product;
@@ -20,40 +17,17 @@ class SlideShowPricing extends StatefulWidget {
 
 class _SlideShowPricingState extends State<SlideShowPricing> {
   Product product;
-
+  List<ProductPrice> pricing = [];
   _SlideShowPricingState(this.product);
 
   @override
   void initState() {
     super.initState();
-    pricingBloc.restart();
-    pricingBloc.getListPricing(product.id);
+    pricing = product.productPrices;
   }
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<PricingResponse>(
-        stream: pricingBloc.listPricing,
-        builder: (context, AsyncSnapshot<PricingResponse> snapshot) {
-          if (snapshot.hasData) {
-            if (snapshot.data.error != null && snapshot.data.error.length > 0) {
-              return BuildError(
-                error: snapshot.data.error,
-              );
-            }
-            return _buildPricingWidget(snapshot.data);
-          } else if (snapshot.hasError) {
-            return BuildError(
-              error: snapshot.error,
-            );
-          } else {
-            return BuildLoading();
-          }
-        });
-  }
-
-  Widget _buildPricingWidget(PricingResponse data) {
-    List<Pricing> pricing = data.pricingList;
     if (pricing.length == 0) {
       return Container(
         width: MediaQuery.of(context).size.width,

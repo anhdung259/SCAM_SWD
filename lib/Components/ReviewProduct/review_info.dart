@@ -3,7 +3,6 @@ import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:jiffy/jiffy.dart';
-import 'package:localstorage/localstorage.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:swd_project/Bloc/get_Review_Bloc.dart';
 import 'package:swd_project/Components/ReviewProduct/filter_star.dart';
@@ -11,15 +10,20 @@ import 'package:swd_project/Model/Product/Product.dart';
 import 'package:swd_project/Model/ReviewAnswer/ReviewAnswer.dart';
 import 'package:swd_project/Model/ReviewAnswer/ReviewList.dart';
 import 'package:swd_project/Model/User/UserReview.dart';
+import 'package:swd_project/Pages/detail_product.dart';
 import 'package:swd_project/Pages/review.dart';
 import 'package:swd_project/Pages/update_review.dart';
 import 'package:swd_project/Widget/load_and_error-process.dart';
+import 'package:videos_player/model/control.model.dart';
+import 'package:videos_player/model/video.model.dart';
+import 'package:videos_player/videos_player.dart';
 
 class ReviewPage extends StatefulWidget {
   final Product product;
   final int pageSize;
   final int currentPage;
   final String queryFilter;
+
   const ReviewPage(
       {Key key,
       this.product,
@@ -34,23 +38,23 @@ class ReviewPage extends StatefulWidget {
 }
 
 class _ReviewPageState extends State<ReviewPage> {
-  final LocalStorage storage = LocalStorage('user');
   User user;
   final Product product;
   int count;
   int pageSize;
   int currentPage;
   final String queryFilter;
+
   _ReviewPageState(
       this.product, this.pageSize, this.currentPage, this.queryFilter);
 
-  List<String> listIdQuestion = ["7", "8", "9", "10"];
-  List<Review> listAllReview = [];
+  bool checkUserReview = false;
   List<Review> reviews;
+  List<Review> listAllReview;
   int reviewId;
-  bool checkReview = false;
 
   RefreshController _controller1 = RefreshController();
+
   @override
   void didChangeDependencies() {
     // TODO: implement didChangeDependencies
@@ -60,16 +64,23 @@ class _ReviewPageState extends State<ReviewPage> {
   }
 
   void _onLoading() {
-    Future.delayed(const Duration(milliseconds: 2000)).then((val) {
+    Future.delayed(const Duration(milliseconds: 1000)).then((val) {
       _getMoreDataFliter();
     });
   }
 
   void _onRefresh() {
-    Future.delayed(const Duration(milliseconds: 2000)).then((val) {
+    Future.delayed(const Duration(milliseconds: 1000)).then((val) {
       if (mounted) {
         _controller1.refreshCompleted();
-        _getMoreDataFliter();
+        Navigator.of(context).pushAndRemoveUntil(
+            new MaterialPageRoute(
+              builder: (context) => new DetailPage(
+                page: 1,
+                product: product,
+              ),
+            ),
+            (Route<dynamic> route) => route.isFirst);
       }
 
 //                refresher.sendStatus(RefreshStatus.completed);
@@ -79,6 +90,14 @@ class _ReviewPageState extends State<ReviewPage> {
   void _getMoreDataFliter() async {
     reviewByIdBloc.getReviewFilter(
         product.id, currentPage, pageSize, queryFilter);
+    reviewByIdBloc.checkReview(product.id).then((result) {
+      if (mounted) {
+        setState(() {
+          checkUserReview = result;
+        });
+      }
+    });
+
     reviewByIdBloc.getSizeListReview(product.id).then((value) {
       if (mounted) {
         setState(() {
@@ -86,10 +105,10 @@ class _ReviewPageState extends State<ReviewPage> {
         });
       }
     });
-    reviewByIdBloc.getAllList(product.id).then((list) {
+    reviewByIdBloc.getAllList(product.id).then((value) {
       if (mounted) {
         setState(() {
-          listAllReview = list;
+          listAllReview = value;
         });
       }
     });
@@ -103,16 +122,6 @@ class _ReviewPageState extends State<ReviewPage> {
   void dispose() {
     super.dispose();
     _controller1.dispose();
-  }
-
-  bool checkUserReviewed(List<Review> reviews, int userId) {
-    for (int i = 0; i < reviews.length; i++) {
-      if (reviews[i].userId == userId) {
-        reviewId = reviews[i].id;
-        return true;
-      }
-    }
-    return false;
   }
 
   @override
@@ -171,10 +180,7 @@ class _ReviewPageState extends State<ReviewPage> {
                       Container(
                         height: 48,
                         width: MediaQuery.of(context).size.width,
-                        child: checkUserReviewed(
-                                listAllReview,
-                                User.fromJsonProfile(storage.getItem('user'))
-                                    .id)
+                        child: checkUserReview
                             ? RaisedButton.icon(
                                 // Đã review rồi thì chỉ được update
                                 onPressed: () {
@@ -440,6 +446,7 @@ class _ReviewPageState extends State<ReviewPage> {
                 ),
                 reviewOfList(
                   reviews[index].reviewAnswers,
+                  reviews[index].userReviewMedia,
                   reviews[index].rate,
                   Jiffy(reviews[index].completeOn).yMMMMd,
                 )
@@ -457,8 +464,8 @@ class _ReviewPageState extends State<ReviewPage> {
 //*
 // *
 //các câu hỏi và câu trả lời bên trong các list review
-  Widget reviewOfList(
-      List<ReviewAnswer> reviewByUser, double rate, String time) {
+  Widget reviewOfList(List<ReviewAnswer> reviewByUser,
+      List<UserReviewMedia> media, double rate, String time) {
     List<String> listIdQuestion = ["7", "8", "9", "10"];
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -501,9 +508,140 @@ class _ReviewPageState extends State<ReviewPage> {
                     ]
                   ]);
             },
-          )
+          ),
+          media.length == 0
+              ? Container()
+              : Container(
+                  height: 180,
+                  child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: media.length,
+                      physics: ScrollPhysics(),
+                      // ngao ngao ko scroll này
+                      itemBuilder: (BuildContext context, int index) {
+                        return Container(
+                          padding: EdgeInsets.all(4),
+                          child: new GestureDetector(
+                            child: new GridTile(
+                              child: Container(
+                                decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    boxShadow: [
+                                      new BoxShadow(
+                                          color:
+                                              Colors.black54.withOpacity(0.5),
+                                          offset: new Offset(0.1, 2.0),
+                                          blurRadius: 3.8),
+                                    ]),
+                                child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      if (media[index].mediaType == "image")
+                                        loadImage(media[index])
+                                      else if (media[index].mediaType ==
+                                          "video")
+                                        loadVideo(media[index])
+                                    ]),
+                              ),
+                            ),
+                          ),
+                        );
+                      }),
+                ),
         ])
       ],
+    );
+  }
+
+  Widget loadImage(UserReviewMedia media) {
+    return Container(
+      width: 170,
+      height: 170,
+      padding: EdgeInsets.all(15),
+      child: GestureDetector(
+        onTap: () {
+          showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return dialogImg(context, media.url);
+              });
+        },
+        child: Container(
+          width: 100,
+          height: 100,
+          decoration: BoxDecoration(
+              image: DecorationImage(
+            image: NetworkImage(media.url),
+            fit: BoxFit.fill,
+          )),
+        ),
+      ),
+    );
+  }
+
+  // getThumbnailVideo(String url) async {
+  //   final linkThumbnail = await VideoThumbnail.thumbnailFile(
+  //     video: url,
+  //     thumbnailPath: (await getTemporaryDirectory()).path,
+  //     imageFormat: ImageFormat.WEBP,
+  //     maxHeight: 64,
+  //     // specify the height of the thumbnail, let the width auto-scaled to keep the source aspect ratio
+  //     quality: 75,
+  //   );
+  //   return linkThumbnail;
+  // }
+
+  Widget loadVideo(UserReviewMedia media) {
+    return Container(
+      child: VideosPlayer(
+        maxVideoPlayerHeight: 150,
+        networkVideos: [
+          new NetworkVideo(
+              videoUrl: media.url,
+              videoControl: new NetworkVideoControl(autoPlay: false),
+              id: "1",
+              name: "VideoReview")
+        ],
+      ),
+    );
+  }
+
+  Widget dialogImg(BuildContext context, String url) {
+    return AlertDialog(
+      insetPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 30),
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(13.0))),
+      title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            SizedBox(
+              width: 30,
+            ),
+            IconButton(
+                icon: Icon(Icons.close),
+                onPressed: () => Navigator.of(context).pop())
+          ]),
+      content: Container(
+          width: double.maxFinite,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Center(
+                child: Container(
+                  width: 400,
+                  height: 550,
+                  decoration: BoxDecoration(
+                      image: DecorationImage(
+                    image: NetworkImage(url),
+                    fit: BoxFit.contain,
+                  )),
+                ),
+              ),
+            ],
+          )),
     );
   }
 
@@ -633,7 +771,6 @@ class _ReviewPageState extends State<ReviewPage> {
         width: double.maxFinite,
         child: UpdateReviewPage(
           product: product,
-          reviewId: reviewId,
         ),
       ),
     );

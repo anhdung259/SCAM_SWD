@@ -1,30 +1,23 @@
 import 'package:flutter/material.dart';
-import 'package:localstorage/localstorage.dart';
 import 'package:swd_project/Bloc/get_Product_Bloc.dart';
 import 'package:swd_project/Components/Recommend/product_recommend.dart';
 import 'package:swd_project/Model/Product/Product.dart';
 import 'package:swd_project/Model/Product/ProductResponse.dart';
 
 class RecommendForUser extends StatefulWidget {
-  final int userId;
-
-  const RecommendForUser({Key key, this.userId}) : super(key: key);
+  const RecommendForUser({Key key}) : super(key: key);
   @override
-  _RecommendForUserState createState() => _RecommendForUserState(userId);
+  _RecommendForUserState createState() => _RecommendForUserState();
 }
 
 class _RecommendForUserState extends State<RecommendForUser> {
-  final LocalStorage storage = LocalStorage('user');
-  final int userId;
-
-  _RecommendForUserState(this.userId);
+  _RecommendForUserState();
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-
-    productBloc.getProductRecommend(userId);
+    productBloc.getProductRecommend();
   }
 
   @override
@@ -76,9 +69,7 @@ class _RecommendForUserState extends State<RecommendForUser> {
   Widget _buildProductWidget(ProductResponse data) {
     List<Product> products = data.products;
     if (products.length == 0) {
-      return Container(
-        child: Text("No Product"),
-      );
+      return Container();
     } else {
       return Container(
         height: 180,

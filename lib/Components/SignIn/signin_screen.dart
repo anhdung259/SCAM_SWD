@@ -121,7 +121,7 @@ class _signinScreenState extends State<signinScreen>
                   },
                 ),
                 (Route<dynamic> route) => false,
-              ).then((value) => null);
+              ).then((value) => value);
             }
           });
         },

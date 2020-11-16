@@ -7,6 +7,7 @@ import 'TaskMenu/User_Bloc.dart';
 final FirebaseAuth auth = FirebaseAuth.instance;
 final GoogleSignIn ggSign = GoogleSignIn();
 final LocalStorage localStore = new LocalStorage('user');
+final LocalStorage localStoreToken = new LocalStorage('token');
 
 bool checkLogin() {
   if (auth.currentUser != null) {
@@ -48,5 +49,6 @@ Future<String> signInWithGG() async {
 void signOutGG() async {
   await ggSign.signOut();
   await auth.signOut();
+  await localStoreToken.clear();
   await localStore.clear();
 }

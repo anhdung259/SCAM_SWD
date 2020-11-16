@@ -1,14 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:swd_project/Bloc/get_Product_Bloc.dart';
+import 'package:swd_project/Bloc/post_interest_Bloc.dart';
 import 'package:swd_project/Components/DetailProduct/product_info.dart';
 import 'package:swd_project/Components/Pricing/Pricing_show.dart';
 import 'package:swd_project/Components/ReviewProduct/review_info.dart';
 import 'package:swd_project/Model/Product/Product.dart';
+import 'package:swd_project/Model/Product/ProductResponse.dart';
+import 'package:swd_project/Widget/load_and_error-process.dart';
 
 class DetailPage extends StatefulWidget {
   final Product product;
   final int page;
   final String queryFilter;
+
   const DetailPage({Key key, this.product, this.page, this.queryFilter})
       : super(key: key);
 
@@ -19,13 +24,21 @@ class DetailPage extends StatefulWidget {
 
 class _DetailPageState extends State<DetailPage> {
   final Product product;
+  Product productDetail;
   final int page;
   final String queryFilter;
+  bool checkInterest;
+  bool c = false;
+
   _DetailPageState(this.product, this.page, this.queryFilter);
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    productBloc.dainStream();
+    productBloc.getProductDetail(product.id);
+    checkInterestProduct();
   }
 
   @override
@@ -35,8 +48,48 @@ class _DetailPageState extends State<DetailPage> {
     "Giá",
   ];
 
+  checkInterestProduct() {
+    checkInterest = false;
+    postInterest.checkInterest(product.id).then((result) {
+      if (mounted) {
+        setState(() {
+          checkInterest = result;
+        });
+      }
+    });
+  }
+
+  getProductDetail() {
+    checkInterest = false;
+    productBloc.getProductDetail(product.id).then((result) {
+      if (mounted) {
+        setState(() {
+          productDetail = result;
+        });
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    return StreamBuilder<ProductDetailResponse>(
+      stream: productBloc.prodDetail,
+      builder: (context, AsyncSnapshot<ProductDetailResponse> snapshot) {
+        if (snapshot.hasData) {
+          productDetail = snapshot.data.productDetail;
+          return loadDetail();
+        } else if (snapshot.hasError) {
+          return BuildError(
+            error: snapshot.error,
+          );
+        } else {
+          return BuildLoading();
+        }
+      },
+    );
+  }
+
+  Widget loadDetail() {
     return Scaffold(
       body: DefaultTabController(
         initialIndex: page == null ? 0 : page,
@@ -83,7 +136,7 @@ class _DetailPageState extends State<DetailPage> {
                                     child: CircleAvatar(
                                       backgroundColor: Colors.white,
                                       backgroundImage:
-                                          NetworkImage(product.iconUrl),
+                                          NetworkImage(productDetail.iconUrl),
                                       radius: 30,
                                     ),
                                   ),
@@ -96,12 +149,12 @@ class _DetailPageState extends State<DetailPage> {
                                         CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        product.name,
+                                        productDetail.name,
                                         style: TextStyle(
                                             color: Colors.white, fontSize: 14),
                                       ),
                                       RatingBarIndicator(
-                                        rating: product.rating.toDouble(),
+                                        rating: productDetail.rating.toDouble(),
                                         itemBuilder: (context, index) => Icon(
                                           Icons.star,
                                           color: Colors.amber,
@@ -119,6 +172,41 @@ class _DetailPageState extends State<DetailPage> {
                         ),
                       ),
                     ),
+                    actions: [
+                      Padding(
+                        padding: const EdgeInsets.all(12.0),
+                        child: Container(
+                          child: RaisedButton(
+                            color: checkInterest ? Colors.green : Colors.grey,
+                            onPressed: () {
+                              postInterest
+                                  .postInterestProduct(productDetail.id);
+                              setState(() {
+                                checkInterest = !checkInterest;
+                              });
+                              Scaffold.of(context).showSnackBar(new SnackBar(
+                                  backgroundColor: Colors.green,
+                                  content: checkInterest
+                                      ? Text('Bạn đã quan tâm sản phẩm này')
+                                      : Text(
+                                          'Bạn đã bỏ quan tâm sản phẩm này')));
+                            },
+                            child: checkInterest
+                                ? Text(
+                                    "Đã quan tâm",
+                                    style: TextStyle(color: Colors.white),
+                                  )
+                                : Text(
+                                    "Quan tâm",
+                                    style: TextStyle(color: Colors.black),
+                                  ),
+                            shape: new RoundedRectangleBorder(
+                              borderRadius: new BorderRadius.circular(30.0),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                     bottom: TabBar(
                       labelPadding: EdgeInsets.only(right: 38, left: 34),
                       indicatorPadding: EdgeInsets.zero,
@@ -150,17 +238,17 @@ class _DetailPageState extends State<DetailPage> {
               // These are the contents of the tab views, below the tabs.
               children: [
                 ProductInfo(
-                  product: product,
+                  product: productDetail,
                 ),
                 ReviewPage(
-                  product: product,
+                  product: productDetail,
                   currentPage: 1,
                   pageSize: 3,
                   queryFilter:
                       queryFilter ?? "rates=5&rates=4&rates=3&rates=2&rates=1&",
                 ),
                 SlideShowPricing(
-                  product: product,
+                  product: productDetail,
                 )
               ]),
         ),
