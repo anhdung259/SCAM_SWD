@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:localstorage/localstorage.dart';
 import 'package:swd_project/Components/Category/category_data.dart';
 import 'package:swd_project/Components/ListProduct/search_bar.dart';
+import 'package:swd_project/Components/Profile/Profile.dart';
 import 'package:swd_project/Components/Profile/user_map_model.dart';
 import 'package:swd_project/Components/Recommend/recommend_by_industry.dart';
 import 'package:swd_project/Components/TaskMenu/listtle_list.dart';

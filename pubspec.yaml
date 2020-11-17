@@ -66,6 +66,7 @@ dependencies:
   dropdown_search: ^0.4.6
   youtube_player_flutter: ^7.0.0+7
   videos_player: ^0.1.3
+  expandable_group: ^0.0.7
 dev_dependencies:
   flutter_test:
     sdk: flutter
