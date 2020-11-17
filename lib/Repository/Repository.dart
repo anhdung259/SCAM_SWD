@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:localstorage/localstorage.dart';
 import 'package:swd_project/Model/Category/CateVsProductResponse.dart';
 import 'package:swd_project/Model/Category/CategoriesResponse.dart';
@@ -246,7 +245,7 @@ class Repository {
           .map<IndustryClass>((item) => IndustryClass.fromJson(item))
           .toList();
     } else {
-      throw Exception('Failed to load feature');
+      throw Exception('Failed to load ');
     }
   }
 }

@@ -11,10 +11,10 @@ class ShowMore extends StatefulWidget {
 }
 
 class _ShowMoreState extends State<ShowMore> {
-  final String description;
+  final String text;
   final String title;
 
-  _ShowMoreState(this.description, this.title);
+  _ShowMoreState(this.text, this.title);
 
   @override
   Widget build(BuildContext context) {
@@ -45,7 +45,7 @@ class _ShowMoreState extends State<ShowMore> {
                   ],
                 ),
                 collapsed: Text(
-                  description,
+                  text,
                   softWrap: true,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
@@ -57,7 +57,7 @@ class _ShowMoreState extends State<ShowMore> {
                       Padding(
                         padding: EdgeInsets.only(bottom: 10),
                         child: Text(
-                          description,
+                          text,
                           softWrap: true,
                           overflow: TextOverflow.fade,
                         ),

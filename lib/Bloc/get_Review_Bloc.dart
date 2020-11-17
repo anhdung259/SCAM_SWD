@@ -42,7 +42,8 @@ class ReviewList {
   Future<bool> checkReview(int productId) async {
     ReviewUpdateResponse reviewUpdateResponse =
         await _reviewRepository.getReviewUserUpdate(productId);
-    if (reviewUpdateResponse.review.rate == null) {
+    if (reviewUpdateResponse.review.rate == null ||
+        reviewUpdateResponse.review.status == false) {
       return false;
     }
     return true;
@@ -50,16 +51,19 @@ class ReviewList {
 
   Future<List<Review>> getAllList(int id) async {
     ReviewResponse listReview = await _reviewRepository.getListReview(id);
-    return listReview.reviews;
+    return listReview.reviews.where((e) => e.status == true).toList();
   }
 
-  void dainStream() {
+  dainStream() async {
     listAll.clear();
     _reviewUser.value = null;
     _subject.value = null;
   }
 
   dispose() async {
+    await _reviewUser.drain();
+    await _subject.drain();
+    listAll.clear();
     _subject.close();
     _reviewUser.close();
   }

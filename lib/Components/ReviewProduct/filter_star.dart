@@ -2,6 +2,8 @@ import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/percent_indicator.dart';
+import 'package:swd_project/Bloc/get_Product_Bloc.dart';
+import 'package:swd_project/Bloc/get_Review_Bloc.dart';
 import 'package:swd_project/Bloc/get_industry_bloc.dart';
 import 'package:swd_project/Model/Industry/industry.dart';
 import 'package:swd_project/Model/Product/Product.dart';
@@ -115,7 +117,8 @@ class _FilterState extends State<Filter> {
                   borderRadius: new BorderRadius.circular(30.0),
                 ),
                 color: Colors.green,
-                onPressed: () {
+                onPressed: () async {
+                  await productBloc.getProductDetail(product.id);
                   Navigator.of(context).pushAndRemoveUntil(
                       new MaterialPageRoute(
                         builder: (context) => new DetailPage(

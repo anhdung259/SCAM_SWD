@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:swd_project/Bloc/get_Product_Bloc.dart';
 import 'package:swd_project/Components/Category/category_data.dart';
 import 'package:swd_project/Components/Recommend/recommend_by_industry.dart';
 import 'package:swd_project/Widget/slide_show.dart';
@@ -9,6 +10,13 @@ class homeContent extends StatefulWidget {
 }
 
 class _homeContentState extends State<homeContent> {
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    productBloc.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(

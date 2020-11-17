@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:localstorage/localstorage.dart';
+import 'package:swd_project/Bloc/get_Product_Bloc.dart';
 import 'TaskMenu/User_Bloc.dart';
 
 final FirebaseAuth auth = FirebaseAuth.instance;
@@ -43,6 +44,7 @@ Future<String> signInWithGG() async {
   await getId().then((token) async {
     await userBloc.getUserLogin(token);
   });
+  await productBloc.getProductRecommend();
   return "$user";
 }
 
@@ -51,4 +53,5 @@ void signOutGG() async {
   await auth.signOut();
   await localStoreToken.clear();
   await localStore.clear();
+  await productBloc.reset();
 }

@@ -46,14 +46,21 @@ class ProductListBloc {
     _proDetail.sink.add(proDetail);
   }
 
-  void dainStream() {
+  dainStream() {
     _proByCate.value = null;
     _proDetail.value = null;
     listAll.clear();
   }
 
+  reset() async {
+    _proRmm.value = null;
+  }
+
   dispose() async {
+    await _proRmm.drain();
     await _subject.drain();
+    await _proDetail.drain();
+
     _subject.close();
     _proRmm.close();
     _proDetail.close();

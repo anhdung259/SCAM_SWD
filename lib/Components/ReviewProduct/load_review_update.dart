@@ -1,9 +1,11 @@
+import 'package:confirm_dialog/confirm_dialog.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:future_progress_dialog/future_progress_dialog.dart';
 import 'package:localstorage/localstorage.dart';
 import 'package:darq/darq.dart';
 import 'package:smooth_star_rating/smooth_star_rating.dart';
+import 'package:swd_project/Bloc/postOrDelete_Review_Bloc.dart';
 import 'package:swd_project/Bloc/update_Review_Bloc.dart';
 import 'package:swd_project/Model/Product/Product.dart';
 import 'package:swd_project/Model/QuestionReview/QuestionReview.dart';
@@ -100,6 +102,57 @@ class _UpdateReviewState extends State<UpdateReview> {
     });
   }
 
+  showAlertDialog(BuildContext context) {
+    // set up the buttons
+    Widget cancelButton = FlatButton(
+      child: Text("Không"),
+      onPressed: () {
+        Navigator.of(context).pop();
+      },
+    );
+    Widget okButton = FlatButton(
+      child: Text("Có"),
+      onPressed: () {
+        showProgressDelete(context);
+      },
+    );
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      title: Text("Xác nhận"),
+      content: Text(
+        "Bạn có chắc chắn muốn xóa review?",
+        textAlign: TextAlign.center,
+      ),
+      actions: [
+        cancelButton,
+        okButton,
+      ],
+    );
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
+  }
+
+  // showConfirm(BuildContext context) {
+  //   SweetAlert.show(context,
+  //       title: "Bạn có chắc chắn muốn xóa bài đăng",
+  //       confirmButtonText: "Có",
+  //       cancelButtonText: "Không",
+  //       style: SweetAlertStyle.confirm,
+  //       showCancelButton: true, onPress: (bool isConfirm) {
+  //     if (isConfirm) {
+  //
+  //     }
+  //     Navigator.of(context).pop();
+  //
+  //     return false;
+  //   });
+  // }
+
   @override
   Widget build(BuildContext context) {
     List<ReviewAnswer> listDistinct = review.reviewAnswers
@@ -109,6 +162,24 @@ class _UpdateReviewState extends State<UpdateReview> {
       key: _formKey,
       child: Column(
         children: [
+          Padding(
+            padding: const EdgeInsets.only(left: 140),
+            child: RaisedButton.icon(
+              color: Colors.red,
+              onPressed: () async {
+                // postOrDeleteReviewBloc.deleteReview(review.id);
+                showAlertDialog(context);
+              },
+              icon: Icon(
+                EvaIcons.trash2Outline,
+                color: Colors.white,
+              ),
+              label: Text(
+                "Xóa bài đánh giá",
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+          ),
           ListView.builder(
               physics: NeverScrollableScrollPhysics(),
               shrinkWrap: true,
@@ -173,7 +244,7 @@ class _UpdateReviewState extends State<UpdateReview> {
 
   Future getFuture() {
     return Future(() async {
-      await await updateReviewBloc.updateReview(new AnswerUpdate(
+      await updateReviewBloc.updateReview(new AnswerUpdate(
         userUpdateReview: new UserUpdateReview(
             id: review.id,
             status: true,
@@ -187,6 +258,21 @@ class _UpdateReviewState extends State<UpdateReview> {
     });
   }
 
+  Future deleteFuture() {
+    return Future(() async {
+      await postOrDeleteReviewBloc.deleteReview(review.id);
+      return 'Xóa review thành công';
+    });
+  }
+
+  Future<void> showProgressDelete(BuildContext context) async {
+    var result = await showDialog(
+        context: context,
+        child:
+            FutureProgressDialog(deleteFuture(), message: Text('Deleting...')));
+    showResultDelete(context, result);
+  }
+
   Future<void> showProgress(BuildContext context) async {
     var result = await showDialog(
         context: context,
@@ -195,6 +281,23 @@ class _UpdateReviewState extends State<UpdateReview> {
   }
 
   void showResultDialog(BuildContext context, String result) {
+    SweetAlert.show(context, title: result, style: SweetAlertStyle.success,
+        onPress: (bool isConfirm) {
+      if (isConfirm) {
+        Navigator.of(context).pushAndRemoveUntil(
+            new MaterialPageRoute(
+              builder: (BuildContext context) => new DetailPage(
+                page: 1,
+                product: product,
+              ),
+            ),
+            (Route<dynamic> route) => route.isFirst);
+      }
+      return false;
+    });
+  }
+
+  void showResultDelete(BuildContext context, String result) {
     SweetAlert.show(context, title: result, style: SweetAlertStyle.success,
         onPress: (bool isConfirm) {
       if (isConfirm) {

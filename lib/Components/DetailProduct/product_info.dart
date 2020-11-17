@@ -64,7 +64,7 @@ class _ProductInfoState extends State<ProductInfo> {
                             text: product.description,
                             title: "Description",
                           ),
-                    FeatureList(product: product)
+                    FeatureList(product: product),
                   ],
                 ),
               ),

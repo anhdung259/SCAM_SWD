@@ -97,18 +97,19 @@ class _ReviewPageState extends State<ReviewPage> {
         });
       }
     });
-
-    reviewByIdBloc.getSizeListReview(product.id).then((value) {
-      if (mounted) {
-        setState(() {
-          count = value;
-        });
-      }
-    });
+    //
+    // reviewByIdBloc.getSizeListReview(product.id).then((value) {
+    //   if (mounted) {
+    //     setState(() {
+    //       count = value;
+    //     });
+    //   }
+    // });
     reviewByIdBloc.getAllList(product.id).then((value) {
       if (mounted) {
         setState(() {
           listAllReview = value;
+          count = listAllReview.length;
         });
       }
     });
@@ -122,6 +123,7 @@ class _ReviewPageState extends State<ReviewPage> {
   void dispose() {
     super.dispose();
     _controller1.dispose();
+    reviewByIdBloc.dispose();
   }
 
   @override

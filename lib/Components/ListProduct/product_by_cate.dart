@@ -145,7 +145,8 @@ class _ProductByCateState extends State<ProductByCate>
             itemBuilder: (BuildContext context, int index) {
               return new Card(
                 child: InkResponse(
-                  onTap: () {
+                  onTap: () async {
+                    await productBloc.getProductDetail(products[index].id);
                     Navigator.push(
                       context,
                       MaterialPageRoute(

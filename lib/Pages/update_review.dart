@@ -15,7 +15,6 @@ class UpdateReviewPage extends StatefulWidget {
 class _UpdateReviewPageState extends State<UpdateReviewPage> {
   final Product product;
   int size;
-
   _UpdateReviewPageState(this.product);
 
   @override

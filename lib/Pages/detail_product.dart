@@ -43,6 +43,7 @@ class _DetailPageState extends State<DetailPage> {
   void dispose() {
     // TODO: implement dispose
     super.dispose();
+    productBloc.dispose();
   }
 
   @override
