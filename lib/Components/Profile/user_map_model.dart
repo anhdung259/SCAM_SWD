@@ -30,6 +30,8 @@ class _UserProfile extends State<UserProfile> {
   bool isSelected = false;
   User detaiUser;
   List<IndustryExpert> _listIndustryExpert = [];
+  List<IndustryExpert> _tmp = [];
+
   TextEditingController _name;
 
   TextEditingController _mail;
@@ -302,17 +304,26 @@ class _UserProfile extends State<UserProfile> {
                                         builder: (context, AsyncSnapshot<List<IndustryClass>> snapshot) {
                                           if (snapshot.hasData) {
                                             List<IndustryClass> _lisIndustry = snapshot.data;
-                                            List<IndustryExpert> _tmp = [];
-                                            List<int> ratingInterest = [];
-                                            List<int> ratingExpert = [];
+
                                             return  MultiSelectDialog(
                                               items: _lisIndustry.map((industry) => MultiSelectItem<IndustryClass>(industry, industry.name)).toList(),
                                               onConfirm: (values) {
                                                 if(values.isNotEmpty){
-
+                                                  for(int i= 0 ; i < values.length; i++){
+                                                    print("_______xxx${values[i].id}");
+                                                    print("_______xxx${user.id}");
+                                                    IndustryExpert temp = new IndustryExpert(
+                                                      id: values[i].id,
+                                                      userId: user.id,
+                                                      status: true,
+                                                    );
+                                                    _tmp.add(temp);
+                                                    print("_______lol${_tmp.length}");
+                                                  }
                                                   return showDialog(
                                                       context: context,
                                                       builder: (BuildContext context) {
+
                                                         return AlertDialog(
                                                           title: Text("Chọn độ thích và chuyên gia"),
                                                           content: Container(
@@ -336,12 +347,9 @@ class _UserProfile extends State<UserProfile> {
                                                                         size: 10,
                                                                       ),
                                                                       onRatingUpdate: (rating){
-                                                                        print(rating);
-                                                                        for(IndustryExpert indE in _tmp){
-                                                                          if(indE.industryId == values[index].id){
-                                                                            indE.interestLevel = int.parse(rating.toString());
-                                                                          }
-                                                                        }
+                                                                        _tmp[index].interestLevel = rating.round();
+                                                                        print("$rating /${values[index].id} / ${_tmp[index].interestLevel}");
+
                                                                       },
 
                                                                       initialRating: 0,
@@ -359,13 +367,8 @@ class _UserProfile extends State<UserProfile> {
                                                                         size: 10,
                                                                       ),
                                                                       onRatingUpdate: (rating){
-                                                                        for(IndustryExpert indE in _tmp){
-                                                                          if(indE.industryId == values[index].id){
-                                                                            print("zzz");
-                                                                            indE.interestLevel = int.parse(rating.toString());
-                                                                          }
-                                                                        }
-                                                                        print(rating);
+                                                                        _tmp[index].interestLevel = rating.round();
+                                                                        print("$rating /${values[index].id} / ${_tmp[index].interestLevel}");
                                                                       },
                                                                       initialRating: 0,
                                                                       minRating: 1,
@@ -389,16 +392,7 @@ class _UserProfile extends State<UserProfile> {
                                                                     .toUpperCase())),
                                                             TextButton(
                                                                 onPressed: () async{
-                                                                  for(int i= 0 ; i < values.length; i++){
-                                                                    print("_______xxx${values[i].id}");
-                                                                    print("_______xxx${user.id}");
-                                                                    IndustryExpert temp = new IndustryExpert(
-                                                                      id: values[i].id,
-                                                                      userId: user.id,
-                                                                      status: true,
-                                                                    );
-                                                                    _tmp.add(temp);
-                                                                  }
+
                                                                   setState(() {
                                                                     _listIndustryExpert = _tmp;
                                                                   });

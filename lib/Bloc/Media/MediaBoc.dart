@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:localstorage/localstorage.dart';
@@ -8,6 +9,8 @@ import 'package:swd_project/Model/User/UserReview.dart';
 
 final StorageReference ref = FirebaseStorage.instance.ref();
 final LocalStorage _localStorage = LocalStorage('user');
+final String id = FirebaseAuth.instance.currentUser.uid;
+
 
 Future<Widget> fetchImages(StorageUploadTask task) async {
   String url = await task.lastSnapshot.ref.getDownloadURL();
@@ -23,7 +26,7 @@ Future<Widget> uploadImages(File file, List<StorageUploadTask> _tasks) async {
   String name;
   name = file.path.split('/').last;
   StorageUploadTask task = ref
-      .child('${User.fromJsonProfile(_localStorage.getItem('user')).id}/$name')
+      .child('$id/$name')
       .putFile(file);
   _tasks.add(task);
   return UploadFile(
