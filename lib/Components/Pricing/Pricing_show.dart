@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:swd_project/Model/Pricing/Pricing.dart';
 import 'package:swd_project/Model/Product/Product.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class SlideShowPricing extends StatefulWidget {
   final Product product;
@@ -124,7 +125,9 @@ class _SlideShowPricingState extends State<SlideShowPricing> {
                             borderRadius: new BorderRadius.circular(30.0),
                           ),
                           color: Colors.green,
-                          onPressed: () {},
+                          onPressed: () {
+                            launch("${product.company.url}");
+                          },
                           child: Text(
                             'Chọn gói',
                             style: TextStyle(fontSize: 20, color: Colors.white),

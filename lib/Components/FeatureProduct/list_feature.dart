@@ -7,7 +7,7 @@ import 'package:future_progress_dialog/future_progress_dialog.dart';
 import 'package:localstorage/localstorage.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'package:smooth_star_rating/smooth_star_rating.dart';
-import 'package:swd_project/Bloc/post_Feature_review_Bloc.dart';
+import 'package:swd_project/Bloc/postOrUpdate_Feature_review_Bloc.dart';
 import 'package:swd_project/Model/Feature/feature.dart';
 import 'package:swd_project/Model/Product/Product.dart';
 import 'package:swd_project/Model/User/UserReview.dart';
@@ -88,22 +88,6 @@ class _FeatureListState extends State<FeatureList> {
                       ),
                     ),
                   ),
-                  RaisedButton.icon(
-                    // Đã review rồi thì chỉ được update
-                    label: Text("Đánh giá tính năng"),
-                    onPressed: () {
-                      showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return dialogUpdateReview(
-                                context, product, "Đánh giá tính năng");
-                          });
-                    },
-                    icon: Icon(
-                      EvaIcons.edit,
-                      color: Colors.white,
-                    ),
-                  )
                 ],
               ),
               Container(
@@ -317,7 +301,7 @@ class _FeatureListState extends State<FeatureList> {
     });
   }
 
-  Widget dialogUpdateReview(
+  Widget dialogUpdateReviewFeature(
       BuildContext context, Product product, String title) {
     return AlertDialog(
       insetPadding: EdgeInsets.symmetric(horizontal: 0, vertical: 90),

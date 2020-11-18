@@ -48,7 +48,7 @@ class Industry {
 
   int id;
   String name;
-  String status;
+  bool status;
   List<dynamic> industryExperts;
 
   factory Industry.fromJson(Map<String, dynamic> json) => Industry(

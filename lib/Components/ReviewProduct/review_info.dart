@@ -4,8 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:swd_project/Bloc/get_Feature_Bloc.dart';
 import 'package:swd_project/Bloc/get_Review_Bloc.dart';
+import 'package:swd_project/Components/FeatureProduct/review_feature.dart';
+import 'package:swd_project/Components/FeatureProduct/update_review_feature.dart';
 import 'package:swd_project/Components/ReviewProduct/filter_star.dart';
+import 'package:swd_project/Model/Feature/feature.dart';
 import 'package:swd_project/Model/Product/Product.dart';
 import 'package:swd_project/Model/ReviewAnswer/ReviewAnswer.dart';
 import 'package:swd_project/Model/ReviewAnswer/ReviewList.dart';
@@ -49,16 +53,18 @@ class _ReviewPageState extends State<ReviewPage> {
       this.product, this.pageSize, this.currentPage, this.queryFilter);
 
   bool checkUserReview = false;
+  bool checkFeatureReview = false;
   List<Review> reviews;
   List<Review> listAllReview;
+  List<FeatureReview> dataReviewFeature;
   int reviewId;
 
   RefreshController _controller1 = RefreshController();
 
   @override
-  void didChangeDependencies() {
-    // TODO: implement didChangeDependencies
-    super.didChangeDependencies();
+  void initState() {
+    // TODO: implement initState
+    super.initState();
     reviewByIdBloc.dainStream();
     _getMoreDataFliter();
   }
@@ -94,6 +100,16 @@ class _ReviewPageState extends State<ReviewPage> {
       if (mounted) {
         setState(() {
           checkUserReview = result;
+        });
+      }
+    });
+    featureBloc.listReviewFeature(product.id).then((result) {
+      if (mounted) {
+        setState(() {
+          dataReviewFeature = result;
+          dataReviewFeature.isEmpty
+              ? checkFeatureReview = true
+              : checkFeatureReview = false;
         });
       }
     });
@@ -201,7 +217,7 @@ class _ReviewPageState extends State<ReviewPage> {
                                   "Cập nhật review",
                                   style: TextStyle(
                                     fontWeight: FontWeight.w600,
-                                    fontSize: 16,
+                                    fontSize: 17,
                                     letterSpacing: 0.0,
                                     color: Colors.white,
                                   ),
@@ -226,12 +242,49 @@ class _ReviewPageState extends State<ReviewPage> {
                                   "Viết review",
                                   style: TextStyle(
                                     fontWeight: FontWeight.w600,
-                                    fontSize: 16,
+                                    fontSize: 17,
                                     letterSpacing: 0.0,
                                     color: Colors.white,
                                   ),
                                 ),
                                 color: Color.fromARGB(255, 18, 32, 50),
+                              ),
+                      ),
+                      Container(
+                        height: 48,
+                        width: MediaQuery.of(context).size.width,
+                        child: checkFeatureReview
+                            ? RaisedButton(
+                                // Đã review rồi thì chỉ được update
+                                child: Text(
+                                  "Đánh giá tính năng",
+                                  style: TextStyle(fontSize: 17),
+                                ),
+                                onPressed: () {
+                                  showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        return dialogReviewFeature(context,
+                                            product, "Đánh giá tính năng");
+                                      });
+                                },
+                              )
+                            : RaisedButton(
+                                // Đã review rồi thì chỉ được update
+                                child: Text(
+                                  "Cập nhật đánh giá tính năng",
+                                  style: TextStyle(fontSize: 17),
+                                ),
+                                onPressed: () {
+                                  showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        return dialogUpdateReviewFeature(
+                                            context,
+                                            product,
+                                            "Cập nhật đánh giá tính năng");
+                                      });
+                                },
                               ),
                       ),
                       getFilterBarUI(count),
@@ -433,11 +486,18 @@ class _ReviewPageState extends State<ReviewPage> {
                                   scrollDirection: Axis.horizontal,
                                   physics: NeverScrollableScrollPhysics(),
                                   itemBuilder: (context, i) {
-                                    return Text(reviews[index]
-                                        .user
-                                        .industryExperts[i]
-                                        .industry
-                                        .name);
+                                    return Row(
+                                      children: [
+                                        Text(reviews[index]
+                                            .user
+                                            .industryExperts[i]
+                                            .industry
+                                            .name),
+                                        SizedBox(
+                                          width: 20,
+                                        )
+                                      ],
+                                    );
                                   }),
                             ),
                           ),
@@ -803,6 +863,75 @@ class _ReviewPageState extends State<ReviewPage> {
           reviews: listAllReview,
         ),
       ),
+    );
+  }
+
+  Widget dialogReviewFeature(
+      BuildContext context, Product product, String title) {
+    return AlertDialog(
+      insetPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 90),
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(13.0))),
+      title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Flexible(child: Text('$title ${product.name}')),
+            IconButton(
+                icon: Icon(Icons.close),
+                onPressed: () async {
+                  if (await confirm(
+                    context,
+                    title: Text('Xác nhận'),
+                    content: Text('Bạn muốn dừng đánh giá tính năng ?'),
+                    textOK: Text('Có'),
+                    textCancel: Text('Không'),
+                  )) {
+                    return Navigator.of(context).pop();
+                  }
+                  return null;
+                })
+          ]),
+      content: Container(
+          width: double.maxFinite,
+          child: ReviewFeature(
+            product: product,
+          )),
+    );
+  }
+
+  Widget dialogUpdateReviewFeature(
+      BuildContext context, Product product, String title) {
+    return AlertDialog(
+      insetPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 90),
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(13.0))),
+      title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Flexible(child: Text('$title ${product.name}')),
+            IconButton(
+                icon: Icon(Icons.close),
+                onPressed: () async {
+                  if (await confirm(
+                    context,
+                    title: Text('Xác nhận'),
+                    content: Text('Bạn muốn dừng cập nhật review tính năng ?'),
+                    textOK: Text('Có'),
+                    textCancel: Text('Không'),
+                  )) {
+                    return Navigator.of(context).pop();
+                  }
+                  return null;
+                })
+          ]),
+      content: Container(
+          width: double.maxFinite,
+          child: UpdateReviewFeature(
+            product: product,
+            featureReview: dataReviewFeature,
+          )),
     );
   }
 }

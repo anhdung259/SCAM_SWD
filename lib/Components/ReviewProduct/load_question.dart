@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'package:confirm_dialog/confirm_dialog.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -8,7 +7,6 @@ import 'package:future_progress_dialog/future_progress_dialog.dart';
 import 'package:localstorage/localstorage.dart';
 import 'package:smooth_star_rating/smooth_star_rating.dart';
 import 'package:swd_project/Bloc/Media/MediaBoc.dart';
-import 'package:swd_project/Bloc/post_Feature_review_Bloc.dart';
 import 'package:swd_project/Bloc/postOrDelete_Review_Bloc.dart';
 import 'package:swd_project/Model/Feature/feature.dart';
 import 'package:swd_project/Model/Product/Product.dart';
@@ -170,61 +168,44 @@ class _LoadQuestionReviewState extends State<LoadQuestionReview> {
                 );
               }),
           ratingQuestion(),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Container(
-                child: RaisedButton(
-                  onPressed: () async {
-                    showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return dialogReviewFeature(
-                              context, product, "Đánh giá tính năng");
-                        });
-                  },
-                  child: Text(
-                    "Đánh giá tính năng",
-                  ),
-                ),
+          Padding(
+            padding: const EdgeInsets.only(left: 170),
+            child: RaisedButton.icon(
+              color: Colors.black54,
+              label: Text(
+                "Upload media",
+                style:
+                    TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
               ),
-              RaisedButton.icon(
-                color: Colors.black54,
-                label: Text(
-                  "Upload media",
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold, color: Colors.white),
-                ),
-                icon: Icon(
-                  Icons.camera_alt,
-                  color: Colors.white,
-                ),
-                onPressed: () async {
-                  List<Widget> tempFiles = [];
-                  FilePickerResult result = await FilePicker.platform.pickFiles(
-                    type: FileType.custom,
-                    allowedExtensions: ['mp4', 'jpg', 'png'],
-                    allowMultiple: true,
-                  );
-                  if (result != null) {
-                    setState(() {
-                      _selectedFiles.clear();
-                      _selectedFiles =
-                          result.paths.map((path) => File(path)).toList();
-                    });
-                    for (File file in _selectedFiles) {
-                      tempFiles.add(futureBuilderUpload(file));
-                    }
-                    setState(() {
-                      uploadingFiles = tempFiles;
-                    });
+              icon: Icon(
+                Icons.camera_alt,
+                color: Colors.white,
+              ),
+              onPressed: () async {
+                List<Widget> tempFiles = [];
+                FilePickerResult result = await FilePicker.platform.pickFiles(
+                  type: FileType.custom,
+                  allowedExtensions: ['mp4', 'jpg', 'png'],
+                  allowMultiple: true,
+                );
+                if (result != null) {
+                  setState(() {
+                    _selectedFiles.clear();
+                    _selectedFiles =
+                        result.paths.map((path) => File(path)).toList();
+                  });
+                  for (File file in _selectedFiles) {
+                    tempFiles.add(futureBuilderUpload(file));
                   }
-                },
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
+                  setState(() {
+                    uploadingFiles = tempFiles;
+                  });
+                }
+              },
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
               ),
-            ],
+            ),
           ),
           Padding(
               padding: EdgeInsets.all(2.0),
@@ -465,112 +446,6 @@ class _LoadQuestionReviewState extends State<LoadQuestionReview> {
     );
   }
 
-  Widget updateFeature() {
-    if (features.length == 0) {
-      return Container(
-        width: MediaQuery.of(context).size.width,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[
-            Column(
-              children: <Widget>[
-                Text(
-                  "Chưa có dữ liệu ",
-                  style: TextStyle(color: Colors.black45),
-                )
-              ],
-            )
-          ],
-        ),
-      );
-    } else
-      return Padding(
-        padding: const EdgeInsets.all(5.0),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              child: ListView.builder(
-                itemCount: features.length,
-                shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
-                itemBuilder: (context, index) {
-                  return Column(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(left: 8),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.only(right: 30),
-                              child: Text(
-                                features[index].feature.featureName,
-                                style: TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 17,
-                                    letterSpacing: 0.27,
-                                    fontWeight: FontWeight.w600),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 40),
-                        child: Container(
-                            child: SmoothStarRating(
-                          rating: 0,
-                          isReadOnly: false,
-                          size: 50,
-                          color: Colors.yellow,
-                          borderColor: Colors.grey,
-                          filledIconData: Icons.star,
-                          halfFilledIconData: Icons.star_half,
-                          defaultIconData: Icons.star_border,
-                          starCount: 5,
-                          allowHalfRating: true,
-                          spacing: 2.0,
-                          onRated: (value) {
-                            answerFeature.update(features[index].feature.id,
-                                (v) => value.toString(),
-                                ifAbsent: () => value.toString());
-                          },
-                        )),
-                      ),
-                    ],
-                  );
-                },
-              ),
-            ),
-            Container(
-              width: 400,
-              height: 50,
-              child: RaisedButton.icon(
-                onPressed: () async {
-                  getDataReviewFeature();
-                  showProgressFeature(context);
-                },
-                label: Text(
-                  "Đánh giá tính năng",
-                  style: TextStyle(color: Colors.white, fontSize: 18),
-                ),
-                icon: Icon(
-                  EvaIcons.arrowCircleUp,
-                  color: Colors.white,
-                ),
-                color: Color.fromARGB(255, 18, 32, 50),
-              ),
-            )
-          ],
-        ),
-      );
-  }
-
   getDataReviewFeature() {
     listFeatureReview = answerFeature.entries
         .map(
@@ -582,60 +457,5 @@ class _LoadQuestionReviewState extends State<LoadQuestionReview> {
               userId: User.fromJsonProfile(storage.getItem('user')).id),
         )
         .toList();
-  }
-
-  Widget dialogReviewFeature(
-      BuildContext context, Product product, String title) {
-    return AlertDialog(
-      insetPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 90),
-      shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(Radius.circular(13.0))),
-      title: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Flexible(child: Text('$title ${product.name}')),
-            IconButton(
-                icon: Icon(Icons.close),
-                onPressed: () async {
-                  if (await confirm(
-                    context,
-                    title: Text('Xác nhận'),
-                    content: Text('Bạn muốn dừng cập nhật tính năng ?'),
-                    textOK: Text('Có'),
-                    textCancel: Text('Không'),
-                  )) {
-                    return Navigator.of(context).pop();
-                  }
-                  return null;
-                })
-          ]),
-      content: Container(width: double.maxFinite, child: updateFeature()),
-    );
-  }
-
-  Future<void> showProgressFeature(BuildContext context) async {
-    var result = await showDialog(
-        context: context,
-        child: FutureProgressDialog(getFutureFeature(),
-            message: Text('Loading...')));
-    showResultFeatureDialog(context, result);
-  }
-
-  Future getFutureFeature() {
-    return Future(() async {
-      await postFeatureReviewBloc.postFeatureReview(listFeatureReview);
-      return 'Đánh giá thành công';
-    });
-  }
-
-  void showResultFeatureDialog(BuildContext context, String result) {
-    SweetAlert.show(context, title: result, style: SweetAlertStyle.success,
-        onPress: (bool isConfirm) {
-      if (isConfirm) {
-        Navigator.of(context).pop();
-      }
-      return false;
-    });
   }
 }

@@ -52,18 +52,19 @@ String featureReviewToJson(List<FeatureReview> data) =>
     json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
 
 class FeatureReview {
-  FeatureReview({
-    this.id,
-    this.productId,
-    this.userId,
-    this.featureId,
-    this.rate,
-  });
+  FeatureReview(
+      {this.id,
+      this.productId,
+      this.userId,
+      this.featureId,
+      this.rate,
+      this.feature});
 
   int id;
   int productId;
   int userId;
   int featureId;
+  Feature feature;
   dynamic rate;
 
   factory FeatureReview.fromJson(Map<String, dynamic> json) => FeatureReview(
@@ -71,6 +72,8 @@ class FeatureReview {
         productId: json["productId"] == null ? null : json["productId"],
         userId: json["userId"] == null ? null : json["userId"],
         featureId: json["featureId"] == null ? null : json["featureId"],
+        feature:
+            json["feature"] == null ? null : Feature.fromJson(json["feature"]),
         rate: json["rate"] == null ? null : json["rate"],
       );
 

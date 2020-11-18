@@ -18,3 +18,21 @@ class FeatureResponse {
       : featureList = List(),
         error = errorValue;
 }
+
+class FeatureReviewResponse {
+  final List<FeatureReview> featureList;
+  final String error;
+
+  FeatureReviewResponse(this.featureList, this.error);
+
+  FeatureReviewResponse.fromJson(String response)
+      : featureList = json
+            .decode(response)
+            .map<FeatureReview>((item) => FeatureReview.fromJson(item))
+            .toList(),
+        error = "";
+
+  FeatureReviewResponse.withError(String errorValue)
+      : featureList = List(),
+        error = errorValue;
+}

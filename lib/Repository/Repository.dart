@@ -234,6 +234,22 @@ class Repository {
     }
   }
 
+  //https://scam2020.azurewebsites.net/api/Products/40/Features/reviews
+  Future<FeatureReviewResponse> getFeatureUpdate(int productId) async {
+    final response = await http
+        .get(getProductUrl + "/$productId" + "/Features/reviews", headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      'Authorization': 'Bearer ${_storage.getItem('token')}',
+    });
+
+    if (response.statusCode == 200) {
+      return FeatureReviewResponse.fromJson(response.body);
+    } else {
+      throw Exception('Failed to load feature');
+    }
+  }
+
 //https://scam2020.azurewebsites.net/api/UserReviews/40/Reviews/industries
   Future<List<IndustryClass>> getIndustry(int productId) async {
     final response =

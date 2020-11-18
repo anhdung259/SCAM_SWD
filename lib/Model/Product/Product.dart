@@ -21,7 +21,7 @@ class Product {
   final String url;
   final String backgroundImageUrl;
   final dynamic rating;
-  final int companyId;
+  Company company;
   final int userId;
   dynamic userInterests;
   List<ProductMedia> productMedia;
@@ -36,7 +36,7 @@ class Product {
       this.description,
       this.url,
       this.rating,
-      this.companyId,
+      this.company,
       this.userId,
       this.backgroundImageUrl,
       this.productMedia,
@@ -55,7 +55,8 @@ class Product {
         description: json["description"] == null ? null : json["description"],
         url: json["url"] == null ? null : json["url"],
         rating: json["rating"] == null ? null : json["rating"].toDouble(),
-        companyId: json["companyId"] == null ? null : json["companyId"],
+        company:
+            json["company"] == null ? null : Company.fromJson(json["company"]),
         userId: json["userId"] == null ? null : json["userId"],
         userInterests: json["userInterests"],
         productMedia: json["productMedia"] == null
@@ -71,6 +72,58 @@ class Product {
             : List<ProductFeature>.from(
                 json["productFeatures"].map((x) => ProductFeature.fromJson(x))),
       );
+}
+
+class Company {
+  Company({
+    this.id,
+    this.name,
+    this.url,
+    this.location,
+    this.yearFounded,
+    this.status,
+    this.products,
+    this.workFors,
+  });
+
+  int id;
+  String name;
+  String url;
+  String location;
+  int yearFounded;
+  bool status;
+  List<dynamic> products;
+  List<dynamic> workFors;
+
+  factory Company.fromJson(Map<String, dynamic> json) => Company(
+        id: json["id"] == null ? null : json["id"],
+        name: json["name"] == null ? null : json["name"],
+        url: json["url"] == null ? null : json["url"],
+        location: json["location"] == null ? null : json["location"],
+        yearFounded: json["yearFounded"] == null ? null : json["yearFounded"],
+        status: json["status"] == null ? null : json["status"],
+        products: json["products"] == null
+            ? null
+            : List<dynamic>.from(json["products"].map((x) => x)),
+        workFors: json["workFors"] == null
+            ? null
+            : List<dynamic>.from(json["workFors"].map((x) => x)),
+      );
+
+  Map<String, dynamic> toJson() => {
+        "id": id == null ? null : id,
+        "name": name == null ? null : name,
+        "url": url == null ? null : url,
+        "location": location == null ? null : location,
+        "yearFounded": yearFounded == null ? null : yearFounded,
+        "status": status == null ? null : status,
+        "products": products == null
+            ? null
+            : List<dynamic>.from(products.map((x) => x)),
+        "workFors": workFors == null
+            ? null
+            : List<dynamic>.from(workFors.map((x) => x)),
+      };
 }
 
 class ProductFeature {
