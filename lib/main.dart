@@ -5,6 +5,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:localstorage/localstorage.dart';
 import 'package:swd_project/Bloc/sign_in_Bloc.dart';
+import 'package:swd_project/Components/Profile/Profile.dart';
 import 'package:swd_project/Components/SignIn/signin_screen.dart';
 import 'Pages/home_page.dart';
 

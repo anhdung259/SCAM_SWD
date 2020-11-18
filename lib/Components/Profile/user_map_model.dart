@@ -1,6 +1,14 @@
+import 'package:expandable_group/expandable_group_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:localstorage/localstorage.dart';
-import 'package:swd_project/Components/TaskMenu/sign_out.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:jiffy/jiffy.dart';
+import 'package:multi_select_flutter/multi_select_flutter.dart';
+import 'package:swd_project/Bloc/User/Update_Profile_Bloc.dart';
+import 'package:swd_project/Model/Industry/industry.dart';
+import 'package:swd_project/Model/User/IndustryExpert.dart';
+import 'package:swd_project/Bloc/User/User_Bloc.dart';
+import 'package:swd_project/Model/User/User.dart';
+import 'package:swd_project/Model/User/UserResponse.dart';
 import 'package:swd_project/Model/User/UserReview.dart';
 import 'package:swd_project/Widget/load_and_error-process.dart';
 
@@ -10,48 +18,517 @@ class UserProfile extends StatefulWidget {
 }
 
 class _UserProfile extends State<UserProfile> {
-  final LocalStorage storage = LocalStorage('user');
-
   @override
   void initState() {
     super.initState();
+    userBloc.getUser();
+    userBloc.getIndustryOfUser();
+    userBloc.getAllIndustry();
   }
 
-  static const double _imageHeight = 256.0;
-  User detailUser;
+  bool checkUpdate = true;
+  bool isSelected = false;
+  User detaiUser;
+  List<IndustryExpert> _listIndustryExpert = [];
+  TextEditingController _name;
+
+  TextEditingController _mail;
+
+  TextEditingController _facebook;
+
+  TextEditingController _phone;
+
+  TextEditingController _createDate;
+
+  TextEditingController _provider;
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-        future: storage.ready,
-        builder: (context, AsyncSnapshot snapshot) {
+    return StreamBuilder<UserResponse>(
+        stream: userBloc.userProfile,
+        builder: (context, AsyncSnapshot<UserResponse> snapshot) {
           if (snapshot.hasData) {
-            var user = User.fromJsonProfile(storage.getItem('user'));
-            detailUser = user;
-            List<String> ListRowInfo = [
-              checkNull(user.email),
-              checkNull(user.facebook),
-              checkNull(user.phone),
-              checkNull(user.joinDate),
-              checkNull(user.provider)
-            ];
-            // ignore: non_constant_identifier_names
-            List<String> ListRowTitle = [
-              "Email",
-              "Facebook",
-              "Phone",
-              "Join date",
-              "Provider"
-            ];
-            return Stack(
-              children: <Widget>[
-                _buildTimeline(),
-                _buildImage(),
-                _buildProfileRow(checkNull(user.name), checkNull(user.bio),
-                    checkNull(user.avatarUrl)),
-                _buildBottomPart(ListRowInfo, ListRowTitle),
-                CusListTitle()
-              ],
+            User user = snapshot.data.user;
+            _name =
+            new TextEditingController(text: checkNull(user.name).trim());
+            _mail =
+            new TextEditingController(text: checkNull(user.email).trim());
+            _facebook = new TextEditingController(
+                text: checkNull(user.facebook).trim());
+            _phone =
+            new TextEditingController(text: checkNull(user.phone).trim());
+            _provider = new TextEditingController(
+                text: checkNull(user.provider).trim());
+            return Container(
+              padding: EdgeInsets.only(left: 16, top: 0, right: 16),
+              child: GestureDetector(
+                  onTap: () {
+                    FocusScope.of(context).unfocus();
+                  },
+                  child: ListView(
+                    children: [
+                      SizedBox(
+                        height: 5,
+                      ),
+                      Center(
+                        child: Stack(
+                          children: [
+                            Container(
+                              width: 100,
+                              height: 100,
+                              decoration: BoxDecoration(
+                                  border: Border.all(
+                                      width: 4,
+                                      color: Theme.of(context)
+                                          .scaffoldBackgroundColor),
+                                  boxShadow: [
+                                    BoxShadow(
+                                        spreadRadius: 2,
+                                        blurRadius: 10,
+                                        color: Colors.black.withOpacity(0.1),
+                                        offset: Offset(0, 10))
+                                  ],
+                                  shape: BoxShape.circle,
+                                  image: DecorationImage(
+                                      fit: BoxFit.cover,
+                                      image: NetworkImage(
+                                        user.avatarUrl,
+                                      ))),
+                            ),
+                            Positioned(
+                                bottom: 0,
+                                right: 0,
+                                child: Container(
+                                  height: 35,
+                                  width: 35,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    border: Border.all(
+                                      width: 4,
+                                      color: Theme.of(context)
+                                          .scaffoldBackgroundColor,
+                                    ),
+                                    color: Colors.black87,
+                                  ),
+                                  child: InkWell(
+                                    child: Icon(
+                                      Icons.edit,
+                                      color: Colors.white,
+                                    ),
+                                    onTap: () {
+                                      setState(() {
+                                        checkUpdate = false;
+                                      });
+                                    },
+                                  ),
+                                )),
+                          ],
+                        ),
+                      ),
+                      SizedBox(
+                        height: 5,
+                      ),
+                      buildTextField("Tên", user.name, _name),
+                      buildTextField("Mail", user.email, _mail),
+                      buildTextField("Facebook", user.facebook, _facebook),
+                      buildTextField("Số điện thoại", user.phone, _phone),
+                      buildTextField("Ngày tạo tài khoản",
+                          Jiffy(user.joinDate).yMMMd, _createDate),
+                      buildTextField(
+                          "Đăng nhập bằng", user.provider, _provider),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            "Lĩnh vực của tôi",
+                            style: TextStyle(
+                                fontSize: 15, fontWeight: FontWeight.bold),
+                          ),
+                          IconButton(
+                              icon: Icon(checkUpdate
+                                  ? Icons.remove_red_eye
+                                  : Icons.edit),
+                              onPressed: () {
+                                checkUpdate
+                                    ? showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return AlertDialog(
+                                        title: Text("Lĩnh vực của bạn"),
+                                        content: StreamBuilder<
+                                            List<IndustryExpert>>(
+                                          stream: userBloc.userIndustry,
+                                          builder: (context,
+                                              AsyncSnapshot<
+                                                  List<IndustryExpert>>
+                                              snapshot) {
+                                            if (snapshot.hasData) {
+                                              List<IndustryExpert>
+                                              _lisIndustry =
+                                                  snapshot.data;
+                                              return Container(
+                                                  height: 500,
+                                                  width: 400,
+                                                  child: ListView.builder(
+                                                    shrinkWrap: true,
+                                                    itemCount:
+                                                    _lisIndustry.length,
+                                                    itemBuilder:
+                                                        (context, index) {
+                                                      return ExpandableGroup(
+                                                        header: Text(
+                                                          _lisIndustry[
+                                                          index]
+                                                              .industry
+                                                              .name,
+                                                          style: TextStyle(
+                                                              fontWeight:
+                                                              FontWeight
+                                                                  .bold,
+                                                              fontSize: 15),
+                                                        ),
+                                                        items: [
+                                                          ListTile(
+                                                            title: Row(
+                                                              children: [
+                                                                Text(
+                                                                    "Độ thích: ",
+                                                                    style: TextStyle(
+                                                                        fontWeight:
+                                                                        FontWeight.bold)),
+                                                                Padding(
+                                                                  padding: const EdgeInsets
+                                                                      .only(
+                                                                      left:
+                                                                      45),
+                                                                  child:
+                                                                  RatingBarIndicator(
+                                                                    rating:
+                                                                    _lisIndustry[index].interestLevel /
+                                                                        1,
+                                                                    itemCount:
+                                                                    5,
+                                                                    itemSize:
+                                                                    20,
+                                                                    direction:
+                                                                    Axis.horizontal,
+                                                                    itemBuilder:
+                                                                        (context,
+                                                                        index) {
+                                                                      return Icon(
+                                                                        Icons.star,
+                                                                        color:
+                                                                        Colors.yellow,
+                                                                      );
+                                                                    },
+                                                                  ),
+                                                                ),
+                                                              ],
+                                                            ),
+                                                            subtitle: Row(
+                                                              children: [
+                                                                Text(
+                                                                  "Độ chuyên gia: ",
+                                                                  style: TextStyle(
+                                                                      fontWeight: FontWeight
+                                                                          .bold,
+                                                                      color: Colors
+                                                                          .black87,
+                                                                      fontSize:
+                                                                      15),
+                                                                ),
+                                                                Padding(
+                                                                  padding: const EdgeInsets
+                                                                      .only(
+                                                                      left:
+                                                                      10),
+                                                                  child:
+                                                                  RatingBarIndicator(
+                                                                    rating:
+                                                                    _lisIndustry[index].expertLevel /
+                                                                        1,
+                                                                    itemCount:
+                                                                    5,
+                                                                    itemSize:
+                                                                    20,
+                                                                    direction:
+                                                                    Axis.horizontal,
+                                                                    itemBuilder:
+                                                                        (context,
+                                                                        index) {
+                                                                      return Icon(
+                                                                        Icons.star,
+                                                                        color:
+                                                                        Colors.yellow,
+                                                                      );
+                                                                    },
+                                                                  ),
+                                                                ),
+                                                              ],
+                                                            ),
+                                                          )
+                                                        ],
+                                                      );
+                                                    },
+                                                  ));
+                                            } else if (snapshot.hasError) {
+                                              return BuildError(
+                                                error: snapshot.error,
+                                              );
+                                            } else {
+                                              return BuildLoading();
+                                            }
+                                          },
+                                        ),
+                                        actions: [
+                                          TextButton(
+                                              onPressed: () {
+                                                Navigator.pop(
+                                                    context, false);
+                                              },
+                                              child: Text("Quay lại"
+                                                  .toUpperCase())),
+                                        ],
+                                      );
+                                    })
+                                    : showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return StreamBuilder<List<IndustryClass>>(
+                                        stream: userBloc.allIndustry,
+                                        builder: (context, AsyncSnapshot<List<IndustryClass>> snapshot) {
+                                          if (snapshot.hasData) {
+                                            List<IndustryClass> _lisIndustry = snapshot.data;
+                                            List<IndustryExpert> _tmp = [];
+                                            List<int> ratingInterest = [];
+                                            List<int> ratingExpert = [];
+                                            return  MultiSelectDialog(
+                                              items: _lisIndustry.map((industry) => MultiSelectItem<IndustryClass>(industry, industry.name)).toList(),
+                                              onConfirm: (values) {
+                                                if(values.isNotEmpty){
+
+                                                  return showDialog(
+                                                      context: context,
+                                                      builder: (BuildContext context) {
+                                                        return AlertDialog(
+                                                          title: Text("Chọn độ thích và chuyên gia"),
+                                                          content: Container(
+                                                            width: 300,
+                                                            height: 500,
+                                                            child: ListView.builder(
+                                                              shrinkWrap: true,
+                                                              itemCount: values.length,
+                                                              itemBuilder: (context, index){
+                                                                return Column(
+                                                                  children: [
+                                                                    Text(values[index].name, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: Colors.blue),),
+                                                                    SizedBox(
+                                                                      height: 10,
+                                                                    ),
+                                                                    Text("độ thích"),
+                                                                    RatingBar.builder(
+                                                                      itemBuilder: (context, _) => Icon(
+                                                                        Icons.star,
+                                                                        color: Colors.amber,
+                                                                        size: 10,
+                                                                      ),
+                                                                      onRatingUpdate: (rating){
+                                                                        print(rating);
+                                                                        for(IndustryExpert indE in _tmp){
+                                                                          if(indE.industryId == values[index].id){
+                                                                            indE.interestLevel = int.parse(rating.toString());
+                                                                          }
+                                                                        }
+                                                                      },
+
+                                                                      initialRating: 0,
+                                                                      minRating: 1,
+                                                                      direction: Axis.horizontal,
+                                                                      allowHalfRating: true,
+                                                                      itemCount: 5,
+                                                                      itemPadding: EdgeInsets.symmetric(horizontal: 4.0),
+                                                                    ),
+                                                                    Text("độ chuyên gia"),
+                                                                    RatingBar.builder(
+                                                                      itemBuilder: (context, _) => Icon(
+                                                                        Icons.star,
+                                                                        color: Colors.amber,
+                                                                        size: 10,
+                                                                      ),
+                                                                      onRatingUpdate: (rating){
+                                                                        for(IndustryExpert indE in _tmp){
+                                                                          if(indE.industryId == values[index].id){
+                                                                            print("zzz");
+                                                                            indE.interestLevel = int.parse(rating.toString());
+                                                                          }
+                                                                        }
+                                                                        print(rating);
+                                                                      },
+                                                                      initialRating: 0,
+                                                                      minRating: 1,
+                                                                      direction: Axis.horizontal,
+                                                                      allowHalfRating: true,
+                                                                      itemCount: 5,
+                                                                      itemPadding: EdgeInsets.symmetric(horizontal: 4.0),
+                                                                    ),
+                                                                  ],
+                                                                );
+                                                              },
+                                                            ),
+                                                          ),
+                                                          actions: [
+                                                            TextButton(
+                                                                onPressed: () {
+                                                                  Navigator.pop(
+                                                                      context, false);
+                                                                },
+                                                                child: Text("Hủy"
+                                                                    .toUpperCase())),
+                                                            TextButton(
+                                                                onPressed: () async{
+                                                                  for(int i= 0 ; i < values.length; i++){
+                                                                    print("_______xxx${values[i].id}");
+                                                                    print("_______xxx${user.id}");
+                                                                    IndustryExpert temp = new IndustryExpert(
+                                                                      id: values[i].id,
+                                                                      userId: user.id,
+                                                                      status: true,
+                                                                    );
+                                                                    _tmp.add(temp);
+                                                                  }
+                                                                  setState(() {
+                                                                    _listIndustryExpert = _tmp;
+                                                                  });
+                                                                  int status = await updateUserBloc.updateUserIndustry(_tmp);
+                                                                  if(status == 200){
+                                                                    print("___done");
+                                                                  }else{
+                                                                    print("___fail");
+                                                                  }
+                                                                },
+                                                                child: Text("Lưu lại"
+                                                                    .toUpperCase())),
+                                                          ],
+                                                        );
+                                                      });
+                                                }else{
+                                                  return null;
+                                                }
+                                              },
+                                              cancelText: Text("Hủy"),
+                                              confirmText: Text("Tiếp tục"),
+
+                                            );
+                                            // children: [
+                                            //   Container(
+                                            //       height: 200,
+                                            //       width: 500,
+                                            //       child: MultiSelectItem(
+                                            //         items: _lisIndustry.map((industry) => MultiSelectItem<IndustryClass>(industry, industry.name)).toList(),
+                                            //         icon: Icon(Icons.check),
+                                            //         onTap: (values) {
+                                            //           print(values.first.name);
+                                            //           setState(() {
+                                            //             _listSelectIndustry.add(Text("a"));
+                                            //           });
+                                            //         },
+                                            //       ),
+
+
+
+                                          } else if (snapshot.hasError) {
+                                            return BuildError(
+                                              error: snapshot.error,
+                                            );
+                                          } else {
+                                            return BuildLoading();
+                                          }
+                                        },
+                                      );
+                                    });
+                              })
+                        ],
+                      ),
+                      checkUpdate
+                          ? Container(
+                        width: 40,
+                        child: RaisedButton(
+                          onPressed: () {},
+                          color: Colors.red,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20)),
+                          child: Text(
+                            "Đăng xuất",
+                            style: TextStyle(
+                                fontSize: 14,
+                                letterSpacing: 2.2,
+                                color: Colors.white),
+                          ),
+                        ),
+                      )
+                          : Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          RaisedButton(
+                            onPressed: () {
+                              setState(() {
+                                checkUpdate = true;
+                              });
+                            },
+                            color: Colors.white,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20)),
+                            child: Text(
+                              "Hủy",
+                              style: TextStyle(
+                                  fontSize: 14,
+                                  letterSpacing: 2.2,
+                                  color: Colors.black87),
+                            ),
+                          ),
+                          RaisedButton(
+                            onPressed: ()  async{
+                              int status = await updateUserBloc.updateUserProfile(new UserDetail(
+                                  id: user.id,
+                                  avatarUrl: user.avatarUrl,
+                                  status: user.status,
+                                  email: _mail.text.trim(),
+                                  phone: _phone.text.trim(),
+                                  facebook: _facebook.text.trim(),
+                                  joinDate: user.joinDate,
+                                  provider: _provider.text.trim(),
+                                  role: user.role,
+                                  name: _name.text.trim(),
+                                  bio: user.bio
+                              ));
+                              if(status == 200){
+                                print("done");
+                                setState(() {
+                                  userBloc.getUser();
+                                  checkUpdate = true;
+                                });
+                              }else{
+                                print("fail");
+                              }
+                            },
+                            color: Colors.green,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20)),
+                            child: Text(
+                              "Lưu thay đổi",
+                              style: TextStyle(
+                                  fontSize: 14,
+                                  letterSpacing: 2.2,
+                                  color: Colors.black87),
+                            ),
+                          ),
+                        ],
+                      )
+                    ],
+                  )),
             );
           } else if (snapshot.hasError) {
             return BuildError(
@@ -63,223 +540,25 @@ class _UserProfile extends State<UserProfile> {
         });
   }
 
-  Widget _buildImage() => ClipPath(
-        clipper: DialogonalClipper(),
-        child: Container(
-          width: double.infinity,
-          child: Image.network(
-            'https://image.freepik.com/free-photo/copy-space-table-with-office-supplies-workspace_35674-973.jpg',
-            fit: BoxFit.cover,
-            height: _imageHeight,
-            colorBlendMode: BlendMode.srcOver,
-            color: Color.fromARGB(80, 20, 10, 40),
-          ),
-        ),
-      );
-
-  Widget _buildProfileRow(String userName, String bio, String imgSrc) =>
-      Padding(
-        padding: const EdgeInsets.only(top: _imageHeight / 2.5, left: 16.0),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            CircleAvatar(
-              minRadius: 28.0,
-              maxRadius: 28.0,
-              backgroundImage: NetworkImage(imgSrc),
-            ),
-            Expanded(
-              child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16.0, vertical: 0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    Text(
-                      userName,
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 18.0,
-                          fontWeight: FontWeight.w300),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 8.0),
-                      child: Text(
-                        bio,
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 12.0,
-                            fontWeight: FontWeight.w200),
-                        overflow: TextOverflow.ellipsis,
-                        maxLines: 1,
-                      ),
-                    )
-                  ],
-                ),
-              ),
-            )
-          ],
-        ),
-      );
-
-  Widget _buildBottomPart(List<String> userInfo, List<String> title) => Padding(
-        padding: const EdgeInsets.only(top: _imageHeight),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            _buildMyTaskHeader(),
-            _buildTaskList(userInfo, title),
-          ],
-        ),
-      );
-
-  Widget _buildTaskList(List<String> userInfo, List<String> title) => Expanded(
-      child: AnimatedList(
-          initialItemCount: 5,
-          itemBuilder: (context, index, animation) => TaskRow(
-                title: title[index],
-                userInfo: userInfo[index],
-                animation: animation,
-              )));
-
-  Widget _buildMyTaskHeader() => Padding(
-        padding: const EdgeInsets.only(left: 64.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Row(
-              children: [
-                Text(
-                  'Thông Tin',
-                  style: TextStyle(fontSize: 26.0, fontWeight: FontWeight.w400),
-                ),
-                IconButton(
-                    icon: Icon(
-                      Icons.edit,
-                      size: 15,
-                    ),
-                    onPressed: () {
-                      showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return AlertDialog(
-                              title: Text("Edit profile"),
-                              content: Container(
-                                height: 200,
-                                child: Column(
-                                  children: [
-                                    TextField(
-                                      decoration: InputDecoration(
-                                          labelText: "fullname"),
-                                    ),
-                                    TextField(
-                                      decoration:
-                                          InputDecoration(labelText: "phone"),
-                                    ),
-                                    TextField(
-                                      decoration: InputDecoration(
-                                          labelText: "birthday"),
-                                    )
-                                  ],
-                                ),
-                              ),
-                              actions: [
-                                TextButton(
-                                    onPressed: () {
-                                      Navigator.pop(context, false);
-                                    },
-                                    child: Text("Cancel".toUpperCase())),
-                                TextButton(
-                                    onPressed: () {},
-                                    child: Text("Update".toUpperCase()))
-                              ],
-                            );
-                          });
-                    }),
-              ],
-            ),
-            SizedBox(
-              height: 5,
-            ),
-          ],
-        ),
-      );
-
-  Widget _buildTimeline() => Positioned(
-        top: 0.0,
-        bottom: 0.0,
-        left: 32.0,
-        child: Container(
-          width: 1.0,
-          color: Colors.grey[300],
-        ),
-      );
-}
-
-class TaskRow extends StatelessWidget {
-  final String userInfo;
-  final String title;
-  final Animation<double> animation;
-
-  const TaskRow({Key key, this.animation, this.userInfo, this.title})
-      : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return FadeTransition(
-      opacity: animation,
-      child: SizeTransition(
-        sizeFactor: animation,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 12.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 26.5),
-                child: Container(
-                  width: 12.0,
-                  height: 12.0,
-                  decoration: BoxDecoration(
-                      shape: BoxShape.circle, color: Colors.orange),
-                ),
-              ),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Text(
-                      title,
-                      style: TextStyle(fontSize: 16.0),
-                    ),
-                    Text(
-                      checkNull(userInfo),
-                      style: TextStyle(
-                          fontSize: 12.0, fontWeight: FontWeight.w300),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
+  Widget buildTextField(
+      String labelText, String placeholder, TextEditingController tmp) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10.0),
+      child: TextField(
+        controller: tmp,
+        readOnly: checkUpdate,
+        decoration: InputDecoration(
+            contentPadding: EdgeInsets.only(bottom: 1),
+            labelText: labelText,
+            floatingLabelBehavior: FloatingLabelBehavior.always,
+            hintText: placeholder,
+            hintStyle: TextStyle(
+              fontSize: 15,
+              color: Colors.black,
+            )),
       ),
     );
   }
-}
-
-class DialogonalClipper extends CustomClipper<Path> {
-  @override
-  Path getClip(Size size) => Path()
-    ..lineTo(0.0, size.height - 60.0)
-    ..lineTo(size.width, size.height)
-    ..lineTo(size.width, 0.0)
-    ..close();
-
-  @override
-  bool shouldReclip(CustomClipper<Path> oldClipper) => true;
 }
 
 String checkNull(String temp) {

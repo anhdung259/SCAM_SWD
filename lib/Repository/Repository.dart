@@ -9,6 +9,7 @@ import 'package:swd_project/Model/Product/ProductResponse.dart';
 import 'package:swd_project/Model/QuestionReview/QuestionReviewResponse.dart';
 import 'package:swd_project/Model/ReviewAnswer/ReviewResponse.dart';
 import 'package:swd_project/Model/ReviewAnswer/ReviewUpdateResponse.dart';
+import 'package:swd_project/Model/User/IndustryExpert.dart';
 import 'package:swd_project/Model/User/UserResponse.dart';
 
 import 'package:http/http.dart' as http;
@@ -26,10 +27,41 @@ class Repository {
   var getPricingList = '$mainUrl/api/Products';
   final LocalStorage _storage = LocalStorage('token');
   var getRecommend = '$mainUrl/api/Products/Recommendations';
+  var getListIndustryUserUrl = "$mainUrl/api/Users/Industries";
+  var getAllIndustryUrl = "$mainUrl/api/Industries";
+
+  Future<List<IndustryClass>> getAllIndustry() async{
+      final response = await http.get(getAllIndustryUrl);
+      if(response.statusCode == 200){
+        return json
+            .decode(response.body)
+            .map<IndustryClass>((item) => IndustryClass.fromJson(item))
+            .toList();
+      }else{
+        throw Exception("failt to getall industry");
+      }
+  }
+
+  Future<List<IndustryExpert>> getListIndustryExpert() async{
+    final response = await http.get(getListIndustryUserUrl, headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      'Authorization': 'Bearer ${_storage.getItem('token')}',
+    });
+    if(response.statusCode == 200){
+      return json
+          .decode(response.body)
+          .map<IndustryExpert>((item) => IndustryExpert.fromJson(item))
+          .toList();
+    }else{
+      throw Exception("fail to get industry");
+    }
+  }
 
   // https://scam2020.azurewebsites.net/api/Users/auth?token=
   Future<String> login(String token) async {
     final response = await http.post(getToken + "idtoken=$token");
+    print("_____$token");
     if (response.statusCode == 200) {
       return response.body;
     } else {

@@ -3,6 +3,7 @@ import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:swd_project/Components/ListProduct/search_bar.dart';
+import 'package:swd_project/Components/Profile/Profile.dart';
 import 'package:swd_project/Components/Profile/user_map_model.dart';
 import 'package:swd_project/Components/TaskMenu/listtle_list.dart';
 import 'package:swd_project/Pages/home_content.dart';

@@ -1,3 +1,6 @@
+import 'dart:convert';
+String industryExpertToJson(List<IndustryExpert> data) =>
+    json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
 class IndustryExpert {
   IndustryExpert({
     this.industryId,
@@ -33,10 +36,9 @@ class IndustryExpert {
         "expertLevel": expertLevel,
         "interestLevel": interestLevel,
         "status": status,
-        "id": id,
-        "industry": industry.toJson(),
       };
 }
+
 
 class Industry {
   Industry({
@@ -48,7 +50,7 @@ class Industry {
 
   int id;
   String name;
-  String status;
+  dynamic status;
   List<dynamic> industryExperts;
 
   factory Industry.fromJson(Map<String, dynamic> json) => Industry(
